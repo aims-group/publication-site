@@ -2,3 +2,4 @@ env/
 db.sqlite
 db.sqlite3
 local_settings.py
+static/scripts/db_settings.py

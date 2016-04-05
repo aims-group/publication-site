@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} login {% endblock %}
+
+{% block content %}
+<link href="/static/css/form.css" rel="stylesheet">
+
+
+<form id="login_form" action="login" method="post" class="form-signin">
+
+  <h2 class="form-signin-heading">Please Sign In</h2>
+  {% csrf_token %}
+  <label for="username" class="sr-only">User name:</label>
+  <input type="text" name="username" value="" id="username" class="form-control" placeholder="User Name">
+
+  <label for="password" class="sr-only">Password:</label>
+  <input type="password" name="password" value="" id="password" class="form-control" placeholder="Password">
+
+  <button class="btn btn-lg btn-primary btn-block" id="sign-in" type="submit">Sign In</button>
+  <input type="hidden" name="next" value="{{ next }}" />
+  <br/>
+  <label for="additional-credentials">Would you like to add ESGF or Alfresco credentials to your account?</label>
+  <a href="add_credentials" class="btn btn-lg btn-primary btn-block" id="additional-credentials">Add Credentials</a>
+  <br>
+  <a href="register" class="btn btn-lg btn-info btn-block" >New User Registration.</a>
+</form>
+<br>
+{% endblock %}
+

@@ -4,7 +4,7 @@ from django.template import loader, Context
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return render(request, 'base.html')
+    return render(request, 'site/search.html')
 
 def register(request):
   return HttpResponse("Register page")
