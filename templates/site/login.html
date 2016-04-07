@@ -5,7 +5,7 @@
 <link href="/static/css/form.css" rel="stylesheet">
 
 
-<form id="login_form" action="login" method="post" class="form-signin">
+<form id="login_form" action="" method="post" class="form-signin">
 
   <h2 class="form-signin-heading">Please Sign In</h2>
   {% csrf_token %}
@@ -21,7 +21,7 @@
   <label for="additional-credentials">Would you like to add ESGF or Alfresco credentials to your account?</label>
   <a href="add_credentials" class="btn btn-lg btn-primary btn-block" id="additional-credentials">Add Credentials</a>
   <br>
-  <a href="register" class="btn btn-lg btn-info btn-block" >New User Registration.</a>
+  <a href="/register" class="btn btn-lg btn-info btn-block" >New User Registration.</a>
 </form>
 <br>
 {% endblock %}

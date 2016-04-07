@@ -15,13 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth import views
+from django.contrib.auth import views as auth_views
 from publisher.forms import LoginForm
+from django.views.generic.edit import CreateView
+from publisher.forms import RegisterForm
+from publisher import views as pub_views
 
 urlpatterns = [
     url(r'^', include('publisher.urls')),
     url(r'^publisher/', include('publisher.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
-    url(r'^logout/$', views.logout, {'next_page': '/login'}),
+    url(r'^login/$', auth_views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
+    url('^register/', CreateView.as_view(template_name='site/registration.html', form_class=RegisterForm, success_url='/')),
 ]

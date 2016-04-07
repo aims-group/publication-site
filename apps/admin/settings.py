@@ -111,7 +111,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/'
+#LOGIN_REDIRECT_URL = 'fuck'
+
+LOGIN_URL = '/login/'
 
 STATICFILES_DIRS = (
         'static',

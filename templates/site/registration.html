@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %} register {% endblock %}
 {% block content %}
-  <link href="/acme/static/css/form.css" rel="stylesheet">
-  {% load addattributes %}  
+  <link href="/static/css/form.css" rel="stylesheet">
  
   {% if registered%}
     <h2>Thank You For Registering</h2>
@@ -14,9 +13,9 @@
     <form id="user_form" action="" method="post" class="form-signin">
     <h2>Create An Account</h2>
       {% csrf_token %}
-        {% for field in user_form %}
+        {% for field in form %}
           {% with attr="form-control" %}
-            {{ field|addattributes:attr|safe}}
+            {{ field }}
             {% if field.errors %}
               <div class="alert alert-danger" role="alert">
                 {{ field.errors }}
