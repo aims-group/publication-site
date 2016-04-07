@@ -4,4 +4,4 @@ db.sqlite3
 local_settings.py
 static/scripts/db_settings.py
 *.pyc
- apps/publisher/migrations/
+apps/publisher/migrations/
