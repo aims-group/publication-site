@@ -68,7 +68,7 @@ class Funding(models.Model):
         return self.funding
 
 class Author(models.Model):
-    
+   
     title = models.IntegerField(choices=AUTHOR_TITLE_CHOICE, default=9)
     first_name = models.TextField()
     middle_name = models.TextField()
@@ -79,8 +79,6 @@ class Author(models.Model):
         return " ".join((AUTHOR_TITLE_CHOICE[int(self.title)][1], self.first_name, self.middle_name, self.last_name))
 
 class Publication(models.Model):
-
-   
     publication_type = models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
     status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
     submitter = models.ForeignKey(User) 
