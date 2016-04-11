@@ -19,11 +19,10 @@ from django.contrib.auth import views as auth_views
 from publisher.forms import LoginForm
 from django.views.generic.edit import CreateView
 from publisher.forms import RegisterForm
-from publisher import views as pub_views
 
 urlpatterns = [
     url(r'^', include('publisher.urls')),
-    url(r'^publisher/', include('publisher.urls')),
+    # url(r'^publisher/', include('publisher.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),

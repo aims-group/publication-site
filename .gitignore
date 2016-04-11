@@ -6,4 +6,5 @@ static/scripts/db_settings.py
 *.pyc
 .idea/
 apps/publisher/migrations/
+.DS_store
 
