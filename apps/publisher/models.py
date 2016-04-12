@@ -81,7 +81,7 @@ class Author(models.Model):
 class Publication(models.Model):
     publication_type = models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
     status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
-    submitter = models.ForeignKey(User) 
+    submitter = models.ForeignKey(User)
     title = models.TextField()
     projects = models.ManyToManyField(Project)
     funding = models.ManyToManyField(Funding)

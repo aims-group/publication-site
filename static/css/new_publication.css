@@ -1,0 +1,6 @@
+#tabs .nav li a {
+    outline: 0;
+}
+#meta-form {
+    overflow: auto;
+}

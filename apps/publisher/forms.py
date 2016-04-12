@@ -35,27 +35,18 @@ class RegisterForm(UserCreationForm):
 
 
 class PublicationForm(forms.Form):
-    # def __init__(self, initial):
-    #     super(PublicationForm, self).__init__()
-    #     if 'isbn' in initial.keys():
-    #         self.fields['isbn'] = initial['isbn']
-    #     if 'title' in initial.keys():
-    #         self.fields['title'] = initial['title']
-    #     if 'url' in initial.keys():
-    #         self.fields['url'] = initial['url']
-    #     if 'page' in initial.keys():
-    #         self.fields['page'] = initial['page']
-    #     if 'publisher' in initial.keys():
-    #         self.fields['publisher'] = initial['publisher']
-
-    doi = forms.CharField(label="DOI", max_length=30, widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'DOI'}))
-    isbn = forms.CharField(label="isbn", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'isbn'}))
-    title = forms.CharField(label="title", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
-    url = forms.CharField(label="url", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'url'}))
-    page = forms.CharField(label="page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
-    publisher = forms.CharField(label="publisher", widget=forms.TextInput(attrs={'class': 'form-control',
+    doi = forms.CharField(label="Doi", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'DOI'}))
+    isbn = forms.CharField(label="Isbn", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'isbn'}))
+    title = forms.CharField(label="Title", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
+    url = forms.CharField(label="Url", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'URL'}))
+    page = forms.CharField(label="Page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
+    publisher = forms.CharField(label="Publisher", widget=forms.TextInput(attrs={'class': 'form-control',
                                                                                  'name': 'publisher'}))
-
+    # status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
+    # authors = models.ManyToManyField(Author)
+    # publication_date = models.DateField()
+    # url = models.URLField()
+    # doi = models.TextField()
 
     # example data object:
     # u'DOI': u'10.1002/0470841559.ch1',

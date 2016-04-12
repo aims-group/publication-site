@@ -37,18 +37,24 @@ def finddoi(request):
         url = "http://dx.doi.org/" + doi
 
     r = requests.get(url, headers=headers)
+    print r.json()
     if r.status_code == 200:
+        #TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
-        if 'isbn' in initial.keys():
-            isbn = initial['isbn']
+        if 'DOI' in initial.keys():
+            doi = initial['DOI']
+        else:
+            doi = ''
+        if 'ISBN' in initial.keys():
+            isbn = initial['ISBN']
         else:
             isbn = ''
         if 'title' in initial.keys():
             title = initial['title']
         else:
             title = ''
-        if 'url' in initial.keys():
-            url = initial['url']
+        if 'URL' in initial.keys():
+            url = initial['URL']
         else:
             url = ''
         if 'page' in initial.keys():
@@ -59,14 +65,11 @@ def finddoi(request):
             publisher = initial['publisher']
         else:
             publisher = ''
-        pub_form = PublicationForm(initial={'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher})
+        pub_form = PublicationForm(initial={'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher})
         return render(request, 'site/publication_details.html', {'pub_form': pub_form})
-    # elif r.status_code == 204:
-    #     return (doi.strip('\n') + " -- The request was OK but there was no metadata available.available.\n")
-    # elif r.status_code == 404:
-    #     return (doi.strip('\n') + " -- The DOI requested doesn't exist.\n")
-    # elif r.status_code == 406:
-    #     return (doi.strip('\n') + " -- Can't serve any requested content type.\n")
+    elif r.status_code == 204 or 404 or 406:
+        pub_form = PublicationForm()
+        return render(request, 'site/publication_details.html', {'pub_form': pub_form, 'message': 'Unable to pre-fill form with the given DOI'})
     else:
         return HttpResponse(status=500)  # temporary
         # return (doi.strip('\n') + " -- Unknown status code returned (" + str(r.status_code) + ").\n")

@@ -1,41 +1,192 @@
 {% extends "base.html" %}
 {% block title %}New Publication{% endblock %}
 {% block content %}
-<link href="/static/css/form.css" rel="stylesheet">
-<script type="text/javascript" src="/static/scripts/doi.js"></script>
+
 <div class="row">
     <div class="col-lg-6">
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="true">
-                    Publication Type
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a href="#">Book</a></li>
-                    <li><a href="#">Conference</a></li>
-                    <li><a href="#">Journal</a></li>
-                    <li><a href="#">Magazine</a></li>
-                    <li><a href="#">Poster</a></li>
-                    <li><a href="#">Presentation</a></li>
-                    <li><a href="#">Technical_Report</a></li>
-                    <li><a href="#">Other</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                </ul>
-            </div>
+        <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
+                Publication Type
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                <li><a href="#">Book</a></li>
+                <li><a href="#">Conference</a></li>
+                <li><a href="#">Journal</a></li>
+                <li><a href="#">Magazine</a></li>
+                <li><a href="#">Poster</a></li>
+                <li><a href="#">Presentation</a></li>
+                <li><a href="#">Technical_Report</a></li>
+                <li><a href="#">Other</a></li>
+            </ul>
+        </div>
         <div class="input-group">
-            <input type="text" class="form-control" id="doi-field" placeholder="doi:10...">
+            <input type="text" class="form-control" id="doi-field" placeholder="doi:">
       <span class="input-group-btn">
         <button class="btn btn-primary" type="button" onclick="doisearch()">Search</button>
       </span>
         </div><!-- /input-group -->
     </div><!-- /.col-lg-6 -->
 </div><!-- /.row -->
+<div id="loading" class="text-center">
+    <br>
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
+    <span class="sr-only">Loading...</span>
+</div>
 <div id="publication-form-wrapper">
 
 </div>
-<div>
-    <p>Meta form goes here</p>
+<div id="meta-form">
+    <form>
+        <div class="row"></div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Experiment</div>
+            <div class="checkbox well well-sm">
+                <label>
+                    <input type="checkbox" value="1pctCO2">
+                    1pctCO2
+                </label><br>
+                <label>
+                    <input type="checkbox" value="abrupt4xCO2">
+                    abrupt4xCO2
+                </label><br>
+                <label>
+                    <input type="checkbox" value="amip">
+                    amip
+                </label><br>
+                <label>
+                    <input type="checkbox" value="amip4K">
+                    amip4K
+                </label><br>
+                <label>
+                    <input type="checkbox" value="amip4xCO2">
+                    amip4xCO2
+                </label><br>
+                <label>
+                    <input type="checkbox" value="amipFuture">
+                    amipFuture
+                </label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Model & Ensemble</div>
+            <div class="checkbox well well-sm">
+                <label>
+                    <input type="checkbox" value="ACCESS1.0">
+                    ACCESS1.0
+                </label><br>
+                <label>
+                    <input type="checkbox" value="ACCESS1.3">
+                    ACCESS1.3
+                </label><br>
+                <label>
+                    <input type="checkbox" value="BCC-CSM1.1">
+                    BCC-CSM1.1
+                </label><br>
+                <label>
+                    <input type="checkbox" value="BCC-CSM1.1-m">
+                    BCC-CSM1.1-m
+                </label><br>
+                <label>
+                    <input type="checkbox" value="BESM-OA2.3">
+                    BESM-OA2.3
+                </label><br>
+                <label>
+                    <input type="checkbox" value="BNU-ESM">
+                    BNU-ESM
+                </label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Frequency</div>
+            <div class="checkbox well well-sm">
+                <label>
+                    <input type="checkbox" value="3-hourly">
+                    3-hourly
+                </label><br>
+                <label>
+                    <input type="checkbox" value="6-hourly">
+                    6-hourly
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Climatology Monthly Mean">
+                    Climatology Monthly Mean
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Daily">
+                    Daily
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Fixed">
+                    Fixed
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Monthly">
+                    Monthly
+                </label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Variable</div>
+            <div class="checkbox well well-sm">
+                <label>
+                    <input type="checkbox" value="air pressure">
+                    air pressure
+                </label><br>
+                <label>
+                    <input type="checkbox" value="air pressure at cloud top">
+                    air pressure at cloud top
+                </label><br>
+                <label>
+                    <input type="checkbox" value="air pressure at convective cloud base">
+                    air pressure at convective cloud base
+                </label><br>
+                <label>
+                    <input type="checkbox" value="air pressure at convective cloud top">
+                    air pressure at convective cloud top
+                </label><br>
+                <label>
+                    <input type="checkbox" value="air pressure at sea level">
+                    air pressure at sea level
+                </label><br>
+                <label>
+                    <input type="checkbox" value="air temperature">
+                    air temperature
+                </label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Keyword</div>
+            <div class="checkbox well well-sm">
+                <label>
+                    <input type="checkbox" value="Abrupt change">
+                    Abrupt change
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Acidification">
+                    Acidification
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Adaptation">
+                    Adaptation
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Aerosols">
+                    Aerosols
+                </label><br>
+                <label>
+                    <input type="checkbox" value="Agriculture">
+                    Agriculture
+                </label><br>
+                <label>
+                    <input type="checkbox" value="AMO">
+                    AMO
+                </label><br>
+            </div>
+        </div>
+    </form>
 </div>
+<script type="text/javascript" src="/static/scripts/doi.js"></script>
+<link href="/static/css/new_publication.css" rel="stylesheet">
 {% endblock %}
