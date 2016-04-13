@@ -65,11 +65,17 @@ def finddoi(request):
             publisher = initial['publisher']
         else:
             publisher = ''
-        pub_form = PublicationForm(initial={'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher})
-        return render(request, 'site/publication_details.html', {'pub_form': pub_form})
+        if 'author' in initial.keys():
+            authors = initial['author']
+        else:
+            author = ''
+        init = {'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher}
+        form = PublicationForm(initial=init)
+        print form
+        return render(request, 'site/publication_details.html', {'form': form})
     elif r.status_code == 204 or 404 or 406:
-        pub_form = PublicationForm()
-        return render(request, 'site/publication_details.html', {'pub_form': pub_form, 'message': 'Unable to pre-fill form with the given DOI'})
+        form = PublicationForm()
+        return render(request, 'site/publication_details.html', {'form': form, 'message': 'Unable to pre-fill form with the given DOI'})
     else:
         return HttpResponse(status=500)  # temporary
         # return (doi.strip('\n') + " -- Unknown status code returned (" + str(r.status_code) + ").\n")
