@@ -6,7 +6,6 @@ from models import Experiment, Frequency, Keyword, Model, Variable, Project, Fun
 # from captcha.fields import ReCaptchaField
 
 
-
 # If you don't do this you cannot use Bootstrap CSS
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Username", max_length=30,
@@ -44,12 +43,51 @@ class PublicationForm(forms.Form):
     page = forms.CharField(label="Page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
     publisher = forms.CharField(label="Publisher", widget=forms.TextInput(attrs={'class': 'form-control',
                                                                                  'name': 'publisher'}))
-    # status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
-    # authors = models.ManyToManyField(Author)
-    # publication_date = models.DateField()
-    # url = models.URLField()
-    # doi = models.TextField()
+    # Experiment
+    onepctCO2 = forms.BooleanField(label='1pctCO2')
+    abrupt4xCO2 = forms.BooleanField()
+    amip = forms.BooleanField()
+    amip4K = forms.BooleanField()
+    amip4xCO2 = forms.BooleanField()
+    amipFuture = forms.BooleanField()
+    # Model
+    ACCESS1_0 = forms.BooleanField(label='ACCESS1.0')
+    ACCESS1_3 = forms.BooleanField(label='ACCESS1.3')
+    BCC_CSM1_1 = forms.BooleanField(label='BCC-CSM1.1')
+    BCC_CSM1_1_m = forms.BooleanField(label='BCC-CSM1.1-m')
+    BESM_OA2_3 = forms.BooleanField(label='BESM-OA2.3')
+    BNU_ESM = forms.BooleanField(label='BNU-ESM')
+    # frequency
+    threehourly = forms.BooleanField(label='3-hourly')
+    sixhourly = forms.BooleanField(label='6-hourly')
+    ClimatologyMonthlyMean = forms.BooleanField()
+    Daily = forms.BooleanField()
+    Fixed = forms.BooleanField()
+    Monthly = forms.BooleanField()
+    # variable
+    airpressureatcloudtop = forms.BooleanField(label='Air pressure at cloudtop')
+    airpressureatconvectivecloudbase = forms.BooleanField(label='Air pressure at convective cloud base')
+    airpressureatconvectivecloudtop = forms.BooleanField(label='Air pressure at convective cloud top')
+    airpressureatsealevel = forms.BooleanField(label='Air pressure at sea level')
+    airtemperature = forms.BooleanField(label='Air temperature')
+    # keyword
+    Abruptchange = forms.BooleanField()
+    Acidification = forms.BooleanField()
+    Adaptation = forms.BooleanField()
+    Aerosols = forms.BooleanField()
+    Agriculture = forms.BooleanField()
+    AMO = forms.BooleanField()
 
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = '__all__'
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'institution': forms.TextInput(attrs={'class': 'form-control'}),
+        }
     # example data object:
     # u'DOI': u'10.1002/0470841559.ch1',
     # u'ISBN': [u'http://id.crossref.org/isbn/0471975141',

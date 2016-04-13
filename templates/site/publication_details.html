@@ -3,7 +3,7 @@
 {% endif %}
 <div id="tabs">
     <ul class="nav nav-tabs">
-        <li role="presentation"><a href="#tabs-1">Book</a></li>
+        <li class="active" role="presentation"><a href="#tabs-1">Book</a></li>
         <li role="presentation"><a href="#tabs-2">Conference</a></li>
         <li role="presentation"><a href="#tabs-3">Journal</a></li>
         <li role="presentation"><a href="#tabs-4">Magazine</a></li>
@@ -13,17 +13,67 @@
         <li role="presentation"><a href="#tabs-8">Other</a></li>
     </ul>
     <div id="tabs-1">
-        {% for field in pub_form %}
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon-{{field.label}}">{{field.label}}</span>
-                {{ field }}
-            </div>
-            {% if field.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ field.errors }}
-                </div>
-            {% endif %}
-        {% endfor %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.doi.label}}">{{form.doi.label}}</span>
+            {{ form.doi }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.doi.errors }}
+        </div>
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.isbn.label}}">{{form.isbn.label}}</span>
+            {{ form.isbn }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.isbn.errors }}
+        </div>
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.title.label}}">{{form.title.label}}</span>
+            {{ form.title }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.title.errors }}
+        </div>
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.url.label}}">{{form.url.label}}</span>
+            {{ form.url }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.url.errors }}
+        </div>
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.page.label}}">{{form.page.label}}</span>
+            {{ form.page }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.page.errors }}
+        </div>
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon-{{form.publisher.label}}">{{form.publisher.label}}</span>
+            {{ form.publisher }}
+        </div>
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.publisher.errors }}
+        </div>
+        {% endif %}
+        <div id="author-form">
+            <div class="text-center">Authors</div>
+            {% for author in author_form %}
+            <div>{{author}}</div>
+            <br>
+            {% endfor %}
+        </div>
     </div>
     <div id="tabs-2">
         <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc.
@@ -49,10 +99,102 @@
     </div>
 </div>
 
+<div id="meta-form">
+    <form>
+        <div class="row"></div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Experiment</div>
+            <div class="checkbox well well-sm">
+                <label>{{form.onepctCO2}}
+                    {{form.onepctCO2.label}}</label><br>
+                <label>{{form.abrupt4xCO2}}
+                    {{form.abrupt4xCO2.label}}</label><br>
+                <label>{{form.amip}}
+                    {{form.amip.label}}</label><br>
+                <label>{{form.amip4K}}
+                    {{form.amip4K.label}}</label><br>
+                <label>{{form.amip4xCO2}}
+                    {{form.amip4xCO2.label}}</label><br>
+                <label>{{form.amipFuture}}
+                    {{form.amipFuture.label}}</label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Model & Ensemble</div>
+            <div class="checkbox well well-sm">
+                <label>{{form.ACCESS1_0}}
+                    {{form.ACCESS1_0.label}}</label><br>
+                <label>{{form.ACCESS1_3}}
+                    {{form.ACCESS1_3.label}}</label><br>
+                <label>{{form.BCC_CSM1_1}}
+                    {{form.BCC_CSM1_1.label}}</label><br>
+                <label>{{form.BCC_CSM1_1_m}}
+                    {{form.BCC_CSM1_1_m.label}}</label><br>
+                <label>{{form.BESM_OA2_3}}
+                    {{form.BESM_OA2_3.label}}</label><br>
+                <label>{{form.BNU_ESM}}
+                    {{form.BNU_ESM.label}}</label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Frequency</div>
+            <div class="checkbox well well-sm">
+                <label>{{form.threehourly}}
+                    {{form.threehourly.label}}</label><br>
+                <label>{{form.sixhourly}}
+                    {{form.sixhourly.label}}</label><br>
+                <label>{{form.ClimatologyMonthlyMean}}
+                    {{form.ClimatologyMonthlyMean.label}}</label><br>
+                <label>{{form.Daily}}
+                    {{form.Daily.label}}</label><br>
+                <label>{{form.Fixed}}
+                    {{form.Fixed.label}}</label><br>
+                <label>{{form.Monthly}}
+                    {{form.Monthly.label}}</label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Variable</div>
+            <div class="checkbox well well-sm">
+                <label>{{form.airpressureatcloudtop}}
+                    {{form.airpressureatcloudtop.label}}</label><br>
+                <label>{{form.airpressureatconvectivecloudbase}}
+                    {{form.airpressureatconvectivecloudbase.label}}</label><br>
+                <label>{{form.airpressureatconvectivecloudtop}}
+                    {{form.airpressureatconvectivecloudtop.label}}</label><br>
+                <label>{{form.airpressureatsealevel}}
+                    {{form.airpressureatsealevel.label}}</label><br>
+                <label>{{form.airtemperature}}
+                    {{form.airtemperature.label}}</label><br>
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            <div class="text-center">Keyword</div>
+            <div class="checkbox well well-sm">
+                <label>{{form.Abruptchange}}
+                    {{form.Abruptchange.label}}</label><br>
+                <label>{{form.Acidification}}
+                    {{form.Acidification.label}}</label><br>
+                <label>{{form.Adaptation}}
+                    {{form.Adaptation.label}}</label><br>
+                <label>{{form.Aerosols}}
+                    {{form.Aerosols.label}}</label><br>
+                <label>{{form.Agriculture}}
+                    {{form.Agriculture.label}}</label><br>
+                <label>{{form.AMO}}
+                    {{form.AMO.label}}</label><br>
+            </div>
+        </div>
+    </form>
+</div>
+
 <script>
     $(function() {$( "#tabs" ).tabs();} );
     $('#tabs a').click(function( event ) {
     $('#tabs .active').removeClass('active');
     $(event.target).parent().addClass('active');
     });
+
+
+
 </script>

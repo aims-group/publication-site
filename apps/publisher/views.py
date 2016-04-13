@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from forms import PublicationForm
-import pdb
+from django.forms import formset_factory
+from forms import PublicationForm, AuthorForm
 import requests
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
 
@@ -38,7 +38,7 @@ def finddoi(request):
         url = "http://dx.doi.org/" + doi
 
     r = requests.get(url, headers=headers)
-    print r.json()
+    #print r.json()
     if r.status_code == 200:
         #TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
@@ -55,7 +55,7 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = initial['URL']
+            url = requests.get(initial['URL']).url
         else:
             url = ''
         if 'page' in initial.keys():
@@ -66,11 +66,23 @@ def finddoi(request):
             publisher = initial['publisher']
         else:
             publisher = ''
-        pub_form = PublicationForm(initial={'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher})
-        return render(request, 'site/publication_details.html', {'pub_form': pub_form})
+        if 'author' in initial.keys():
+            authors_list = []
+            AuthorFormSet = formset_factory(AuthorForm, extra=0)
+            for author in initial['author']:
+                authors_list.append({'first_name': author['given'], 'last_name': author['family']})
+            author_form = AuthorFormSet(initial=authors_list)
+        else:
+            authors_form = ''
+        init = {'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher}
+        form = PublicationForm(initial=init)
+        return render(request, 'site/publication_details.html', {'form': form, 'author_form': author_form})
     elif r.status_code == 204 or 404 or 406:
-        pub_form = PublicationForm()
-        return render(request, 'site/publication_details.html', {'pub_form': pub_form, 'message': 'Unable to pre-fill form with the given DOI'})
+        form = PublicationForm()
+        authors_list = []
+        AuthorFormSet = formset_factory(AuthorForm, extra=0)
+        author_form = AuthorFormSet(initial=authors_list)
+        return render(request, 'site/publication_details.html', {'form': form, 'author_form': author_form, 'message': 'Unable to pre-fill form with the given DOI'})
     else:
         return HttpResponse(status=500)  # temporary
         # return (doi.strip('\n') + " -- Unknown status code returned (" + str(r.status_code) + ").\n")
