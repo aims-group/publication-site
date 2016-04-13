@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from models import Author
 # from captcha.fields import ReCaptchaField
 from django import forms
 
@@ -64,11 +65,11 @@ class PublicationForm(forms.Form):
     Fixed = forms.BooleanField()
     Monthly = forms.BooleanField()
     # variable
-    airpressureatcloudtop = forms.BooleanField(label='air pressure at cloudtop')
-    airpressureatconvectivecloudbase = forms.BooleanField(label='air pressure at convective cloud base')
-    airpressureatconvectivecloudtop = forms.BooleanField(label='air pressure at convective cloud top')
-    airpressureatsealevel = forms.BooleanField(label='air pressure at sea level')
-    airtemperature = forms.BooleanField(label='air temperature')
+    airpressureatcloudtop = forms.BooleanField(label='Air pressure at cloudtop')
+    airpressureatconvectivecloudbase = forms.BooleanField(label='Air pressure at convective cloud base')
+    airpressureatconvectivecloudtop = forms.BooleanField(label='Air pressure at convective cloud top')
+    airpressureatsealevel = forms.BooleanField(label='Air pressure at sea level')
+    airtemperature = forms.BooleanField(label='Air temperature')
     # keyword
     Abruptchange = forms.BooleanField()
     Acidification = forms.BooleanField()
@@ -77,22 +78,16 @@ class PublicationForm(forms.Form):
     Agriculture = forms.BooleanField()
     AMO = forms.BooleanField()
 
-
-
-
-
-    # def __init__(self, *args, **kwargs):
-    #     author = kwargs.pop('author')
-    #     super(PublicationForm, self).__init__(*args, **kwargs)
-    #
-    #     for num, person in enumerate(author):
-    #         self.fields['author_%s' % num] = forms.TextInput(label=question)
-    # status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
-    # authors = models.ManyToManyField(Author)
-    # publication_date = models.DateField()
-    # url = models.URLField()
-    # doi = models.TextField()
-
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = '__all__'
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'institution': forms.TextInput(attrs={'class': 'form-control'}),
+        }
     # example data object:
     # u'DOI': u'10.1002/0470841559.ch1',
     # u'ISBN': [u'http://id.crossref.org/isbn/0471975141',
