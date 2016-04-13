@@ -2,86 +2,105 @@ from django.db import models
 from django.contrib.auth.models import User
 
 AUTHOR_TITLE_CHOICE = (
-            (0, 'Dr'),
-            (1, 'Hon'),
-            (2, 'Miss'),
-            (3, 'Mr'),
-            (4, 'Mrs'),
-            (5, 'Ms'),
-            (6, 'Prof'),
-            (7, 'Sir'),
-            (8, 'Knight'),
-            (9, ' '),
-            )
+    (0, 'Dr'),
+    (1, 'Hon'),
+    (2, 'Miss'),
+    (3, 'Mr'),
+    (4, 'Mrs'),
+    (5, 'Ms'),
+    (6, 'Prof'),
+    (7, 'Sir'),
+    (8, 'Knight'),
+    (9, ' '),
+)
 
 PUBLICATION_TYPE_CHOICE = (
-            (0, 'Book'),
-            (1, 'Conference'),
-            (2, 'Journal'),
-            (3, 'Magazine'),
-            (4, 'Poster'),
-            (5, 'Presentation'),
-            (6, 'Technical Report'),
-            (7, 'Other'),
-            )
+    (0, 'Book'),
+    (1, 'Conference'),
+    (2, 'Journal'),
+    (3, 'Magazine'),
+    (4, 'Poster'),
+    (5, 'Presentation'),
+    (6, 'Technical Report'),
+    (7, 'Other'),
+)
 
 PUBLICATION_STATUS_CHOICE = (
-            (0, 'Published'),
-            (1, 'Submitted'),
-            (2, 'Accepted'),
-            (3, 'Not Applicable'),
-            )            
+    (0, 'Published'),
+    (1, 'Submitted'),
+    (2, 'Accepted'),
+    (3, 'Not Applicable'),
+)
+
+
 class Experiment(models.Model):
     experiment = models.TextField()
+
     def __str__(self):
         return self.experiment
-        
+
+
 class Frequency(models.Model):
     frequency = models.TextField()
+
     def __str__(self):
         return self.frequency
-        
+
+
 class Keyword(models.Model):
     keyword = models.TextField()
+
     def __str__(self):
-        return self.keyword  
-        
+        return self.keyword
+
+
 class Model(models.Model):
-    model = models.TextField() 
+    model = models.TextField()
     ensumble = models.TextField()
+
     def __str__(self):
-        return self.model              
+        return self.model
+
 
 class Variable(models.Model):
-    variable = models.TextField()    
+    variable = models.TextField()
+
     def __str__(self):
         return self.variable
 
+
 class Project(models.Model):
     project = models.TextField()
+
     def __str__(self):
         return self.project
-        
+
+
 class Journal_Options(models.Model):
     journal = models.TextField()
+
     def __str__(self):
-        return self.journal        
+        return self.journal
+
 
 class Funding(models.Model):
     funding = models.TextField()
+
     def __str__(self):
         return self.funding
 
+
 class Author(models.Model):
-   
     title = models.IntegerField(choices=AUTHOR_TITLE_CHOICE, default=9)
     first_name = models.TextField()
     middle_name = models.TextField()
     last_name = models.TextField()
     institution = models.TextField()
     email = models.EmailField(max_length=128)
-    def __str__(self) :
+
+    def __str__(self):
         return " ".join((AUTHOR_TITLE_CHOICE[int(self.title)][1], self.first_name, self.middle_name, self.last_name))
+
 
 class Publication(models.Model):
     publication_type = models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
@@ -102,9 +121,11 @@ class Publication(models.Model):
     keywords = models.ManyToManyField(Keyword)
     model = models.ManyToManyField(Model)
     variables = models.ManyToManyField(Variable)
+
     def __str__(self):
         return self.title
-    
+
+
 class Book(models.Model):
     publication_id = models.ForeignKey(Publication)
     book_name = models.TextField()
@@ -112,11 +133,13 @@ class Book(models.Model):
     start_page = models.TextField()
     end_page = models.TextField()
     editor = models.TextField()
-    city_of_publication  = models.TextField()
+    city_of_publication = models.TextField()
     publisher = models.TextField()
+
     def __str__(self):
         return self.book_name
-        
+
+
 class Conference(models.Model):
     publication_id = models.ForeignKey(Publication)
     conference_name = models.TextField()
@@ -125,10 +148,12 @@ class Conference(models.Model):
     start_page = models.TextField()
     end_page = models.TextField()
     editor = models.TextField()
-    city_of_publication  = models.TextField()
+    city_of_publication = models.TextField()
     publisher = models.TextField()
+
     def __str__(self):
         return self.conference_name
+
 
 class Journal(models.Model):
     publication_id = models.ForeignKey(Publication)
@@ -138,8 +163,10 @@ class Journal(models.Model):
     artical_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
+
     def __str__(self):
-        return self.journal_name        
+        return self.journal_name
+
 
 class Magazine(models.Model):
     publication_id = models.ForeignKey(Publication)
@@ -149,32 +176,41 @@ class Magazine(models.Model):
     artical_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
+
     def __str__(self):
-        return self.magazine_name 
-        
+        return self.magazine_name
+
+
 class Poster(models.Model):
     publication_id = models.ForeignKey(Publication)
     poster_title = models.TextField()
     event = models.TextField()
+
     def __str__(self):
-        return self.poster_title 
-        
+        return self.poster_title
+
+
 class Presentation(models.Model):
     publication_id = models.ForeignKey(Publication)
     presentation_title = models.TextField()
+
     def __str__(self):
-        return self.presentation_title 
-        
+        return self.presentation_title
+
+
 class Technical_Report(models.Model):
     publication_id = models.ForeignKey(Publication)
     report_number = models.TextField()
     editor = models.TextField()
-    issuer = models.TextField()   
+    issuer = models.TextField()
+
     def __str__(self):
-        return self.title 
-        
+        return self.title
+
+
 class Other(models.Model):
     publication_id = models.ForeignKey(Publication)
     other_pub = models.TextField()
+
     def __str__(self):
-        return self.other_pub                               
+        return self.other_pub

@@ -1,5 +1,4 @@
 from django.contrib import admin
-#from django.db import models
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
 
 admin.site.register(Experiment)
