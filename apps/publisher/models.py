@@ -61,6 +61,11 @@ class Project(models.Model):
     project = models.TextField()
     def __str__(self):
         return self.project
+        
+class Journal_Options(models.Model):
+    journal = models.TextField()
+    def __str__(self):
+        return self.journal        
 
 class Funding(models.Model):
     funding = models.TextField()

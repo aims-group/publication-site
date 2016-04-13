@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from forms import PublicationForm
 import pdb
 import requests
+from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
 
 
 @login_required()

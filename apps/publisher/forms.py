@@ -1,8 +1,10 @@
+from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
 # from captcha.fields import ReCaptchaField
-from django import forms
+
 
 
 # If you don't do this you cannot use Bootstrap CSS
