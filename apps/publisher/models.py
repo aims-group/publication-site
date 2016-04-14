@@ -119,7 +119,7 @@ class Publication(models.Model):
     experiments = models.ManyToManyField(Experiment)
     frequency = models.ManyToManyField(Frequency)
     keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model)
+    model = models.ManyToManyField(Model, )
     variables = models.ManyToManyField(Variable)
 
     def __str__(self):
