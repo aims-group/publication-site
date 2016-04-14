@@ -78,6 +78,7 @@ class PublicationForm(forms.Form):
     Agriculture = forms.BooleanField()
     AMO = forms.BooleanField()
 
+
 class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
@@ -88,6 +89,22 @@ class AuthorForm(forms.ModelForm):
             'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
             'institution': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+class NewPublicationForm(forms.ModelForm):
+    class Meta:
+        model = Publication
+        fields = ['doi', 'title', 'url', 'status', 'project_number', 'task_number', 'publication_date', 'abstract' ]
+        widgets = {
+            'doi': forms.TextInput(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'url': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.TextInput(attrs={'class': 'form-control'}),
+            'project_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'task_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'publication_date': forms.TextInput(attrs={'class': 'form-control'}),
+            'abstract': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
     # example data object:
     # u'DOI': u'10.1002/0470841559.ch1',
     # u'ISBN': [u'http://id.crossref.org/isbn/0471975141',
