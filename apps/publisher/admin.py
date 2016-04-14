@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
+from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
 admin.site.register(Experiment)
 admin.site.register(Frequency)
@@ -15,6 +15,6 @@ admin.site.register(Conference)
 admin.site.register(Journal)
 admin.site.register(Magazine)
 admin.site.register(Poster)
-admin.site.register(Technical_Report)
+admin.site.register(TechnicalReport)
 admin.site.register(Other)
-admin.site.register(Journal_Options)
+admin.site.register(JournalOptions)

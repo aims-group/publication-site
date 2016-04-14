@@ -56,7 +56,6 @@ class Keyword(models.Model):
 
 class Model(models.Model):
     model = models.TextField()
-    ensumble = models.TextField()
 
     def __str__(self):
         return self.model
@@ -76,7 +75,7 @@ class Project(models.Model):
         return self.project
 
 
-class Journal_Options(models.Model):
+class JournalOptions(models.Model):
     journal = models.TextField()
 
     def __str__(self):
@@ -119,11 +118,17 @@ class Publication(models.Model):
     experiments = models.ManyToManyField(Experiment)
     frequency = models.ManyToManyField(Frequency)
     keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model, )
+    model = models.ManyToManyField(Model, through='PubModels')
     variables = models.ManyToManyField(Variable)
 
     def __str__(self):
         return self.title
+
+
+class PubModels(models.Model):
+    publication = models.ForeignKey(Publication)
+    experiment = models.ForeignKey(Experiment)
+    ensemble = models.IntegerField()
 
 
 class Book(models.Model):
@@ -160,7 +165,7 @@ class Journal(models.Model):
     journal_name = models.TextField()
     editor = models.TextField()
     volume_number = models.TextField()
-    artical_number = models.TextField()
+    article_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
 
@@ -173,7 +178,7 @@ class Magazine(models.Model):
     magazine_name = models.TextField()
     editor = models.TextField()
     volume_number = models.TextField()
-    artical_number = models.TextField()
+    article_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
 
@@ -198,7 +203,7 @@ class Presentation(models.Model):
         return self.presentation_title
 
 
-class Technical_Report(models.Model):
+class TechnicalReport(models.Model):
     publication_id = models.ForeignKey(Publication)
     report_number = models.TextField()
     editor = models.TextField()

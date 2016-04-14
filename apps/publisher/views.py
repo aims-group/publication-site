@@ -5,7 +5,7 @@ from django.forms import formset_factory
 from forms import PublicationForm, AuthorForm
 import requests
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, \
-    Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
+    Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
 
 @login_required()
