@@ -115,10 +115,10 @@ class Publication(models.Model):
     url = models.URLField()
     doi = models.TextField()
     abstract = models.TextField()
-    experiments = models.ManyToManyField(Experiment)
+    experiments = models.ManyToManyField(Experiment, through='PubModels')
     frequency = models.ManyToManyField(Frequency)
     keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model, through='PubModels')
+    model = models.ManyToManyField(Model)
     variables = models.ManyToManyField(Variable)
 
     def __str__(self):
