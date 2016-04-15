@@ -22,7 +22,6 @@ from publisher.forms import RegisterForm
 
 urlpatterns = [
     url(r'^', include('publisher.urls')),
-    # url(r'^publisher/', include('publisher.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
