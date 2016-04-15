@@ -24,3 +24,6 @@ $(document).ready(function(){
     $('#loading').hide();
 });
 
+function submitPublication() {
+    console.log("Submitting publication");
+}

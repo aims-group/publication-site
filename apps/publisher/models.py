@@ -56,7 +56,7 @@ class Keyword(models.Model):
 
 class Model(models.Model):
     model = models.TextField()
-    ensumble = models.TextField()
+    #ensemble = models.TextField()
 
     def __str__(self):
         return self.model
@@ -160,7 +160,7 @@ class Journal(models.Model):
     journal_name = models.TextField()
     editor = models.TextField()
     volume_number = models.TextField()
-    artical_number = models.TextField()
+    article_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
 
@@ -173,7 +173,7 @@ class Magazine(models.Model):
     magazine_name = models.TextField()
     editor = models.TextField()
     volume_number = models.TextField()
-    artical_number = models.TextField()
+    article_number = models.TextField()
     start_page = models.TextField()
     end_page = models.TextField()
 

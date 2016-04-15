@@ -2,7 +2,10 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
+from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, \
+    Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
+
+
 # from captcha.fields import ReCaptchaField
 
 
@@ -43,40 +46,6 @@ class PublicationForm(forms.Form):
     page = forms.CharField(label="Page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
     publisher = forms.CharField(label="Publisher", widget=forms.TextInput(attrs={'class': 'form-control',
                                                                                  'name': 'publisher'}))
-    # Experiment
-    onepctCO2 = forms.BooleanField(label='1pctCO2')
-    abrupt4xCO2 = forms.BooleanField()
-    amip = forms.BooleanField()
-    amip4K = forms.BooleanField()
-    amip4xCO2 = forms.BooleanField()
-    amipFuture = forms.BooleanField()
-    # Model
-    ACCESS1_0 = forms.BooleanField(label='ACCESS1.0')
-    ACCESS1_3 = forms.BooleanField(label='ACCESS1.3')
-    BCC_CSM1_1 = forms.BooleanField(label='BCC-CSM1.1')
-    BCC_CSM1_1_m = forms.BooleanField(label='BCC-CSM1.1-m')
-    BESM_OA2_3 = forms.BooleanField(label='BESM-OA2.3')
-    BNU_ESM = forms.BooleanField(label='BNU-ESM')
-    # frequency
-    threehourly = forms.BooleanField(label='3-hourly')
-    sixhourly = forms.BooleanField(label='6-hourly')
-    ClimatologyMonthlyMean = forms.BooleanField()
-    Daily = forms.BooleanField()
-    Fixed = forms.BooleanField()
-    Monthly = forms.BooleanField()
-    # variable
-    airpressureatcloudtop = forms.BooleanField(label='Air pressure at cloudtop')
-    airpressureatconvectivecloudbase = forms.BooleanField(label='Air pressure at convective cloud base')
-    airpressureatconvectivecloudtop = forms.BooleanField(label='Air pressure at convective cloud top')
-    airpressureatsealevel = forms.BooleanField(label='Air pressure at sea level')
-    airtemperature = forms.BooleanField(label='Air temperature')
-    # keyword
-    Abruptchange = forms.BooleanField()
-    Acidification = forms.BooleanField()
-    Adaptation = forms.BooleanField()
-    Aerosols = forms.BooleanField()
-    Agriculture = forms.BooleanField()
-    AMO = forms.BooleanField()
 
 
 class AuthorForm(forms.ModelForm):
@@ -88,46 +57,173 @@ class AuthorForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
             'institution': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
 
 class NewPublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['doi', 'title', 'url', 'status', 'project_number', 'task_number', 'publication_date', 'abstract' ]
+        fields = ['doi', 'title', 'url', 'status', 'project_number', 'task_number', 'publication_date', 'abstract']
         widgets = {
             'doi': forms.TextInput(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'url': forms.TextInput(attrs={'class': 'form-control'}),
-            'status': forms.TextInput(attrs={'class': 'form-control'}),
+            # 'status': forms.TextInput(attrs={'class': 'form-control'}),
             'project_number': forms.TextInput(attrs={'class': 'form-control'}),
             'task_number': forms.TextInput(attrs={'class': 'form-control'}),
             'publication_date': forms.TextInput(attrs={'class': 'form-control'}),
             'abstract': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    # example data object:
-    # u'DOI': u'10.1002/0470841559.ch1',
-    # u'ISBN': [u'http://id.crossref.org/isbn/0471975141',
-    #           u'http://id.crossref.org/isbn/0470841559'],
-    # u'URL': u'http://dx.doi.org/10.1002/0470841559.ch1',
-    # u'container-title': u'Internetworking LANs and WANs',
-    # u'created': {u'date-parts': [[2003, 4, 2]],
-    #              u'date-time': u'2003-04-02T18:18:49Z',
-    #              u'timestamp': 1049307529000},
-    # u'deposited': {u'date-parts': [[2013, 12, 16]],
-    #                u'date-time': u'2013-12-16T23:08:32Z',
-    #                u'timestamp': 1387235312000},
-    # u'indexed': {u'date-parts': [[2015, 12, 24]],
-    #              u'date-time': u'2015-12-24T19:52:16Z',
-    #              u'timestamp': 1450986736947},
-    # u'issued': {u'date-parts': [[None]]},
-    # u'member': u'http://id.crossref.org/member/311',
-    # u'page': u'1-30',
-    # u'prefix': u'http://id.crossref.org/prefix/10.1002',
-    # u'publisher': u'Wiley-Blackwell',
-    # u'reference-count': 0,
-    # u'score': 1.0,
-    # u'source': u'CrossRef',
-    # u'subtitle': [],
-    # u'title': u'Network Concepts',
-    # u'type': u'book-chapter'}
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'book_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'chapter_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'end_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'editor': forms.TextInput(attrs={'class': 'form-control'}),
+            'city_of_publication': forms.TextInput(attrs={'class': 'form-control'}),
+            'publisher': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class ConferenceForm(forms.ModelForm):
+    class Meta:
+        model = Conference
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'conference_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'conference_serial_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'event_location': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'end_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'editor': forms.TextInput(attrs={'class': 'form-control'}),
+            'city_of_publication': forms.TextInput(attrs={'class': 'form-control'}),
+            'publisher': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class JournalForm(forms.ModelForm):
+    class Meta:
+        model = Journal
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'journal_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'editor': forms.TextInput(attrs={'class': 'form-control'}),
+            'volume_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'article_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'end_page': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class MagazineForm(forms.ModelForm):
+    class Meta:
+        model = Magazine
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'magazine_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'editor': forms.TextInput(attrs={'class': 'form-control'}),
+            'volume_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'article_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_page': forms.TextInput(attrs={'class': 'form-control'}),
+            'end_page': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class PosterForm(forms.ModelForm):
+    class Meta:
+        model = Poster
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'poster_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'event': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class PresentationForm(forms.ModelForm):
+    class Meta:
+        model = Presentation
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'presentation_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'event': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class TechnicalReportForm(forms.ModelForm):
+    class Meta:
+        model = Technical_Report
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'report_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'editor': forms.TextInput(attrs={'class': 'form-control'}),
+            'issuer': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class OtherForm(forms.ModelForm):
+    class Meta:
+        model = Other
+        fields = '__all__'
+        exclude = ['publication_id']
+        widgets = {
+            'other_pub': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class ExperimentForm(forms.ModelForm):
+    exp = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
+
+    class Meta:
+        model = Experiment
+        fields = '__all__'
+        exclude = ['experiment']
+
+
+class FrequencyForm(forms.ModelForm):
+    frequency = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Frequency.objects.all())
+
+    class Meta:
+        model = Frequency
+        fields = '__all__'
+        exclude = ['frequency']
+
+
+class KeywordForm(forms.ModelForm):
+    keyword = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Keyword.objects.all())
+
+    class Meta:
+        model = Keyword
+        fields = '__all__'
+        exclude = ['keyword']
+
+
+class ModelForm(forms.ModelForm):
+    model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all())
+
+    class Meta:
+        model = Model
+        fields = '__all__'
+        exclude = ['model']
+
+
+class VariableForm(forms.ModelForm):
+    variable = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Variable.objects.all())
+
+    class Meta:
+        model = Variable
+        fields = '__all__'
+        exclude = ['variable']

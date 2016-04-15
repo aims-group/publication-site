@@ -2,42 +2,43 @@
 {% block title %}New Publication{% endblock %}
 {% block content %}
 
-<div class="row">
-    <div class="col-lg-6">
-        <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                Publication Type
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
-                <li><a href="#">Book</a></li>
-                <li><a href="#">Conference</a></li>
-                <li><a href="#">Journal</a></li>
-                <li><a href="#">Magazine</a></li>
-                <li><a href="#">Poster</a></li>
-                <li><a href="#">Presentation</a></li>
-                <li><a href="#">Technical_Report</a></li>
-                <li><a href="#">Other</a></li>
-            </ul>
-        </div>
-        <div class="input-group">
-            <input type="text" class="form-control" id="doi-field" placeholder="doi:">
+<div class="form-container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    Publication Type
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                    <li><a href="#">Book</a></li>
+                    <li><a href="#">Conference</a></li>
+                    <li><a href="#">Journal</a></li>
+                    <li><a href="#">Magazine</a></li>
+                    <li><a href="#">Poster</a></li>
+                    <li><a href="#">Presentation</a></li>
+                    <li><a href="#">Technical_Report</a></li>
+                    <li><a href="#">Other</a></li>
+                </ul>
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="doi-field" placeholder="doi:">
       <span class="input-group-btn">
         <button class="btn btn-primary" type="button" onclick="doisearch()">Search</button>
       </span>
-        </div><!-- /input-group -->
-    </div><!-- /.col-lg-6 -->
-</div><!-- /.row -->
-<div id="loading" class="text-center">
-    <br>
-    <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
-    <span class="sr-only">Loading...</span>
-</div>
-<div id="publication-form-wrapper">
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div><!-- /.row -->
+    <div id="loading" class="text-center">
+        <br>
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div id="publication-form-wrapper">
 
+    </div>
 </div>
-
 <script type="text/javascript" src="/static/scripts/doi.js"></script>
 <link href="/static/css/new_publication.css" rel="stylesheet">
 
