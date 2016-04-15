@@ -7,7 +7,7 @@ from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, \
-    Conference, Journal, Magazine, Poster, Presentation, Technical_Report, Other, Journal_Options
+    Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
 
 @login_required()

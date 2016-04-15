@@ -56,7 +56,6 @@ class Keyword(models.Model):
 
 class Model(models.Model):
     model = models.TextField()
-    #ensemble = models.TextField()
 
     def __str__(self):
         return self.model
@@ -76,7 +75,7 @@ class Project(models.Model):
         return self.project
 
 
-class Journal_Options(models.Model):
+class JournalOptions(models.Model):
     journal = models.TextField()
 
     def __str__(self):
@@ -116,14 +115,20 @@ class Publication(models.Model):
     url = models.URLField()
     doi = models.TextField()
     abstract = models.TextField()
-    experiments = models.ManyToManyField(Experiment)
+    experiments = models.ManyToManyField(Experiment, through='PubModels')
     frequency = models.ManyToManyField(Frequency)
     keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model, )
+    model = models.ManyToManyField(Model)
     variables = models.ManyToManyField(Variable)
 
     def __str__(self):
         return self.title
+
+
+class PubModels(models.Model):
+    publication = models.ForeignKey(Publication)
+    experiment = models.ForeignKey(Experiment)
+    ensemble = models.IntegerField()
 
 
 class Book(models.Model):
@@ -198,7 +203,7 @@ class Presentation(models.Model):
         return self.presentation_title
 
 
-class Technical_Report(models.Model):
+class TechnicalReport(models.Model):
     publication_id = models.ForeignKey(Publication)
     report_number = models.TextField()
     editor = models.TextField()
