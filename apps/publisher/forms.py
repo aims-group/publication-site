@@ -38,14 +38,14 @@ class RegisterForm(UserCreationForm):
         }
 
 
-class PublicationForm(forms.Form):
-    doi = forms.CharField(label="Doi", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'DOI'}))
-    isbn = forms.CharField(label="Isbn", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'isbn'}))
-    title = forms.CharField(label="Title", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
-    url = forms.CharField(label="Url", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'URL'}))
-    page = forms.CharField(label="Page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
-    publisher = forms.CharField(label="Publisher", widget=forms.TextInput(attrs={'class': 'form-control',
-                                                                                 'name': 'publisher'}))
+# class PublicationForm(forms.Form):
+#     doi = forms.CharField(label="Doi", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'DOI'}))
+#     isbn = forms.CharField(label="Isbn", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'isbn'}))
+#     title = forms.CharField(label="Title", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
+#     url = forms.CharField(label="Url", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'URL'}))
+#     page = forms.CharField(label="Page", widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'page'}))
+#     publisher = forms.CharField(label="Publisher", widget=forms.TextInput(attrs={'class': 'form-control',
+#                                                                                  'name': 'publisher'}))
 
 
 class AuthorForm(forms.ModelForm):
@@ -61,7 +61,7 @@ class AuthorForm(forms.ModelForm):
         }
 
 
-class NewPublicationForm(forms.ModelForm):
+class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
         fields = ['doi', 'title', 'url', 'status', 'project_number', 'task_number', 'publication_date', 'abstract']

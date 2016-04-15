@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm, NewPublicationForm
+from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, \
