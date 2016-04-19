@@ -6,6 +6,8 @@ from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, Journal
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
+from django.http import JsonResponse
+import pdb
 
 
 @login_required()
@@ -28,35 +30,30 @@ def new(request):
     if request.method == 'GET':
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
-        pub_form = PublicationForm(request.POST)
-        book_form = BookForm(request.POST or None)
-        conference_form = ConferenceForm(request.POST or None)
-        journal_form = JournalForm(request.POST or None)
-        magazine_form = MagazineForm(request.POST or None)
-        poster_form = PosterForm(request.POST or None)
-        presentation_form = PresentationForm(request.POST or None)
-        technical_form = TechnicalReportForm(request.POST or None)
-        other_form = OtherForm(request.POST or None)
-        exp_form = ExperimentForm(request.POST or None)
-        freq_form = FrequencyForm(request.POST or None)
-        keyword_form = KeywordForm(request.POST or None)
-        model_form = ModelForm(request.POST or None)
-        var_form = VariableForm(request.POST or None)
-        print pub_form
-        print book_form
-        print conference_form
-        # if pub_form.is_valid():
-        #     if book_form.is_valid():
-        #         print 'valid book'
+        pub_form = PublicationForm(request.POST, prefix='pub')
+        pub_type =  request.POST.get('pub_type', '')
+        if pub_type == 'Book':
+            media_form = BookForm(request.POST, prefix='book')
+            if media_form.is_valid() and pub_form.is_valid():
+                pub_form.save(commit=False)
+                media_form.save(commit=False)
+                return HttpResponse(status=200)
+        elif pub_type == 'Conference':
+            media_form = ConferenceForm(request.POST, prefix='conf')
+        elif pub_type == 'Journal':
+            media_form = JournalForm(request.POST, prefix='journal')
+        elif pub_type == 'Magazine':
+            media_form = MagazineForm(request.POST, prefix='mag')
+        elif pub_type == 'Poster':
+            media_form = PosterForm(request.POST, prefix='poster')
+        elif pub_type == 'Presentation':
+            media_form = PresentationForm(request.POST, prefix='pres')
+        elif pub_type == 'Technical_Report':
+            media_form = TechnicalReportForm(request.POST, prefix='tech')
+        elif pub_type == 'Other':
+            media_form = OtherForm(request.POST, prefix='other')
 
-        return render(request, 'site/publication_details.html',
-                      {'pub_form': pub_form, #'author_form': author_form,
-                       'book_form': book_form,
-                       'conference_form': conference_form,
-                       'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
-                       'presentation_form': presentation_form, 'technical_form': technical_form,
-                       'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-                       'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form})
+        JsonResponse({'pub_form': pub_form, 'media_form': media_form}, status=400) # These should be strings actually
 
 def finddoi(request):
     doi = request.GET.get('doi')
@@ -130,15 +127,15 @@ def finddoi(request):
 
         init = {'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'page': page, 'publisher': publisher,
                 'publication_date': publication_date}
-        pub_form = PublicationForm(initial=init)
-        book_form = BookForm(initial={'publisher': publisher, 'publication_date': publication_date})
-        conference_form = ConferenceForm()
-        journal_form = JournalForm()
-        magazine_form = MagazineForm()
-        poster_form = PosterForm()
-        presentation_form = PresentationForm()
-        technical_form = TechnicalReportForm()
-        other_form = OtherForm()
+        pub_form = PublicationForm(prefix='pub', initial=init)
+        book_form = BookForm(prefix='book', initial={'publisher': publisher, 'publication_date': publication_date})
+        conference_form = ConferenceForm(prefix='conf')
+        journal_form = JournalForm(prefix='journal')
+        magazine_form = MagazineForm(prefix='mag')
+        poster_form = PosterForm(prefix='poster')
+        presentation_form = PresentationForm(prefix='pres')
+        technical_form = TechnicalReportForm(prefix='tech')
+        other_form = OtherForm(prefix='other')
         exp_form = ExperimentForm()
         freq_form = FrequencyForm()
         keyword_form = KeywordForm()
@@ -153,17 +150,17 @@ def finddoi(request):
                        'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
                        'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form})
     else:
-        pub_form = PublicationForm()
+        pub_form = PublicationForm(prefix='pub')
         AuthorFormSet = formset_factory(AuthorForm, extra=1)
         author_form = AuthorFormSet()
-        book_form = BookForm()
-        conference_form = ConferenceForm()
-        journal_form = JournalForm()
-        magazine_form = MagazineForm()
-        poster_form = PosterForm()
-        presentation_form = PresentationForm()
-        technical_form = TechnicalReportForm()
-        other_form = OtherForm()
+        book_form = BookForm(prefix='book')
+        conference_form = ConferenceForm(prefix='conf')
+        journal_form = JournalForm(prefix='journal')
+        magazine_form = MagazineForm(prefix='mag')
+        poster_form = PosterForm(prefix='poster')
+        presentation_form = PresentationForm(prefix='pres')
+        technical_form = TechnicalReportForm(prefix='tech')
+        other_form = OtherForm(prefix='other')
         exp_form = ExperimentForm()
         freq_form = FrequencyForm()
         keyword_form = KeywordForm()
