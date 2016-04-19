@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from captcha.fields import ReCaptchaField
 
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
@@ -18,7 +19,7 @@ class LoginForm(AuthenticationForm):
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
                              required=True)
-    # captcha = ReCaptchaField(attrs={'theme': 'blackglass'})
+    captcha = ReCaptchaField(attrs={'theme': 'clean'})
     password1 = forms.CharField(label="Password",
                                 widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     password2 = forms.CharField(label="Confirm Password",

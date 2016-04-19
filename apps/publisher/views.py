@@ -6,12 +6,20 @@ from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, Journal
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
-from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, \
-    Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
 
 @login_required()
 def index(request):
+    return render(request, 'site/search.html')
+
+
+@login_required()
+def review(request):
+    return render(request, 'site/review.html')
+
+
+@login_required()
+def search(request):
     return render(request, 'site/search.html')
 
 

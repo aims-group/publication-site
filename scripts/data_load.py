@@ -1,4 +1,4 @@
-from publisher.models import Experiment, Frequency, Keyword, Model, Variable, Journal_Options
+from publisher.models import Experiment, Frequency, Keyword, Model, Variable, JournalOptions
 from scripts.experiment import experiment_data
 from scripts.frequency import frequency_data
 from scripts.keyword import keyword_data
@@ -57,12 +57,12 @@ def run_data_load():
             new_var.save()
         print 'var done'
 
-    if Journal_Options.objects.all():
+    if JournalOptions.objects.all():
         print 'journal names already loaded'
     else:
         print 'loading journal names'
         for jour in journal_names:
-            new_jour = Journal_Options()
+            new_jour = JournalOptions()
             new_jour.journal = jour
             new_jour.save()
         print 'journal names done'
