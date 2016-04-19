@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
     url('^register/', CreateView.as_view(template_name='site/registration.html', form_class=RegisterForm, success_url='/')),
+    #(r'^reset_password/$', password_reset, {'template_name': 'my_templates/password_reset.html'})
 ]

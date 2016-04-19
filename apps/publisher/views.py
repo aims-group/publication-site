@@ -45,6 +45,7 @@ def finddoi(request):
             url = "http://dx.doi.org/" + doi
         r = requests.get(url, headers=headers)
     if not empty and r.status_code == 200:
+
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
         if 'DOI' in initial.keys():

@@ -25,5 +25,22 @@ $(document).ready(function(){
 });
 
 function submitPublication() {
-    console.log("Submitting publication");
+    data = {
+    //publication
+        doi: $('#id_doi').val(),
+        title: $('#id_title').val(),
+        url: $('#id_url').val(),
+        status: $('#id_status').val(),
+        project_number: $('#id_project_number').val(),
+        task_number: $('#id_task_number').val(),
+        publication_date: $('#id_publication_date').val(),
+        abstract: $('#id_abstract').val()
+    //active
+    };
+    console.log('got here');
+    elements = $('#tabs .active input')
+    $.each(elements, function(index, elem) {
+        console.log(elem.val());
+    });
+
 }
