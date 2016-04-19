@@ -20,9 +20,35 @@ def new(request):
     if request.method == 'GET':
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
-        # Handle new publication post here
-        return HttpResponse('new page post')
+        pub_form = PublicationForm(request.POST)
+        book_form = BookForm(request.POST or None)
+        conference_form = ConferenceForm(request.POST or None)
+        journal_form = JournalForm(request.POST or None)
+        magazine_form = MagazineForm(request.POST or None)
+        poster_form = PosterForm(request.POST or None)
+        presentation_form = PresentationForm(request.POST or None)
+        technical_form = TechnicalReportForm(request.POST or None)
+        other_form = OtherForm(request.POST or None)
+        exp_form = ExperimentForm(request.POST or None)
+        freq_form = FrequencyForm(request.POST or None)
+        keyword_form = KeywordForm(request.POST or None)
+        model_form = ModelForm(request.POST or None)
+        var_form = VariableForm(request.POST or None)
+        print pub_form
+        print book_form
+        print conference_form
+        # if pub_form.is_valid():
+        #     if book_form.is_valid():
+        #         print 'valid book'
 
+        return render(request, 'site/publication_details.html',
+                      {'pub_form': pub_form, #'author_form': author_form,
+                       'book_form': book_form,
+                       'conference_form': conference_form,
+                       'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
+                       'presentation_form': presentation_form, 'technical_form': technical_form,
+                       'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
+                       'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form})
 
 def finddoi(request):
     doi = request.GET.get('doi')
@@ -61,7 +87,7 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = requests.get(initial['URL'], stream=True, verify=False).url # use llnl cert instead of verify=False
+            url = requests.get(initial['URL'], stream=True, verify=False).url  # use llnl cert instead of verify=False
         else:
             url = ''
         if 'page' in initial.keys():

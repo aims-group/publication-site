@@ -1,61 +1,69 @@
 {% if message %}
 <div class="alert alert-warning">{{ message }}</div>
 {% endif %}
-<div>
-    {{ pub_form }}
-</div>
-<div id="tabs">
-    <ul class="nav nav-tabs">
-        <li class="active" role="presentation"><a href="#tabs-1">Book</a></li>
-        <li role="presentation"><a href="#tabs-2">Conference</a></li>
-        <li role="presentation"><a href="#tabs-3">Journal</a></li>
-        <li role="presentation"><a href="#tabs-4">Magazine</a></li>
-        <li role="presentation"><a href="#tabs-5">Poster</a></li>
-        <li role="presentation"><a href="#tabs-6">Presentation</a></li>
-        <li role="presentation"><a href="#tabs-7">Technical_Report</a></li>
-        <li role="presentation"><a href="#tabs-8">Other</a></li>
-    </ul>
-    <div id="tabs-1">
-        {{ book_form }}
+<form action="/new" method="post">
+    {% csrf_token %}
+    <div class="pub_form">
+        {{ pub_form }}
     </div>
-    <div id="tabs-2">
-        {{ conference_form }}
+    <div id="tabs">
+        <input id="pub_type" type="hidden" name="pub_type" value="Book">
+        <ul class="nav nav-tabs">
+            <li class="active" role="presentation"><a href="#tabs-1">Book</a></li>
+            <li role="presentation"><a href="#tabs-2">Conference</a></li>
+            <li role="presentation"><a href="#tabs-3">Journal</a></li>
+            <li role="presentation"><a href="#tabs-4">Magazine</a></li>
+            <li role="presentation"><a href="#tabs-5">Poster</a></li>
+            <li role="presentation"><a href="#tabs-6">Presentation</a></li>
+            <li role="presentation"><a href="#tabs-7">Technical_Report</a></li>
+            <li role="presentation"><a href="#tabs-8">Other</a></li>
+        </ul>
+        <div id="tabs-1">
+            {{ book_form }}
+        </div>
+        <div id="tabs-2">
+            {{ conference_form }}
+        </div>
+        <div id="tabs-3">
+            {{ journal_form }}
+        </div>
+        <div id="tabs-4">
+            {{ magazine_form }}
+        </div>
+        <div id="tabs-5">
+            {{ poster_form }}
+        </div>
+        <div id="tabs-6">
+            {{ presentation_form }}
+        </div>
+        <div id="tabs-7">
+            {{ technical_form }}
+        </div>
+        <div id="tabs-8">
+            {{ other_form }}
+        </div>
     </div>
-    <div id="tabs-3">
-        {{ journal_form }}
-    </div>
-    <div id="tabs-4">
-        {{ magazine_form }}
-    </div>
-    <div id="tabs-5">
-        {{ poster_form }}
-    </div>
-    <div id="tabs-6">
-        {{ presentation_form }}
-    </div>
-    <div id="tabs-7">
-        {{ technical_form }}
-    </div>
-    <div id="tabs-8">
-        {{ other_form }}
-    </div>
-</div>
 
-<div id="meta-form">
-    <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
-    <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
-    <span class="meta-form-list col-md-4 well">{{ model_form }}</span>
-    <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
-    <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
-</div>
+    <div id="meta-form">
+        <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ model_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
+        <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
+    </div>
+</form>
 
-<div class="text-center"><button class="submit-form btn btn-primary" onclick="submitPublication()">Submit</button></div>
+<div class="text-center">
+<button class="submit-form btn btn-primary" onclick="submitPublication()">Submit</button>
+</div>
 
 <script>
     $(function() {$( "#tabs" ).tabs();} );
+    <!--$(function() {$( "#tabs-1" ).addClass('activetab');} );-->
     $('#tabs a').click(function( event ) {
     $('#tabs .active').removeClass('active');
     $(event.target).parent().addClass('active');
+    $('#pub_type').val($(event.target).text());
     });
 
 </script>
