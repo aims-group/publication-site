@@ -34,6 +34,13 @@ function submitPublication() {
         type: 'POST',
         url: '/new',
         data: $('form').serialize(),
+        success: function(result){
+            window.location.replace("/review");
+        },
+        error: function(response){
+            alert("Incorrect Form");
+            console.log(response);
+        }
     })
 
 }

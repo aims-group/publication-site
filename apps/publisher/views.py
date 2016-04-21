@@ -7,6 +7,7 @@ from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
 from django.http import JsonResponse
+from models import Publication, Frequency, Keyword, Model, Variable
 import pdb
 
 
@@ -14,16 +15,25 @@ import pdb
 def index(request):
     return render(request, 'site/search.html')
 
-
-@login_required()
-def review(request):
-    return render(request, 'site/review.html')
-
-
 @login_required()
 def search(request):
     return render(request, 'site/search.html')
 
+
+@login_required()
+def review(request):
+    message = None
+    userid = request.user.id
+    entries = Publication.objects.filter(submitter=userid)
+    if not entries:
+        message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
+    return render(request, 'site/review.html', {'message': message, 'entries': entries})
+
+
+@login_required()
+def edit(request, pubid):
+    render(request, )
+    pass
 
 @login_required()
 def new(request):
@@ -31,29 +41,80 @@ def new(request):
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
         pub_form = PublicationForm(request.POST, prefix='pub')
-        pub_type =  request.POST.get('pub_type', '')
+        if pub_form.is_valid():
+            publication = pub_form.save(commit=False)
+            publication.submitter = request.user
+            publication.save()
+            publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in
+                                        request.POST.getlist("frequency")])
+            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in
+                                       request.POST.getlist("keywords")])
+            publication.model.add(*[Model.objects.get(id=model_id) for model_id in
+                                    request.POST.getlist("model")])
+            publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in
+                                    request.POST.getlist("variable")])
+        pub_type = request.POST.get('pub_type', '')
         if pub_type == 'Book':
             media_form = BookForm(request.POST, prefix='book')
-            if media_form.is_valid() and pub_form.is_valid():
-                pub_form.save(commit=False)
-                media_form.save(commit=False)
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                book = media_form.save(commit=False)
+                book.publication_id = publication
+                book.save()
                 return HttpResponse(status=200)
+
         elif pub_type == 'Conference':
             media_form = ConferenceForm(request.POST, prefix='conf')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                conference = media_form.save(commit=False)
+                conference.publication_id = publication
+                conference.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Journal':
             media_form = JournalForm(request.POST, prefix='journal')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                journal = media_form.save(commit=False)
+                journal.publication_id = publication
+                journal.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Magazine':
             media_form = MagazineForm(request.POST, prefix='mag')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                magazine = media_form.save(commit=False)
+                magazine.publication_id = publication
+                magazine.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Poster':
             media_form = PosterForm(request.POST, prefix='poster')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                poster = media_form.save(commit=False)
+                poster.publication_id = publication
+                poster.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Presentation':
             media_form = PresentationForm(request.POST, prefix='pres')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                presentation = media_form.save(commit=False)
+                presentation.publication_id = publication
+                presentation.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Technical_Report':
             media_form = TechnicalReportForm(request.POST, prefix='tech')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                techreport = media_form.save(commit=False)
+                techreport.publication_id = publication
+                techreport.save()
+                return HttpResponse(status=200)
         elif pub_type == 'Other':
             media_form = OtherForm(request.POST, prefix='other')
+            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+                other = media_form.save(commit=False)
+                other.publication_id = publication
+                other.save()
+                return HttpResponse(status=200)
 
-        JsonResponse({'pub_form': pub_form, 'media_form': media_form}, status=400) # These should be strings actually
+        return JsonResponse({'pub_form': pub_form, 'media_form': media_form},
+                            status=400)  # These should be strings actually
+
 
 def finddoi(request):
     doi = request.GET.get('doi')

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}edit{% endblock %}
+{% block content %}
+
+{% if error %}
+<div class="alert alert-warning" role="alert">{{error}}</div>
+{% endif %}
+
+{% if message %}
+<div class="alert alert-info" role="alert">{{message}}</div>
+{% endif %}
+
+{% if entries %}
+<div class="list-group">
+    {% for entry in entries %}
+    <a href="/edit/{{entry.id}}" class="list-group-item">{{entry}}</a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -43,7 +43,9 @@
             {{ other_form }}
         </div>
     </div>
-
+    <div id="author-form">
+        {{ author_form }}
+    </div>
     <div id="meta-form">
         <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
         <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
@@ -59,7 +61,6 @@
 
 <script>
     $(function() {$( "#tabs" ).tabs();} );
-    <!--$(function() {$( "#tabs-1" ).addClass('activetab');} );-->
     $('#tabs a').click(function( event ) {
     $('#tabs .active').removeClass('active');
     $(event.target).parent().addClass('active');

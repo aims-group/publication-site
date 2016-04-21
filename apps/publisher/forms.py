@@ -175,7 +175,7 @@ class OtherForm(forms.ModelForm):
 
 class ExperimentForm(forms.ModelForm):
     exp = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
-
+    ensemble = forms.IntegerField()
     class Meta:
         model = Experiment
         fields = '__all__'
