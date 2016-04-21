@@ -32,8 +32,7 @@ def review(request):
 
 @login_required()
 def edit(request, pubid):
-    render(request, )
-    pass
+    return render(request, 'site/edit.html')
 
 @login_required()
 def new(request):
