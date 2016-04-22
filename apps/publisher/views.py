@@ -40,13 +40,12 @@ def edit(request, pubid):
         pub_form = PublicationForm(instance=publication)
         AuthorFormSet = modelformset_factory(Author, AuthorForm, extra=0)
         author_form = AuthorFormSet(queryset=authors)
-
+        #if publication.publication_type ==
         freq_form = FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]})
         exp_form = ExperimentForm(initial={'exp': [box.id for box in publication.experiments.all()]})
         keyword_form = KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]})
         model_form = ModelForm(initial={'model': [box.id for box in publication.model.all()]})
         var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
-        print keyword_form
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
                        'model_form': model_form, 'var_form': var_form,
@@ -63,25 +62,27 @@ def new(request):
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
         pub_form = PublicationForm(request.POST, prefix='pub')
-        if pub_form.is_valid():
-            publication = pub_form.save(commit=False)
-            publication.submitter = request.user
-            publication.save()
-            publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
-            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
-            publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
-            publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
-            AuthorFormSet = formset_factory(AuthorForm)
-            author_form_set = AuthorFormSet(request.POST)
-            if author_form_set.is_valid():
-                for authorform in author_form_set:
-                    author = authorform.save()
-                    publication.authors.add(author.id)
-
+        AuthorFormSet = formset_factory(AuthorForm)
+        author_form_set = AuthorFormSet(request.POST)
         pub_type = request.POST.get('pub_type', '')
         if pub_type == 'Book':
             media_form = BookForm(request.POST, prefix='book')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                # todo: make this a function
+                # --------------------------
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
+                # -------------------------
                 book = media_form.save(commit=False)
                 book.publication_id = publication
                 book.save()
@@ -89,55 +90,139 @@ def new(request):
 
         elif pub_type == 'Conference':
             media_form = ConferenceForm(request.POST, prefix='conf')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 conference = media_form.save(commit=False)
                 conference.publication_id = publication
                 conference.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Journal':
             media_form = JournalForm(request.POST, prefix='journal')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 journal = media_form.save(commit=False)
                 journal.publication_id = publication
                 journal.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Magazine':
             media_form = MagazineForm(request.POST, prefix='mag')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 magazine = media_form.save(commit=False)
                 magazine.publication_id = publication
                 magazine.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Poster':
             media_form = PosterForm(request.POST, prefix='poster')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 poster = media_form.save(commit=False)
                 poster.publication_id = publication
                 poster.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Presentation':
             media_form = PresentationForm(request.POST, prefix='pres')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 presentation = media_form.save(commit=False)
                 presentation.publication_id = publication
                 presentation.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Technical_Report':
             media_form = TechnicalReportForm(request.POST, prefix='tech')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 techreport = media_form.save(commit=False)
                 techreport.publication_id = publication
                 techreport.save()
                 return HttpResponse(status=200)
         elif pub_type == 'Other':
             media_form = OtherForm(request.POST, prefix='other')
-            if media_form.is_valid() and pub_form.is_valid() and publication.id is not None:
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = pub_form.save(commit=False)
+                publication.submitter = request.user
+                publication.save()
+                publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+                publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+                publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+                publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+                publication.publication_type = 0
+                publication.save()
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
                 other = media_form.save(commit=False)
                 other.publication_id = publication
                 other.save()
                 return HttpResponse(status=200)
 
-        return JsonResponse({'pub_form': pub_form, 'media_form': media_form},
+        return JsonResponse({'pub_form': pub_form, 'media_form': media_form, 'auth_form': author_form_set},
                             status=400)  # These should be strings actually
 
 
