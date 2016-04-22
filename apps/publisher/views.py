@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 import requests
 from django.http import JsonResponse
-from models import Publication, Frequency, Keyword, Model, Variable
+from models import *
 import pdb
 
 
@@ -34,10 +34,23 @@ def review(request):
 @login_required()
 def edit(request, pubid):
     publication = Publication.objects.get(id=pubid)
+    authors = publication.authors.all()
     userid = request.user.id
     if userid == publication.submitter.id:
         pub_form = PublicationForm(instance=publication)
-        return render(request, 'site/edit.html', {'pub_form': pub_form})
+        AuthorFormSet = modelformset_factory(Author, AuthorForm, extra=0)
+        author_form = AuthorFormSet(queryset=authors)
+
+        freq_form = FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]})
+        exp_form = ExperimentForm(initial={'exp': [box.id for box in publication.experiments.all()]})
+        keyword_form = KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]})
+        model_form = ModelForm(initial={'model': [box.id for box in publication.model.all()]})
+        var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
+        print keyword_form
+        return render(request, 'site/edit.html',
+                      {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
+                       'model_form': model_form, 'var_form': var_form,
+                       })
     else:
         entries = Publication.objects.filter(submitter=userid)
         error = 'Error: You must be the owner of a submission to edit it.'
@@ -55,7 +68,7 @@ def new(request):
             publication.submitter = request.user
             publication.save()
             publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
-            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keywords")])
+            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
             publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
             publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
             AuthorFormSet = formset_factory(AuthorForm)
