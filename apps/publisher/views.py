@@ -15,6 +15,7 @@ import pdb
 def index(request):
     return render(request, 'site/search.html')
 
+
 @login_required()
 def search(request):
     return render(request, 'site/search.html')
@@ -27,12 +28,21 @@ def review(request):
     entries = Publication.objects.filter(submitter=userid)
     if not entries:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    return render(request, 'site/review.html', {'message': message, 'entries': entries})
+    return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
 
 
 @login_required()
 def edit(request, pubid):
-    return render(request, 'site/edit.html')
+    publication = Publication.objects.get(id=pubid)
+    userid = request.user.id
+    if userid == publication.submitter.id:
+        pub_form = PublicationForm(instance=publication)
+        return render(request, 'site/edit.html', {'pub_form': pub_form})
+    else:
+        entries = Publication.objects.filter(submitter=userid)
+        error = 'Error: You must be the owner of a submission to edit it.'
+        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
+
 
 @login_required()
 def new(request):
@@ -44,14 +54,17 @@ def new(request):
             publication = pub_form.save(commit=False)
             publication.submitter = request.user
             publication.save()
-            publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in
-                                        request.POST.getlist("frequency")])
-            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in
-                                       request.POST.getlist("keywords")])
-            publication.model.add(*[Model.objects.get(id=model_id) for model_id in
-                                    request.POST.getlist("model")])
-            publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in
-                                    request.POST.getlist("variable")])
+            publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
+            publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keywords")])
+            publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+            publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+            AuthorFormSet = formset_factory(AuthorForm)
+            author_form_set = AuthorFormSet(request.POST)
+            if author_form_set.is_valid():
+                for authorform in author_form_set:
+                    author = authorform.save()
+                    publication.authors.add(author.id)
+
         pub_type = request.POST.get('pub_type', '')
         if pub_type == 'Book':
             media_form = BookForm(request.POST, prefix='book')

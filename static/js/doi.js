@@ -5,7 +5,7 @@ function doisearch(showform) {
         doi = ''
     }
     $.ajax({
-        url: '/finddoi/',
+        url: '/finddoi',
         method: 'GET',
         data: {'doi': doi},
         success: function(result){

@@ -7,7 +7,7 @@
 {% endif %}
 
 {% if message %}
-<div class="alert alert-info" role="alert">{{message}}</div>
+<div class="alert alert-info" role="alert">{{message|safe}}</div>
 {% endif %}
 
 {% if entries %}
