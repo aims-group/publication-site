@@ -174,8 +174,8 @@ class OtherForm(forms.ModelForm):
 
 
 class ExperimentForm(forms.ModelForm):
-    exp = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
-    ensemble = forms.IntegerField()
+    experiment = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
+    # The ensemble inputs are located in the doi.js file. Getting the same behavior with django is a ton more work.
     class Meta:
         model = Experiment
         fields = '__all__'
@@ -216,3 +216,5 @@ class VariableForm(forms.ModelForm):
         model = Variable
         fields = '__all__'
         exclude = ['variable']
+
+

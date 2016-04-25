@@ -2,14 +2,18 @@
 {% block title %}edit{% endblock %}
 {% block content %}
 
-{{ pub_form }}
+<form>
+    <input type="hidden" name="pub_type" value="{{ pub_type }}">
+    {{ pub_form }}
 
-{{ author_form }}
+    {{ author_form }}
 
-{{ freq_form }}
+    {{ media_form }}
 
-{{ exp_form }}
-{{ keyword_form }}
-{{ model_form }}
-{{ var_form }}
+    {{ freq_form }}
+    {{ exp_form }}
+    {{ keyword_form }}
+    {{ model_form }}
+    {{ var_form }}
+</form>
 {% endblock %}

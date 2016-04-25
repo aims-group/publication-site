@@ -11,6 +11,13 @@ function doisearch(showform) {
         success: function(result){
             $('#loading').hide();
             $("#publication-form-wrapper").html(result);
+            $.each($('#id_experiment li label'), function(index, element) {
+                newelem = $('<input/>');
+                $(newelem).attr('id', 'ensemble_'+index)
+                $(newelem).attr('name', 'ensemble')
+                console.log(newelem);
+                $(element).after(newelem);
+            });
             if (showform === true) {
                 $('.alert.alert-warning').hide();
             }
@@ -35,7 +42,7 @@ function submitPublication() {
         url: '/new',
         data: $('form').serialize(),
         success: function(result){
-            window.location.replace("/review");
+            //window.location.replace("/review");
         },
         error: function(response){
             alert("Incorrect Form");
