@@ -13,8 +13,8 @@ function doisearch(showform) {
             $("#publication-form-wrapper").html(result);
             $.each($('#id_experiment li label'), function(index, element) {
                 newelem = $('<input/>');
-                $(newelem).attr('id', 'ensemble_'+index)
-                $(newelem).attr('name', 'ensemble')
+                $(newelem).attr('id', 'ensemble_'+index);
+                $(newelem).attr('name', 'ensemble');
                 console.log(newelem);
                 $(element).after(newelem);
             });

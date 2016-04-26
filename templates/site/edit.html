@@ -1,19 +1,35 @@
 {% extends "base.html" %}
 {% block title %}edit{% endblock %}
 {% block content %}
-
+{% load my_json %}
 <form>
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {{ pub_form }}
-
     {{ author_form }}
-
     {{ media_form }}
-
     {{ freq_form }}
     {{ exp_form }}
     {{ keyword_form }}
     {{ model_form }}
     {{ var_form }}
 </form>
+<script type="text/javascript">
+    var ensemble = JSON.parse({{ ensemble_data|my_json|safe }});
+    {# example ensemble: [[1,1], [2,5], [3,1]] #}
+    {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
+    $(document).ready(function(){
+    $.each($('#id_experiment li label'), function(index, element) {
+        console.log(index);
+        newelem = $('<input/>');
+        $(newelem).attr('id', 'ensemble_'+index);
+        $(newelem).attr('name', 'ensemble');
+        if(ensemble.length > 0 && ensemble[0][0] === index+1) {
+            $(newelem).val(ensemble[0][1]);
+            ensemble.shift(); //treat the array as a queue. [0] is always the next checked element
+        }
+        $(element).after(newelem);
+        });
+    });
+
+</script>
 {% endblock %}
