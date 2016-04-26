@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
@@ -12,10 +12,10 @@ import json
 import pdb
 
 # Helper function
-def save_publication(pub_form, request, author_form_set):
+def save_publication(pub_form, request, author_form_set, pub_type):
     publication = pub_form.save(commit=False)
     publication.submitter = request.user
-    publication.publication_type = 0
+    publication.publication_type = pub_type
     publication.save()
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
@@ -46,8 +46,7 @@ def search(request):
 @login_required()
 def review(request):
     message = None
-    userid = request.user.id
-    entries = Publication.objects.filter(submitter=userid)
+    entries = Publication.objects.filter(submitter=request.user.id)
     if not entries:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
     return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
@@ -58,39 +57,85 @@ def edit(request, pubid):
     if request.method == 'POST':
         pub_instance = Publication.objects.get(id=pubid)
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
-        pub_type = request.POST.get('pub_type', '')
+        AuthorFormSet = formset_factory(AuthorForm)
+        author_form_set = AuthorFormSet(request.POST)
+        pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
-            media_form = BookForm(request.POST)
+            instance = Book.objects.get(publication_id=pub_instance)
+            bookinstance = Book.objects.get(publication_id=pub_instance)
+            media_form = BookForm(request.POST or None, instance=bookinstance)
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = pub_form.save(commit=False)
-                publication.submitter = request.user
-                publication.save()
-                publication.frequency = ([Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
-                publication.keywords = ([Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
-                publication.model = ([Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
-                publication.variables = ([Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
-                publication.save()
-                for authorform in author_form_set:
-                    author = authorform.save()
-                    publication.authors.add(author.id)
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
                 book = media_form.save(commit=False)
                 book.publication_id = publication
                 book.save()
-                return HttpResponse(status=200)
+                return redirect('review')
         elif pub_type == 1:  # conference
-            media_form = ConferenceForm(request.POST)
+            conferenceinstance = Conference.objects.get(publication_id=pub_instance)
+            media_form = ConferenceForm(request.POST or None, instance=conferenceinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                conference = media_form.save(commit=False)
+                conference.publication_id = publication
+                conference.save()
+                return redirect('review')
         elif pub_type == 2:  # journal
-            media_form = JournalForm(request.POST)
+            journalinstance = Journal.objects.get(publication_id=pub_instance)
+            media_form = JournalForm(request.POST or None, instance=journalinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                journal = media_form.save(commit=False)
+                journal.publication_id = publication
+                journal.save()
+                return redirect('review')
         elif pub_type == 3:  # magazine
-            media_form = MagazineForm(request.POST)
+            magazineinstance = Magazine.objects.get(publication_id=pub_instance)
+            media_form = MagazineForm(request.POST or None, instance=magazineinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                magazine = media_form.save(commit=False)
+                magazine.publication_id = publication
+                magazine.save()
+                return redirect('review')
         elif pub_type == 4:  # poster
-            media_form = PosterForm(request.POST)
+            posterinstance = Poster.objects.get(publication_id=pub_instance)
+            media_form = PosterForm(request.POST or None, instance=posterinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                poster = media_form.save(commit=False)
+                poster.publication_id = publication
+                poster.save()
+                return redirect('review')
         elif pub_type == 5:  # presentation
-            media_form = PresentationForm(request.POST)
+            presentationinstance = Book.objects.get(publication_id=pub_instance)
+            media_form = PresentationForm(request.POST or None, instance=presentationinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                presentation = media_form.save(commit=False)
+                presentation.publication_id = publication
+                presentation.save()
+                return redirect('review')
         elif pub_type == 6:  # technical report
-            media_form = TechnicalReportForm(request.POST)
+            techinstance = TechnicalReport.objects.get(publication_id=pub_instance)
+            media_form = TechnicalReportForm(request.POST or None, instance=techinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                techreport = media_form.save(commit=False)
+                techreport.publication_id = publication
+                techreport.save()
+                return redirect('review')
         elif pub_type == 7:  # other
-            media_form = OtherForm(request.POST)
+            otherinstance = Other.objects.get(publication_id=pub_instance)
+            media_form = OtherForm(request.POST or None, instance=otherinstance)
+            if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                other = media_form.save(commit=False)
+                other.publication_id = publication
+                other.save()
+                return redirect('review')
+        else:
+            print 'oh noes'
+            pass # return error here
 
     else:
         publication = Publication.objects.get(id=pubid)
@@ -146,7 +191,7 @@ def new(request):
         if pub_type == 'Book':
             media_form = BookForm(request.POST, prefix='book')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 0)
                 book = media_form.save(commit=False)
                 book.publication_id = publication
                 book.save()
@@ -154,7 +199,7 @@ def new(request):
         elif pub_type == 'Conference':
             media_form = ConferenceForm(request.POST, prefix='conf')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 1)
                 conference = media_form.save(commit=False)
                 conference.publication_id = publication
                 conference.save()
@@ -162,7 +207,7 @@ def new(request):
         elif pub_type == 'Journal':
             media_form = JournalForm(request.POST, prefix='journal')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 2)
                 journal = media_form.save(commit=False)
                 journal.publication_id = publication
                 journal.save()
@@ -170,7 +215,7 @@ def new(request):
         elif pub_type == 'Magazine':
             media_form = MagazineForm(request.POST, prefix='mag')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 3)
                 magazine = media_form.save(commit=False)
                 magazine.publication_id = publication
                 magazine.save()
@@ -178,7 +223,7 @@ def new(request):
         elif pub_type == 'Poster':
             media_form = PosterForm(request.POST, prefix='poster')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 4)
                 poster = media_form.save(commit=False)
                 poster.publication_id = publication
                 poster.save()
@@ -186,7 +231,7 @@ def new(request):
         elif pub_type == 'Presentation':
             media_form = PresentationForm(request.POST, prefix='pres')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 5)
                 presentation = media_form.save(commit=False)
                 presentation.publication_id = publication
                 presentation.save()
@@ -194,7 +239,7 @@ def new(request):
         elif pub_type == 'Technical_Report':
             media_form = TechnicalReportForm(request.POST, prefix='tech')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 6)
                 techreport = media_form.save(commit=False)
                 techreport.publication_id = publication
                 techreport.save()
@@ -202,7 +247,7 @@ def new(request):
         elif pub_type == 'Other':
             media_form = OtherForm(request.POST, prefix='other')
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set)
+                publication = save_publication(pub_form, request, author_form_set, 7)
                 other = media_form.save(commit=False)
                 other.publication_id = publication
                 other.save()
@@ -332,8 +377,3 @@ def finddoi(request):
                        'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form,
                        'message': 'Unable to pre-fill form with the given DOI'})
 
-def ensembles(request):
-    pub_id = request.GET.get('id', '')
-    [value for value in PubModels.objects.filter(publication_id=pub_id).values('experiment_id', 'ensemble')]
-    ensembles
-    return JsonResponse()

@@ -42,7 +42,7 @@ function submitPublication() {
         url: '/new',
         data: $('form').serialize(),
         success: function(result){
-            //window.location.replace("/review");
+            window.location.replace("/review");
         },
         error: function(response){
             alert("Incorrect Form");

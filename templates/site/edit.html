@@ -2,7 +2,8 @@
 {% block title %}edit{% endblock %}
 {% block content %}
 {% load my_json %}
-<form>
+<form action="" method="post">
+    {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {{ pub_form }}
     {{ author_form }}
@@ -12,6 +13,7 @@
     {{ keyword_form }}
     {{ model_form }}
     {{ var_form }}
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <script type="text/javascript">
     var ensemble = JSON.parse({{ ensemble_data|my_json|safe }});
