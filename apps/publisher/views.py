@@ -8,8 +8,6 @@ from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, Variabl
 import requests
 from django.http import JsonResponse
 from models import *
-import json
-import pdb
 
 # Helper function
 def save_publication(pub_form, request, author_form_set, pub_type):
@@ -61,7 +59,6 @@ def edit(request, pubid):
         author_form_set = AuthorFormSet(request.POST)
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
-            instance = Book.objects.get(publication_id=pub_instance)
             bookinstance = Book.objects.get(publication_id=pub_instance)
             media_form = BookForm(request.POST or None, instance=bookinstance)
             if media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
@@ -252,8 +249,13 @@ def new(request):
                 other.publication_id = publication
                 other.save()
                 return HttpResponse(status=200)
-
-        return JsonResponse({'pub_form': pub_form.as_table(), 'media_form': media_form.as_table(), 'auth_form': author_form_set.as_table()},
+        pub_form = str(pub_form.as_p()).replace('<p>', '')
+        pub_form = pub_form.replace('</p>', '')
+        media_form = str(media_form.as_p()).replace('<p>', '')
+        media_form = media_form.replace('</p>', '')
+        author_form_set = str(author_form_set.as_p()).replace('<p>', '')
+        author_form_set = author_form_set.replace('</p>', '')
+        return JsonResponse({'pub_form': pub_form, 'media_form': media_form, 'auth_form': author_form_set},
                             status=400)  # These should be strings actually
 
 

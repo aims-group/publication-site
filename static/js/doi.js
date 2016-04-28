@@ -15,7 +15,6 @@ function doisearch(showform) {
                 newelem = $('<input/>');
                 $(newelem).attr('id', 'ensemble_'+index);
                 $(newelem).attr('name', 'ensemble');
-                console.log(newelem);
                 $(element).after(newelem);
             });
             if (showform === true) {
@@ -44,11 +43,14 @@ function submitPublication() {
         success: function(result){
             window.location.replace("/review");
         },
-        error: function(response){
-            alert("Incorrect Form");
-            console.log(response);
-        }
-    })
+    }).fail(function($xhr) {
+        var data = $.parseJSON($xhr.responseText);
+        $('.pub_form').html(data.pub_form);
+        $('#tabs div').filter(function() {
+            return($(this)).css('display') == 'block';
+        }).html(data.media_form);
+        $('#author-form').html(data.auth_form);
+    });
 
 }
 
