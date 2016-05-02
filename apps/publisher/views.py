@@ -58,11 +58,28 @@ def review(request):
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
     return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
 
+@login_required()
+def delete(request, pub_id):
+    publication = Publication.objects.get(id=pub_id)
+    userid = request.user.id
+    if userid == publication.submitter.id:
+        publication.delete()
+        return redirect('review')
+    else:
+        entries = Publication.objects.filter(submitter=userid)
+        error = 'Error: You must be the owner of a submission to edit it.'
+        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
+
 
 @login_required()
 def edit(request, pubid):
     if request.method == 'POST':
         pub_instance = Publication.objects.get(id=pubid)
+        if not request.user.id == pub_instance.submitter.id:
+            entries = Publication.objects.filter(submitter=request.user.id)
+            error = 'Error: You must be the owner of a submission to edit it.'
+            return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
+
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
         AuthorFormSet = modelformset_factory(Author, fields=('title', 'first_name', 'middle_name', 'last_name', 'institution', 'email',))
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())

@@ -6,13 +6,15 @@
     {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {{ pub_form }}
-    {{ author_form }}
     {{ media_form }}
-    {{ freq_form }}
-    {{ exp_form }}
-    {{ keyword_form }}
-    {{ model_form }}
-    {{ var_form }}
+    {{ author_form }}
+    <div id="meta-form">
+        <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ model_form }}</span>
+        <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
+        <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <script type="text/javascript">

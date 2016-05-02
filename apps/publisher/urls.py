@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^finddoi$', views.finddoi),
     url(r'^review/', views.review, name='review'),
     url(r'^edit/(\d+)', views.edit, name='edit'),
+    url(r'^delete/(\d+)', views.delete, name='delete'),
     #url(r'ensembles'), views.ensembles, name='ensembles'),
 ]
