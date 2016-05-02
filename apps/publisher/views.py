@@ -8,6 +8,7 @@ from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, Variabl
 import requests
 from django.http import JsonResponse
 from models import *
+import pdb
 
 # Helper function
 def save_publication(pub_form, request, author_form_set, pub_type):
@@ -21,11 +22,19 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
     publication.save()  # might not be needed
     ensemble = request.POST.getlist('ensemble')
-    for exp_id in request.POST.getlist("experiment"):
+    experiments = request.POST.getlist('experiment')
+    PubModels.objects.filter(publication=publication.id).exclude(experiment__in=experiments).delete()
+    # Delete any experiments that were unchecked
+    for exp_id in experiments:
         exp = Experiment.objects.get(id=exp_id)
         ens = ensemble[exp.id - 1]  # database index vs lists, so off by one
-        if ens:
-            PubModels.objects.create(publication=publication, experiment=exp, ensemble=ens)
+        pubmodel = PubModels.objects.filter(publication=publication.id, experiment=exp_id)
+        if ens: # Enforce that experiments must have an ensemble
+            if pubmodel:
+                pubmodel[0].ensemble = int(ens)
+                pubmodel[0].save()
+            else:
+                PubModels.objects.create(publication=publication, experiment=exp, ensemble=ens)
     for authorform in author_form_set:
         author = authorform.save()
         publication.authors.add(author.id)
@@ -55,8 +64,8 @@ def edit(request, pubid):
     if request.method == 'POST':
         pub_instance = Publication.objects.get(id=pubid)
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
-        AuthorFormSet = formset_factory(AuthorForm)
-        author_form_set = AuthorFormSet(request.POST)
+        AuthorFormSet = modelformset_factory(Author, fields=('title', 'first_name', 'middle_name', 'last_name', 'institution', 'email',))
+        author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
             bookinstance = Book.objects.get(publication_id=pub_instance)
@@ -130,9 +139,14 @@ def edit(request, pubid):
                 other.publication_id = publication
                 other.save()
                 return redirect('review')
-        else:
-            print 'oh noes'
-            pass # return error here
+        ens = request.POST.getlist('ensemble')
+        ensemble_data = str([[index+1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
+        return render(request, 'site/edit.html',
+                      {'pub_form': pub_form, 'author_form': author_form_set, 'freq_form': FrequencyForm(initial=request.POST), 'exp_form': ExperimentForm(initial=request.POST),
+                       'keyword_form': KeywordForm(initial=request.POST),
+                       'model_form': ModelForm(initial=request.POST), 'var_form': VariableForm(initial=request.POST), 'media_form': media_form, 'pub_type': pub_type,
+                       'ensemble_data': ensemble_data,
+                       })
 
     else:
         publication = Publication.objects.get(id=pubid)
