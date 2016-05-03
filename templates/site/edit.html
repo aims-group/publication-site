@@ -49,6 +49,15 @@
     cloneMore('div.author:last', 'form');
     });
 
+    $('.author-delete').click(function( event ) {
+        event.preventDefault();
+        var form = $(event.target).parent().parent('.author');
+        var total = $('#id_form-TOTAL_FORMS').val();
+        $('#id_form-TOTAL_FORMS').val(total-1);
+
+        $(form).remove();
+    });
+
 
 </script>
 <script type="text/javascript" src="/static/js/authorform.js"></script>

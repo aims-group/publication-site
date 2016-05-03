@@ -45,11 +45,20 @@
     </div>
     <div id="author-form">
         {% for form in author_form %}
-            <div class="author"> {{form}} </div>
+        <div class="panel panel-default author">
+            <div class="panel-heading">
+                <span class="md-font">Author Details</span>
+                <a class="btn btn-xs btn-danger pull-right author-delete" role="button" title="Delete">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </div>
+            <div class="panel-body"> {{form}} </div>
+        </div>
         {% endfor %}
-        {{author_form.management_form}}
+    </div>
+    {{author_form.management_form}}
 
-        <button class="btn btn-info" id="add_author">Add Author</button>
+    <button class="btn btn-info" id="add_author">Add Author</button>
 
     </div>
     <div id="meta-form">
@@ -62,7 +71,7 @@
 </form>
 
 <div class="text-center">
-<button class="submit-form btn btn-primary" onclick="submitPublication()">Submit</button>
+    <button class="submit-form btn btn-primary" onclick="submitPublication()">Submit</button>
 </div>
 
 <script>
@@ -76,5 +85,18 @@
     $('#add_author').click(function( event ) {
         event.preventDefault();
         cloneMore('div.author:last', 'form');
+    });
+
+    $('#author-form').on('click', '.author-delete', function( event ) {
+        event.preventDefault();
+        var total = $('#id_form-TOTAL_FORMS').val();
+        if(total > 1) {
+            var form = $(event.target).closest('.author');
+            $('#id_form-TOTAL_FORMS').val(total-1);
+            $(form).remove();
+        }
+        else {
+            alert('Publications must have at least 1 author.');
+        }
     });
 </script>
