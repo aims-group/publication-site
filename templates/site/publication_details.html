@@ -44,8 +44,13 @@
         </div>
     </div>
     <div id="author-form">
-        {{ author_form }}
-        {{ author_form.management_form }}
+        {% for form in author_form %}
+            <div class="author"> {{form}} </div>
+        {% endfor %}
+        {{author_form.management_form}}
+
+        <button class="btn btn-info" id="add_author">Add Author</button>
+
     </div>
     <div id="meta-form">
         <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
@@ -68,4 +73,8 @@
     $('#pub_type').val($(event.target).text());
     });
 
+    $('#add_author').click(function( event ) {
+        event.preventDefault();
+        cloneMore('div.author:last', 'form');
+    });
 </script>

@@ -7,7 +7,14 @@
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {{ pub_form }}
     {{ media_form }}
-    {{ author_form }}
+    <div id="author-form">
+        {% for form in author_form %}
+        <div class="author"> {{form}}</div>
+        {% endfor %}
+        {{author_form.management_form}}
+        <button class="btn btn-info" id="add_author">Add Author</button>
+
+    </div>
     <div id="meta-form">
         <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
         <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
@@ -15,7 +22,9 @@
         <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
         <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
 </form>
 <script type="text/javascript">
     var ensemble = JSON.parse({{ ensemble_data|my_json|safe }});
@@ -35,5 +44,13 @@
         });
     });
 
+    $('#add_author').click(function( event ) {
+    event.preventDefault();
+    cloneMore('div.author:last', 'form');
+    });
+
+
 </script>
+<script type="text/javascript" src="/static/js/authorform.js"></script>
+<link href="/static/css/new_publication.css" rel="stylesheet">
 {% endblock %}
