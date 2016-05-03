@@ -3,6 +3,93 @@
 
 {% block content %}
 
-show all the publications with search options / per model ....
+<h3>{{ type }}</h3>
+<h5>{{ option }}</h5>
+
+<div class="row">
+  <div class="col-md-1"><h4>Published</h4></div>
+  <div class="col-md-10"><h4>Title</h4></div>
+  <div class="col-md-1"><h4>Type</h4></div>
+</div>
+
+{% if publications %}
+<style>
+  table td, table td * {
+    vertical-align: top;
+  }
+</style>
+  {% for publication in publications %}
+    <div class="row">
+        <div class="col-md-1">{{ publication.publication_date|date:"Y" }} </div>
+        <div class="col-md-10">
+            <a href="/publication/publications/{{ publication.id }}">{{ publication.title }}</a><br/>
+            <a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">(Citation)</a>
+            <a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">(More Info)</a>
+            <div id="citation{{ publication.id }}" style="display:none">empty</div>
+            <div id="more_info{{ publication.id }}"style="display:none">empty</div>
+    </div>
+    <div class="col-md-1">{{ publication.get_publication_type_display }} </div>
+ </div>
+  {% endfor %}
+
+{% else %}
+<p>No publications found.</p>
+{% endif %}
+
+<script>
+  function show_citation(id){
+    if ($("div #citation"+id).html() == "empty"){
+      url = "/ajax/citation/" + id
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: {},
+        dataType: 'json',
+        success: function(data){
+          $("div #citation"+id).text(data.key);
+          $("div #citation"+id).toggle();
+        },
+        error: function(request, status, error){
+          alert(request + " | " +  status + " | " +  error);
+        }
+      });
+    }
+    else{
+       $("div #citation"+id).toggle();
+    }
+  }
+  function show_more_info(id){
+    if ($("div #more_info"+id).html() == "empty"){
+      url = "/ajax/moreinfo/" + id
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: {},
+        dataType: 'json',
+        success: function(data){
+          output = data.key;
+          output = output.replace(/,/g, '<br/>');
+          metadata = output.split("|");
+          data =  "<table class=\"table\">" +
+                  "<th>Experiments</th><th>models</th><th>Variables</th><th>Keywords</th><tr>" +
+                  "<td>" + metadata[0] + "</td>" +
+                  "<td>" + metadata[1] + "</td>" +
+                  "<td>" + metadata[2] + "</td>" +
+                  "<td>" + metadata[3] + "</td>" +
+                  "</tr></table>";
+          $("div #more_info"+id).html(data);
+          $("div #more_info"+id).toggle();
+        },
+        error: function(request, status, error){
+          alert(request + " | " +  status + " | " +  error);
+        }
+      });
+    }
+    else{
+      $("div #more_info"+id).toggle();
+    }
+  }
+</script>
+
 
 {% endblock %}

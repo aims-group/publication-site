@@ -5,10 +5,11 @@ from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
-import requests
-from django.http import JsonResponse
+from datetime import date
+from django.http import JsonResponse, HttpResponseRedirect
 from models import *
-import pdb
+import requests
+
 
 # Helper function
 def save_publication(pub_form, request, author_form_set, pub_type):
@@ -40,14 +41,47 @@ def save_publication(pub_form, request, author_form_set, pub_type):
         publication.authors.add(author.id)
     return publication
 
-@login_required()
-def index(request):
-    return render(request, 'site/search.html')
-
 
 @login_required()
 def search(request):
-    return render(request, 'site/search.html')
+    pubs = {}
+    pubs["type"] = request.GET.get("type", "all")
+    pubs["option"] = request.GET.get("option", "")
+
+    if request.method == 'GET':
+        pubs["search"] = True
+        page_filter = request.GET.get("type", "all")
+        range = {}
+        if page_filter == 'all':
+            publications = Publication.objects.all()
+        elif page_filter == 'experiment':
+            option = request.GET.get("option", "1pctCO2")
+            publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
+        elif page_filter == 'frequency':
+            option = request.GET.get("option", "3-hourly")
+            publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
+        elif page_filter == 'keyword':
+            option = request.GET.get("option", "Abrupt change")
+            publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
+        elif page_filter == 'model':
+            option = request.GET.get("option", "ACCESS1.0")
+            publications = Publication.objects.filter(model=Model.objects.filter(model=option))
+        elif page_filter == 'status':
+            option = request.GET.get("option", "0")
+            publications = Publication.objects.filter(status=option)
+        elif page_filter == 'type':
+            option = request.GET.get("option", "2")
+            publications = Publication.objects.filter(publication_type=option)
+        elif page_filter == 'variable':
+            option = request.GET.get("option", "air pressure")
+            publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
+        elif page_filter == 'year':
+            # TODO - filter by year not date
+            option = request.GET.get("option", str(date.today()))
+            publications = Publication.objects.filter(publication_date=option)
+
+        pubs["publications"] = publications
+    return render(request, 'site/search.html', pubs)
 
 
 @login_required()
@@ -57,6 +91,7 @@ def review(request):
     if not entries:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
     return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
+
 
 @login_required()
 def delete(request, pub_id):
@@ -410,3 +445,30 @@ def finddoi(request):
                        'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form,
                        'message': 'Unable to pre-fill form with the given DOI'})
 
+
+# ajax
+def ajax(request):
+    return HttpResponseRedirect("/search?type='all'")
+
+
+def ajax_citation(request, pub_id):
+    pub = Publication.objects.get(id=pub_id)
+    citation =  pub.title + ". " + str(pub.publication_date) + ". " + pub.url
+    authors = ", ".join(["{author.title}. {author.last_name}, {author.first_name} {author.middle_name}".format(author=author) for author in pub.authors.all()])
+    citation = authors + ": " + citation
+    json = "{\"key\": \"" + citation + "\"}"
+    return HttpResponse(json)
+
+def ajax_more_info(request, pub_id):
+    pub = Publication.objects.get(id=pub_id)
+
+    experiments = ",".join(["{experiments.experiment}".format(experiments=experiments) for experiments in pub.experiments.all()])
+    model = ",".join(["{model.model}".format(model=model) for model in pub.model.all()])
+    variables = ",".join(["{variables.variable}".format(variables=variables) for variables in pub.variables.all()])
+    keywords = ",".join(["{keywords.keyword}".format(keywords=keywords) for keywords in pub.keywords.all()])
+    # frequency = ",".join(["{frequency.frequency}".format(frequency=frequency) for frequency in pub.frequency.all()])
+    # tags = ",".join(["{tags.name}".format(tags=tags) for tags in pub.tags.all()])
+
+    moreinfo = experiments + "|" + model + "|" + variables + "|" + keywords
+    json = "{\"key\": \"" + moreinfo + "\"}"
+    return HttpResponse(json)
