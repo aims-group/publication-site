@@ -9,3 +9,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+.md-font {
+    font-size: 12pt;
+}

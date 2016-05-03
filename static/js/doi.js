@@ -51,6 +51,6 @@ function submitPublication() {
         }).html(data.media_form);
         $('#author-form').html(data.auth_form);
     });
-
 }
+
 

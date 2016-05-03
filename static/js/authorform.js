@@ -1,6 +1,6 @@
-function cloneMore(selector, type) {
+function cloneMore(selector) {
     var newElement = $(selector).clone(true);
-    var total = $('#id_' + type + '-TOTAL_FORMS').val();
+    var total = $('#id_form-TOTAL_FORMS').val();
     newElement.find(':input').each(function() {
         var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
         var id = 'id_' + name;
@@ -11,6 +11,6 @@ function cloneMore(selector, type) {
         $(this).attr('for', newFor);
     });
     total++;
-    $('#id_' + type + '-TOTAL_FORMS').val(total);
+    $('#id_form-TOTAL_FORMS').val(total);
     $(selector).after(newElement);
 }

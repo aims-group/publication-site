@@ -116,7 +116,7 @@ def edit(request, pubid):
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
 
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
-        AuthorFormSet = modelformset_factory(Author, fields=('title', 'first_name', 'middle_name', 'last_name', 'institution', 'email',))
+        AuthorFormSet = modelformset_factory(Author, form=AuthorForm, can_delete=True)
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
