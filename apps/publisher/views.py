@@ -11,7 +11,7 @@ from models import *
 import requests
 
 
-# Helper function
+# Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type):
     publication = pub_form.save(commit=False)
     publication.submitter = request.user
@@ -42,42 +42,144 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     return publication
 
 
+def get_all_options():
+    all_options = {}
+    all_options['experiment'] = "Experiment"
+    all_options['frequency'] = "Frequency"
+    all_options['keyword'] = "Keyword"
+    all_options['model'] = "Model"
+    all_options['status'] = "Status"
+    all_options['type'] = "Type"
+    all_options['variable'] = "Variable"
+    all_options['year'] = "Year"
+    return all_options
+
+
 @login_required()
 def search(request):
     pubs = {}
+    data = {}
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
+    pubs["total"] = Publication.objects.all().count()
 
     if request.method == 'GET':
         pubs["search"] = True
         page_filter = request.GET.get("type", "all")
-        range = {}
+
         if page_filter == 'all':
             publications = Publication.objects.all()
+            pubs["pages"] = get_all_options()
+
         elif page_filter == 'experiment':
             option = request.GET.get("option", "1pctCO2")
+            pubs["option"] = request.GET.get("option", "1pctCO2")
             publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
+            for exp in Experiment.objects.all():
+                if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
+                    continue
+                exps = {}
+                exps['type'] = 'experiment'
+                exps['options'] = str(exp.experiment)
+                exps['count'] = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
+                data[str(exp.experiment)] = exps
+            pubs["pages"] = data
+
         elif page_filter == 'frequency':
             option = request.GET.get("option", "3-hourly")
+            pubs["option"] = request.GET.get("option", "3-hourly")
             publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
+            for frq in Frequency.objects.all():
+                if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
+                    continue
+                frqs = {}
+                frqs['type'] = 'frequency'
+                frqs['options'] = str(frq.frequency)
+                frqs['count'] = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
+                data[str(frq.frequency)] = frqs
+            pubs["pages"] = data
+
         elif page_filter == 'keyword':
             option = request.GET.get("option", "Abrupt change")
+            pubs["option"] = request.GET.get("option", "Abrupt change")
             publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
+            for kyw in Keyword.objects.all():
+                if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
+                    continue
+                kyws = {}
+                kyws['type'] = 'keyword'
+                kyws['options'] = str(kyw.keyword)
+                kyws['count'] = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
+                data[str(kyw.keyword)] = kyws
+            pubs["pages"] = data
+
         elif page_filter == 'model':
             option = request.GET.get("option", "ACCESS1.0")
+            pubs["option"] = request.GET.get("option", "ACCESS1.0")
             publications = Publication.objects.filter(model=Model.objects.filter(model=option))
+            for mod in Model.objects.all():
+                if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
+                    continue
+                mods = {}
+                mods['type'] = 'model'
+                mods['options'] = str(mod.model)
+                mods['count'] = Publication.objects.filter(model=Model.objects.filter(model=mod)).count()
+                data[str(mod.model)] = mods
+            pubs["pages"] = data
+
+
         elif page_filter == 'status':
             option = request.GET.get("option", "0")
+            if option != "0":
+                if option == 'Published':
+                    option = 0
+                elif option == 'Submitted':
+                    option = 1
+                elif option == 'Accepted':
+                    option = 2
+                else:
+                    option = 3
             publications = Publication.objects.filter(status=option)
+            for stat in [0, 1, 2, 3]:
+                if Publication.objects.filter(status=stat).count() == 0:
+                    continue
+                stats = {}
+                stats['type'] = 'status'
+                if stat == 0:
+                    option = 'Published'
+                elif stat == 1:
+                    option = 'Submitted'
+                elif stat == 2:
+                    option = 'Accepted'
+                else:
+                    option = 'Not Applicable'
+                stats['options'] = option
+                stats['count'] = Publication.objects.filter(status=stat).count()
+                data[str(stat)] = stats
+            pubs["pages"] = data
+
         elif page_filter == 'type':
             option = request.GET.get("option", "2")
             publications = Publication.objects.filter(publication_type=option)
+
         elif page_filter == 'variable':
             option = request.GET.get("option", "air pressure")
+            pubs["option"] = request.GET.get("option", "air pressure")
             publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
+            for var in Variable.objects.all():
+                if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
+                    continue
+                vars = {}
+                vars['type'] = 'variable'
+                vars['options'] = str(var.variable)
+                vars['count'] = Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count()
+                data[str(var.variable)] = vars
+            pubs["pages"] = data
+
         elif page_filter == 'year':
             # TODO - filter by year not date
             option = request.GET.get("option", str(date.today()))
+            pubs["option"] = request.GET.get("option", str(date.today()))
             publications = Publication.objects.filter(publication_date=option)
 
         pubs["publications"] = publications

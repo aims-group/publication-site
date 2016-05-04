@@ -2,39 +2,57 @@
 {% block title %} search {% endblock %}
 
 {% block content %}
+<style>
+    table td, table td * {
+        vertical-align: top;
+    }
+</style>
 
-<h3>{{ type }}</h3>
-<h5>{{ option }}</h5>
+<div class="col-sm-9">
+    <h1>{{ type }}: {{ option }}</h1>
 
-<div class="row">
-  <div class="col-md-1"><h4>Published</h4></div>
-  <div class="col-md-10"><h4>Title</h4></div>
-  <div class="col-md-1"><h4>Type</h4></div>
+    <div class="row">
+        <div class="col-md-2"><h4>Published</h4></div>
+        <div class="col-md-9"><h4>Title</h4></div>
+        <div class="col-md-1"><h4>Type</h4></div>
+    </div>
+
+    {% if publications %}
+        {% for publication in publications %}
+            <div class="row">
+                <div class="col-md-2">{{ publication.publication_date|date:"Y" }} </div>
+                <div class="col-md-9">
+                    {{ publication.title }}<br/>
+                        (<a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">Citation</a>)
+                        (<a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">More Info</a>)
+                        <div id="citation{{ publication.id }}" style="display:none">empty</div>
+                        <div id="more_info{{ publication.id }}"style="display:none">empty</div>
+                </div>
+            <div class="col-md-1">{{ publication.get_publication_type_display }} </div>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No publications found.</p>
+    {% endif %}
 </div>
 
-{% if publications %}
-<style>
-  table td, table td * {
-    vertical-align: top;
-  }
-</style>
-  {% for publication in publications %}
-    <div class="row">
-        <div class="col-md-1">{{ publication.publication_date|date:"Y" }} </div>
-        <div class="col-md-10">
-            <a href="/publication/publications/{{ publication.id }}">{{ publication.title }}</a><br/>
-            <a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">(Citation)</a>
-            <a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">(More Info)</a>
-            <div id="citation{{ publication.id }}" style="display:none">empty</div>
-            <div id="more_info{{ publication.id }}"style="display:none">empty</div>
-    </div>
-    <div class="col-md-1">{{ publication.get_publication_type_display }} </div>
- </div>
-  {% endfor %}
-
-{% else %}
-<p>No publications found.</p>
-{% endif %}
+<div class="col-sm-3 well">
+    <h5> Publication Count: {{ total }}</h5>
+    {% if type == "all" %}
+        <ul>
+            {% for k, v in pages.items %}
+                <li><a href="search?type={{ k }}"> {{ v }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <table class="table">
+            {% for k, v in pages.items %}
+<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options }}</a></td><td>{{ v.count }}</td></tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</div>
 
 <script>
   function show_citation(id){
