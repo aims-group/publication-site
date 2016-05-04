@@ -5,10 +5,10 @@ from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorForm, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
-from datetime import date
 from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
+import datetime
 
 
 # Helper functions
@@ -127,17 +127,22 @@ def search(request):
                 data[str(mod.model)] = mods
             pubs["pages"] = data
 
-
         elif page_filter == 'status':
+            # TODO - redo
             option = request.GET.get("option", "0")
+            pubs["option"] = "Published"
             if option != "0":
                 if option == 'Published':
+                    pubs["option"] = "Published"
                     option = 0
                 elif option == 'Submitted':
+                    pubs["option"] = "Submitted"
                     option = 1
                 elif option == 'Accepted':
+                    pubs["option"] = "Accepted"
                     option = 2
                 else:
+                    pubs["option"] = "Not Applicable"
                     option = 3
             publications = Publication.objects.filter(status=option)
             for stat in [0, 1, 2, 3]:
@@ -159,7 +164,9 @@ def search(request):
             pubs["pages"] = data
 
         elif page_filter == 'type':
+            # TODO -
             option = request.GET.get("option", "2")
+
             publications = Publication.objects.filter(publication_type=option)
 
         elif page_filter == 'variable':
@@ -177,9 +184,10 @@ def search(request):
             pubs["pages"] = data
 
         elif page_filter == 'year':
+            now = datetime.datetime.now()
             # TODO - filter by year not date
-            option = request.GET.get("option", str(date.today()))
-            pubs["option"] = request.GET.get("option", str(date.today()))
+            option = request.GET.get("option", str(now.strftime("%Y-%m-%d")))
+            pubs["option"] = request.GET.get("option", str(now.year))
             publications = Publication.objects.filter(publication_date=option)
 
         pubs["publications"] = publications
