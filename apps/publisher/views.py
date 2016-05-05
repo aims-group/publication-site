@@ -202,10 +202,9 @@ def search(request):
 
         elif page_filter == 'year':
             now = datetime.datetime.now()
-            # TODO - filter by year not date
-            option = request.GET.get("option", str(now.strftime("%Y-%m-%d")))
-            pubs["option"] = request.GET.get("option", str(now.year))
-            publications = Publication.objects.filter(publication_date=option)
+            option = request.GET.get("option", str(now.year))
+            pubs["option"] = option
+            publications = Publication.objects.filter(publication_date__year=option)
 
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)

@@ -57,7 +57,6 @@ class Keyword(models.Model):
 class Model(models.Model):
     model = models.TextField()
 
-
     def __str__(self):
         return self.model
 
