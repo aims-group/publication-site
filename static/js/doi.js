@@ -11,7 +11,7 @@ function doisearch(showform) {
         success: function(result){
             $('#loading').hide();
             $("#publication-form-wrapper").html(result);
-            $.each($('#id_experiment li label'), function(index, element) {
+            $.each($('#id_model li label'), function(index, element) {
                 newelem = $('<input/>');
                 $(newelem).attr('id', 'ensemble_'+index);
                 $(newelem).attr('name', 'ensemble');

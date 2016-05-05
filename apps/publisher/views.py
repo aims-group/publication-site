@@ -19,23 +19,23 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     publication.save()
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
-    publication.model.add(*[Model.objects.get(id=model_id) for model_id in request.POST.getlist("model")])
+    publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
     publication.save()  # might not be needed
     ensemble = request.POST.getlist('ensemble')
-    experiments = request.POST.getlist('experiment')
-    PubModels.objects.filter(publication=publication.id).exclude(experiment__in=experiments).delete()
+    models = request.POST.getlist('model')
+    PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
-    for exp_id in experiments:
-        exp = Experiment.objects.get(id=exp_id)
-        ens = ensemble[exp.id - 1]  # database index vs lists, so off by one
-        pubmodel = PubModels.objects.filter(publication=publication.id, experiment=exp_id)
+    for model_id in models:
+        model = Model.objects.get(id=model_id)
+        ens = ensemble[model.id - 1]  # database index vs lists, so off by one
+        pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
         if ens: # Enforce that experiments must have an ensemble
             if pubmodel:
                 pubmodel[0].ensemble = int(ens)
                 pubmodel[0].save()
             else:
-                PubModels.objects.create(publication=publication, experiment=exp, ensemble=ens)
+                PubModels.objects.create(publication=publication, model=model, ensemble=ens)
     for authorform in author_form_set:
         author = authorform.save()
         publication.authors.add(author.id)
@@ -311,8 +311,8 @@ def edit(request, pubid):
             keyword_form = KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]})
             model_form = ModelForm(initial={'model': [box.id for box in publication.model.all()]})
             var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
-            ensemble_data = str([[value['experiment_id'], value['ensemble']] for value in
-                             PubModels.objects.filter(publication_id=publication.id).values('experiment_id', 'ensemble')])
+            ensemble_data = str([[value['model_id'], value['ensemble']] for value in
+                             PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
                            'model_form': model_form, 'var_form': var_form, 'media_form': media_form, 'pub_type': publication.publication_type,

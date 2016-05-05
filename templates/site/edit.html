@@ -8,13 +8,7 @@
     {{ pub_form }}
     {{ media_form }}
     {% include 'snippets/authorForm.html' %}
-    <div id="meta-form">
-        <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ model_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
-        <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
-    </div>
+    {% include 'snippets/metaForm.html' %}
     <div class="text-center">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
@@ -25,7 +19,7 @@
     {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
     $(document).ready(function(){
     console.log(ensemble);
-    $.each($('#id_experiment li label'), function(index, element) {
+    $.each($('#id_model li label'), function(index, element) {
         newelem = $('<input/>');
         $(newelem).attr('id', 'ensemble_'+index);
         $(newelem).attr('name', 'ensemble');
