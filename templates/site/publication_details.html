@@ -51,13 +51,7 @@
 
     {% include "snippets/authorForm.html" %}
 
-    <div id="meta-form">
-        <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ model_form }}</span>
-        <span class="meta-form-list col-md-4 well">{{ keyword_form }}</span>
-        <span class="meta-form-list col-md-6 well">{{ var_form }}</span>
-    </div>
+    {% include "snippets/metaForm.html" %}
 </form>
 
 <div class="text-center">
@@ -72,6 +66,10 @@
     $('#pub_type').val($(event.target).text());
     });
 
+    var count = parseInt($('#id_form-TOTAL_FORMS').val());
+    for(i=0; i < count; i++) {
+        $('#id_form-' + i + '-DELETE').closest('td').remove();
+    }
     $('#add_author').click(function( event ) {
         event.preventDefault();
         cloneMore('tr.author:last');
