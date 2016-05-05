@@ -125,6 +125,18 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def get_publication_type(self):
+        return PUBLICATION_TYPE_CHOICE[int(self.publication_type)][1]
+
+    @property
+    def get_status(self):
+        return PUBLICATION_STATUS_CHOICE[int(self.status)][1]
+
+    @property
+    def get_year(self):
+        return self.publication_date.year
+
 
 class PubModels(models.Model):
     publication = models.ForeignKey(Publication)

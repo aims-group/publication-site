@@ -94,7 +94,7 @@ def search(request):
 
         elif page_filter == 'experiment':
             option = request.GET.get("option", "1pctCO2")
-            pubs["option"] = request.GET.get("option", "1pctCO2")
+            pubs["option"] = option
             publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
             for exp in Experiment.objects.all():
                 if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
@@ -108,7 +108,7 @@ def search(request):
 
         elif page_filter == 'frequency':
             option = request.GET.get("option", "3-hourly")
-            pubs["option"] = request.GET.get("option", "3-hourly")
+            pubs["option"] = option
             publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
             for frq in Frequency.objects.all():
                 if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
@@ -122,7 +122,7 @@ def search(request):
 
         elif page_filter == 'keyword':
             option = request.GET.get("option", "Abrupt change")
-            pubs["option"] = request.GET.get("option", "Abrupt change")
+            pubs["option"] = option
             publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
             for kyw in Keyword.objects.all():
                 if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
@@ -136,7 +136,7 @@ def search(request):
 
         elif page_filter == 'model':
             option = request.GET.get("option", "ACCESS1.0")
-            pubs["option"] = request.GET.get("option", "ACCESS1.0")
+            pubs["option"] = option
             publications = Publication.objects.filter(model=Model.objects.filter(model=option))
             for mod in Model.objects.all():
                 if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
@@ -150,8 +150,8 @@ def search(request):
 
         elif page_filter == 'status':
             # TODO - redo
-            option = request.GET.get("option", "0")
-            pubs["option"] = "Published"
+            option = request.GET.get("option", "published")
+            pubs["option"] = request.GET.get("option", "published")
             if option != "0":
                 if option == 'Published':
                     pubs["option"] = "Published"
@@ -187,6 +187,7 @@ def search(request):
         elif page_filter == 'type':
             # TODO -
             option = request.GET.get("option", "2")
+            pubs["option"] = "Journal"
 
             publications = Publication.objects.filter(publication_type=option)
 
