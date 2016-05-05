@@ -111,7 +111,7 @@ class Publication(models.Model):
     funding = models.ManyToManyField(Funding)
     project_number = models.TextField()
     task_number = models.TextField()
-    authors = models.ManyToManyField(Author)
+    authors = models.ManyToManyField(Author, blank=False)
     publication_date = models.DateField()
     url = models.URLField()
     doi = models.TextField()

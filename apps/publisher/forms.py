@@ -49,6 +49,11 @@ class AuthorForm(forms.ModelForm):
             'email': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+AuthorFormSetBase = forms.modelformset_factory(Author, fields=["title", "first_name", "middle_name", "last_name", "institution", "email"], form=AuthorForm, can_delete=True)
+
+class AuthorFormSet(AuthorFormSetBase):
+    pass
+
 
 class PublicationForm(forms.ModelForm):
     class Meta:

@@ -44,12 +44,9 @@ function submitPublication() {
             window.location.replace("/review");
         },
     }).fail(function($xhr) {
-        var data = $.parseJSON($xhr.responseText);
-        $('.pub_form').html(data.pub_form);
-        $('#tabs div').filter(function() {
-            return($(this)).css('display') == 'block';
-        }).html(data.media_form);
-        $('#author-form').html(data.auth_form);
+        console.log($xhr);
+        console.log($xhr.responseText);
+        $("#publication-form-wrapper").html($xhr.responseText);
     });
 }
 
