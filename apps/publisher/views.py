@@ -149,47 +149,42 @@ def search(request):
             pubs["pages"] = data
 
         elif page_filter == 'status':
-            # TODO - redo
-            option = request.GET.get("option", "published")
-            pubs["option"] = request.GET.get("option", "published")
-            if option != "0":
-                if option == 'Published':
-                    pubs["option"] = "Published"
-                    option = 0
-                elif option == 'Submitted':
-                    pubs["option"] = "Submitted"
-                    option = 1
-                elif option == 'Accepted':
-                    pubs["option"] = "Accepted"
-                    option = 2
-                else:
-                    pubs["option"] = "Not Applicable"
-                    option = 3
-            publications = Publication.objects.filter(status=option)
-            for stat in [0, 1, 2, 3]:
+            option = request.GET.get("option", "Published")
+            pubs["option"] = option
+            lookup = 0
+            for k, v in PUBLICATION_STATUS_CHOICE:
+                if str(v) == str(option):
+                    lookup = k
+                    break
+            publications = Publication.objects.filter(status=lookup)
+            for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
                 if Publication.objects.filter(status=stat).count() == 0:
                     continue
                 stats = {}
                 stats['type'] = 'status'
-                if stat == 0:
-                    option = 'Published'
-                elif stat == 1:
-                    option = 'Submitted'
-                elif stat == 2:
-                    option = 'Accepted'
-                else:
-                    option = 'Not Applicable'
-                stats['options'] = option
+                stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
                 stats['count'] = Publication.objects.filter(status=stat).count()
-                data[str(stat)] = stats
+                data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
             pubs["pages"] = data
 
         elif page_filter == 'type':
-            # TODO -
-            option = request.GET.get("option", "2")
-            pubs["option"] = "Journal"
-
-            publications = Publication.objects.filter(publication_type=option)
+            option = request.GET.get("option", "Journal")
+            pubs["option"] = option
+            lookup = 2
+            for k, v in PUBLICATION_TYPE_CHOICE:
+                if str(v) == option:
+                    lookup = k
+                    break
+            publications = Publication.objects.filter(publication_type=lookup)
+            for pt in range(0, len(PUBLICATION_TYPE_CHOICE)):
+                if Publication.objects.filter(publication_type=pt).count() == 0:
+                    continue
+                pubttpe = {}
+                pubttpe['type'] = 'type'
+                pubttpe['options'] = PUBLICATION_TYPE_CHOICE[pt][1]
+                pubttpe['count'] = Publication.objects.filter(publication_type=pt).count()
+                data[str(PUBLICATION_STATUS_CHOICE[pt][1])] = pubttpe
+            pubs["pages"] = data
 
         elif page_filter == 'variable':
             option = request.GET.get("option", "air pressure")
