@@ -7,44 +7,7 @@
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {{ pub_form }}
     {{ media_form }}
-    <div class="panel panel-default">
-        <div class="panel-heading"><span class="md-font">Author Details</span></div>
-        <table id="author-form" class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>First Name</th>
-                <th>Middle Name</th>
-                <th>Last Name</th>
-                <th>Institution</th>
-                <th>Email</th>
-                <th>
-                    <a id="add_author" class="btn btn-xs btn-info " role="button" title="Add Author">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </a>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for form in author_form %}
-            <tr class="author">
-                {% for field in form.visible_fields %}
-                <td>{{field}}</td>
-                {% endfor %}
-                <td>
-                    <a class="btn btn-xs btn-danger author-delete" role="button" title="Delete">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </a>
-                </td>
-                {% for hidden in form.hidden_fields %}
-                    {{hidden}}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {{author_form.management_form}}
-    </div>
+    {% include 'snippets/authorForm.html' %}
     <div id="meta-form">
         <span class="meta-form-list col-md-4 well">{{ exp_form }}</span>
         <span class="meta-form-list col-md-4 well">{{ freq_form }}</span>

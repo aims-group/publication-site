@@ -72,6 +72,10 @@
     $('#pub_type').val($(event.target).text());
     });
 
+    var count = parseInt($('#id_form-TOTAL_FORMS').val());
+    for(i=0; i < count; i++) {
+        $('#id_form-' + i + '-DELETE').closest('td').remove();
+    }
     $('#add_author').click(function( event ) {
         event.preventDefault();
         cloneMore('tr.author:last');
