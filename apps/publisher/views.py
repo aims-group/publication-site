@@ -445,11 +445,11 @@ def finddoi(request):
             authors_list = []
             if 'given' in initial['author'][0].keys():
                 for author in initial['author']:
-                    authors_list.append({'first_name': author['given'], 'last_name': author['family']})
+                    authors_list.append({'name': author['family'] + ', ' + author['given']})
                 author_form = AuthorFormSet(initial=authors_list)
             elif 'literal' in initial['author'][0].keys():
                 for author in initial['author']:
-                    authors_list.append({'first_name': author['literal']})
+                    authors_list.append({'name': author['literal']})
                 author_form = AuthorFormSet(initial=authors_list)
             else:
                 author_form = AuthorFormSet(queryset=Author.objects.none())

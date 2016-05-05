@@ -91,12 +91,8 @@ class Funding(models.Model):
 
 
 class Author(models.Model):
-    title = models.IntegerField(choices=AUTHOR_TITLE_CHOICE, default=9)
-    first_name = models.TextField()
-    middle_name = models.TextField()
-    last_name = models.TextField()
+    name = models.TextField()
     institution = models.TextField()
-    email = models.EmailField(max_length=128)
 
     def __str__(self):
         return " ".join((AUTHOR_TITLE_CHOICE[int(self.title)][1], self.first_name, self.middle_name, self.last_name))

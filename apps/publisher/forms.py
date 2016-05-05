@@ -6,7 +6,7 @@ from captcha.fields import ReCaptchaField
 
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
-
+import pdb
 
 # If you don't do this you cannot use Bootstrap CSS
 class LoginForm(AuthenticationForm):
@@ -42,17 +42,18 @@ class AuthorForm(forms.ModelForm):
         model = Author
         fields = '__all__'
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
             'institution': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-AuthorFormSetBase = forms.modelformset_factory(Author, fields=["title", "first_name", "middle_name", "last_name", "institution", "email"], form=AuthorForm, can_delete=True)
+AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True)
 
 class AuthorFormSet(AuthorFormSetBase):
-    pass
+    def clean(self):
+        if any(self.errors):
+            return
+        #self.forms = [form for form in self.forms if name != '']
+        # will uncomment this when author fields are updated
 
 
 class PublicationForm(forms.ModelForm):
