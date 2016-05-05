@@ -112,10 +112,10 @@ class Publication(models.Model):
     url = models.URLField()
     doi = models.TextField()
     abstract = models.TextField()
-    experiments = models.ManyToManyField(Experiment, through='PubModels')
+    experiments = models.ManyToManyField(Experiment)
     frequency = models.ManyToManyField(Frequency)
     keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model)
+    model = models.ManyToManyField(Model, through='PubModels')
     variables = models.ManyToManyField(Variable)
 
     def __str__(self):
@@ -136,7 +136,7 @@ class Publication(models.Model):
 
 class PubModels(models.Model):
     publication = models.ForeignKey(Publication)
-    experiment = models.ForeignKey(Experiment)
+    model = models.ForeignKey(Model)
     ensemble = models.IntegerField()
 
 
