@@ -18,7 +18,6 @@
     {# example ensemble: [[1,1], [2,5], [3,1]] #}
     {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
     $(document).ready(function(){
-    console.log(ensemble);
     $.each($('#id_model li label'), function(index, element) {
         newelem = $('<input/>');
         $(newelem).attr('id', 'ensemble_'+index);
@@ -31,6 +30,10 @@
         });
     });
 
+    var count = parseInt($('#id_form-TOTAL_FORMS').val());
+    for(i=0; i < count; i++) {
+        $('#id_form-' + i + '-DELETE').closest('td').hide();
+    }
     $('#add_author').click(function( event ) {
     event.preventDefault();
     cloneMore('div.author:last', 'form');

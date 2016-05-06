@@ -9,7 +9,6 @@ from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
 import datetime
-import pdb
 
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type):
@@ -27,6 +26,7 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
     for model_id in models:
+        pdb.set_trace()
         model = Model.objects.get(id=model_id)
         ens = ensemble[model.id - 1]  # database index vs lists, so off by one
         pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
@@ -362,8 +362,7 @@ def new(request):
             media.publication_id = publication
             media.save()
             return HttpResponse(status=200)
-        return render(request, 'site/publication_details.html',
-                      all_forms, status=400)
+        return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
 def finddoi(request):

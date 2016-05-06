@@ -1,4 +1,4 @@
-
+{% load my_json %}
 {% if message %}
 <div class="alert alert-warning">{{ message }}</div>
 {% endif %}
@@ -58,34 +58,3 @@
     <button class="submit-form btn btn-primary" onclick="submitPublication()">Submit</button>
 </div>
 
-<script>
-    $(function() {$( "#tabs" ).tabs();} );
-    $('#tabs a').click(function( event ) {
-    $('#tabs .active').removeClass('active');
-    $(event.target).parent().addClass('active');
-    $('#pub_type').val($(event.target).text());
-    });
-
-    var count = parseInt($('#id_form-TOTAL_FORMS').val());
-    for(i=0; i < count; i++) {
-        $('#id_form-' + i + '-DELETE').closest('td').remove();
-    }
-    $('#add_author').click(function( event ) {
-        event.preventDefault();
-        cloneMore('tr.author:last');
-    });
-
-    $('#author-form').on('click', '.author-delete', function( event ) {
-        event.preventDefault();
-        var total = $('#id_form-TOTAL_FORMS').val();
-        if(total > 1) {
-            var form = $(event.target).closest('.author');
-            $('#id_form-TOTAL_FORMS').val(total-1);
-            $(form).remove();
-        }
-        else {
-            alert('Publications must have at least 1 author.');
-        }
-    });
-
-</script>
