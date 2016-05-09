@@ -24,6 +24,10 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
     publication.save()  # might not be needed
+    year = publication.get_year
+    if not AvailableYears.objects.filter(year=year):
+        avail = AvailableYears(year=year)
+        avail.save()
     ensemble = request.POST.getlist('ensemble')
     models = request.POST.getlist('model')
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
