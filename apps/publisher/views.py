@@ -14,7 +14,7 @@ import pdb
 
 
 # Helper functions
-def save_publication(pub_form, request, author_form_set, pub_type):
+def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication = pub_form.save(commit=False)
     publication.submitter = request.user
     publication.publication_type = pub_type
@@ -38,17 +38,18 @@ def save_publication(pub_form, request, author_form_set, pub_type):
                 pubmodel[0].save()
             else:
                 PubModels.objects.create(publication=publication, model=model, ensemble=ens)
-    author_form_set.save(commit=False)
+    if edit:
+        author_form_set.save(commit=False)
     for authorform in author_form_set:
         form_is_filled = True
         if not authorform['name'].data:
-            
             form_is_filled = False
         if form_is_filled:
             author = authorform.save()
             publication.authors.add(author.id)
-    for obj in author_form_set.deleted_objects:
-        obj.delete()
+    if edit:
+        for obj in author_form_set.deleted_objects:
+            obj.delete()
     return publication
 
 
@@ -279,7 +280,7 @@ def edit(request, pubid):
             otherinstance = Other.objects.get(publication_id=pub_instance)
             media_form = OtherForm(request.POST or None, instance=otherinstance)
         if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set, pub_type)
+                publication = save_publication(pub_form, request, author_form_set, pub_type, True)
                 other = media_form.save(commit=False)
                 other.publication_id = publication
                 other.save()
@@ -368,7 +369,7 @@ def new(request):
             pub_type = 7
             media_form = OtherForm(request.POST, prefix='other')
         if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
-            publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type)
+            publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
             media = media_form.save(commit=False)
             media.publication_id = publication
             media.save()
