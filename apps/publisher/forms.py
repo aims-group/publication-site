@@ -49,9 +49,7 @@ class AuthorForm(forms.ModelForm):
 AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=1)
 
 class AuthorFormSet(AuthorFormSetBase):
-    def is_valid(self):
-        for form in self.forms:
-            pdb.set_trace()
+    pass
 
 
 class PublicationForm(forms.ModelForm):

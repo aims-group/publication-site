@@ -37,9 +37,17 @@ def save_publication(pub_form, request, author_form_set, pub_type):
                 pubmodel[0].save()
             else:
                 PubModels.objects.create(publication=publication, model=model, ensemble=ens)
+    author_form_set.save(commit=False)
     for authorform in author_form_set:
-        author = authorform.save()
-        publication.authors.add(author.id)
+        form_is_filled = True
+        if not authorform['name'].data:
+            
+            form_is_filled = False
+        if form_is_filled:
+            author = authorform.save()
+            publication.authors.add(author.id)
+    for obj in author_form_set.deleted_objects:
+        obj.delete()
     return publication
 
 def init_forms(author_form, request=None, instance=None):
@@ -243,7 +251,7 @@ def edit(request, pubid):
             error = 'Error: You must be the owner of a submission to edit it.'
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
-        author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all(), prefix='model_author')
+        author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
             bookinstance = Book.objects.get(publication_id=pub_instance)
@@ -290,7 +298,7 @@ def edit(request, pubid):
         userid = request.user.id
         if userid == publication.submitter.id:
             pub_form = PublicationForm(instance=publication)
-            author_model_form = AuthorFormSet(queryset=authors, prefix='model_author')
+            author_form = AuthorFormSet(queryset=authors)
             if publication.publication_type == 0: # book
                 media_form = BookForm(instance=Book.objects.get(publication_id=publication))
             elif publication.publication_type == 1: # conference
@@ -314,12 +322,10 @@ def edit(request, pubid):
             var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
             ensemble_data = str([[value['model_id'], value['ensemble']] for value in
                              PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
-            formset = formset_factory(AuthorForm, extra=1)
-            author_form = formset()
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
                            'model_form': model_form, 'var_form': var_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                           'ensemble_data': ensemble_data, 'author_model_form': author_model_form,
+                           'ensemble_data': ensemble_data,
                            })
         else:
             entries = Publication.objects.filter(submitter=userid)
@@ -333,7 +339,7 @@ def new(request):
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
         pub_type = request.POST.get('pub_type', '')
-        formset = formset_factory(AuthorForm, extra=1)
+        formset = formset_factory(AuthorForm)
         author_form_set = formset(request.POST)
         all_forms = init_forms(author_form_set, request.POST)
         if pub_type == 'Book':
