@@ -1,5 +1,7 @@
 $(document).ready(function(){
     $('#loading').hide();
+    var local = 'test';
+    global = 'foobar';
 });
 
 $('#publication-form-wrapper').on('click', '#add_author', (function( event ) {
@@ -55,6 +57,8 @@ function doisearch(showform) {
             if (showform === true) {
                 $('.alert.alert-warning').hide();
             }
+            console.log(global);
+            console.log(local);
         },
         error: function(jqxhr, status, error){
             $('#loading').hide();

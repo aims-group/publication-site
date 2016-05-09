@@ -46,14 +46,12 @@ class AuthorForm(forms.ModelForm):
             'institution': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True)
+AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=1)
 
 class AuthorFormSet(AuthorFormSetBase):
-    def clean(self):
-        if any(self.errors):
-            return
-        #self.forms = [form for form in self.forms if name != '']
-        # will uncomment this when author fields are updated
+    def is_valid(self):
+        for form in self.forms:
+            pdb.set_trace()
 
 
 class PublicationForm(forms.ModelForm):

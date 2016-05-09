@@ -14,6 +14,27 @@
         </tr>
         </thead>
         <tbody>
+        {% if author_model_form %}
+            {% for form in author_model_form %}
+            <tr class="model-author">
+            {% for field in form.visible_fields %}
+                {% if field.errors %}
+                    <td>{{field|add_class:"form-error"}}</td>
+                {% else %}
+                    <td>{{field}}</td>
+                {% endif %}
+            {% endfor %}
+            <td>
+                <a class="btn btn-xs btn-danger model-author-delete" role="button" title="Delete">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </td>
+            {% for hidden in form.hidden_fields %}
+                {{hidden}}
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        {% endif %}
         {% for form in author_form %}
         <tr class="author">
             {% for field in form.visible_fields %}
@@ -35,5 +56,6 @@
         {% endfor %}
         </tbody>
     </table>
+    {{author_model_form.management_form}}
     {{author_form.management_form}}
 </div>

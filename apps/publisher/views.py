@@ -2,13 +2,15 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
-from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm
+from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
 import datetime
+import pprint
+import pdb
 
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type):
@@ -26,7 +28,6 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
     for model_id in models:
-        pdb.set_trace()
         model = Model.objects.get(id=model_id)
         ens = ensemble[model.id - 1]  # database index vs lists, so off by one
         pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
@@ -242,7 +243,7 @@ def edit(request, pubid):
             error = 'Error: You must be the owner of a submission to edit it.'
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
         pub_form = PublicationForm(request.POST or None, instance=pub_instance)
-        author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
+        author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all(), prefix='model_author')
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
             bookinstance = Book.objects.get(publication_id=pub_instance)
@@ -289,7 +290,7 @@ def edit(request, pubid):
         userid = request.user.id
         if userid == publication.submitter.id:
             pub_form = PublicationForm(instance=publication)
-            author_form = AuthorFormSet(queryset=authors)
+            author_model_form = AuthorFormSet(queryset=authors, prefix='model_author')
             if publication.publication_type == 0: # book
                 media_form = BookForm(instance=Book.objects.get(publication_id=publication))
             elif publication.publication_type == 1: # conference
@@ -313,10 +314,12 @@ def edit(request, pubid):
             var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
             ensemble_data = str([[value['model_id'], value['ensemble']] for value in
                              PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
+            formset = formset_factory(AuthorForm, extra=1)
+            author_form = formset()
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
                            'model_form': model_form, 'var_form': var_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                           'ensemble_data': ensemble_data,
+                           'ensemble_data': ensemble_data, 'author_model_form': author_model_form,
                            })
         else:
             entries = Publication.objects.filter(submitter=userid)
@@ -330,7 +333,8 @@ def new(request):
         return render(request, 'site/new_publication.html')
     elif request.method == 'POST':
         pub_type = request.POST.get('pub_type', '')
-        author_form_set = AuthorFormSet(request.POST)
+        formset = formset_factory(AuthorForm, extra=1)
+        author_form_set = formset(request.POST)
         all_forms = init_forms(author_form_set, request.POST)
         if pub_type == 'Book':
             pub_type = 0
@@ -384,11 +388,17 @@ def finddoi(request):
             url = doi
         else:
             url = "http://dx.doi.org/" + doi
-        r = requests.get(url, headers=headers)
-    if not empty and r.status_code == 200:
+        try:
+            r = requests.get(url, headers=headers)
+            status = r.status_code
+        except:
+            status = 500
+    if not empty and status == 200:
 
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(initial)
         if 'DOI' in initial.keys():
             doi = initial['DOI']
         else:
@@ -403,6 +413,7 @@ def finddoi(request):
             title = ''
         if 'URL' in initial.keys():
             url = requests.get(initial['URL'], stream=True, verify=False).url  # use llnl cert instead of verify=False
+            url = url.split(';')[0]
         else:
             url = ''
         if 'container-title' in initial.keys():
@@ -433,22 +444,30 @@ def finddoi(request):
                 publication_date = initial['created']['date-parts'][0][0]
             except:
                 publication_date = ''
+        elif 'issued' in initial.keys():
+            try:
+                publication_date = initial['issued']['raw']
+            except:
+                publication_date = ''
         else:
             publication_date = ''
         if 'author' in initial.keys():
             authors_list = []
+            formset = formset_factory(AuthorForm, extra=0)
             if 'given' in initial['author'][0].keys():
                 for author in initial['author']:
                     authors_list.append({'name': author['family'] + ', ' + author['given']})
-                author_form = AuthorFormSet(initial=authors_list)
+                author_form = formset(initial=authors_list)
             elif 'literal' in initial['author'][0].keys():
                 for author in initial['author']:
                     authors_list.append({'name': author['literal']})
-                author_form = AuthorFormSet(initial=authors_list)
+                author_form = formset(initial=authors_list)
             else:
-                author_form = AuthorFormSet(queryset=Author.objects.none())
+                formset = formset_factory(AuthorForm, extra=1)
+                author_form = formset()
         else:
-            author_form = AuthorFormSet(queryset=Author.objects.none())
+            formset = formset_factory(AuthorForm, extra=1)
+            author_form = formset()
 
         init = {'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
                 'publication_date': publication_date, 'volume_number': volume, 'issue': issue,}
@@ -476,8 +495,8 @@ def finddoi(request):
                        'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
                        'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form})
     else:
-        author_form = AuthorFormSet(queryset=Author.objects.none())
-        print author_form
+        formset = formset_factory(AuthorForm, extra=1)
+        author_form = formset()
         all_forms = init_forms(author_form)
         all_forms.update({'message': 'Unable to pre-fill form with the given DOI'})
         return render(request, 'site/publication_details.html', all_forms)
