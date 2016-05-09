@@ -12,6 +12,7 @@ import datetime
 import pprint
 import pdb
 
+
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type):
     publication = pub_form.save(commit=False)
@@ -50,6 +51,7 @@ def save_publication(pub_form, request, author_form_set, pub_type):
         obj.delete()
     return publication
 
+
 def init_forms(author_form, request=None, instance=None):
     # The author form is passed in seperately since it takes different arguments depending on the circumstances
     pub_form = PublicationForm(request, prefix='pub')
@@ -72,6 +74,7 @@ def init_forms(author_form, request=None, instance=None):
                        'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
                        'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form}
 
+
 def get_all_options():
     all_options = {}
     all_options['experiment'] = "Experiment"
@@ -85,7 +88,6 @@ def get_all_options():
     return all_options
 
 
-@login_required()
 def search(request):
     pubs = {}
     data = {}
@@ -211,11 +213,10 @@ def search(request):
 
         elif page_filter == 'year':
             now = datetime.datetime.now()
-            # TODO - filter by year not date
-            option = request.GET.get("option", str(now.strftime("%Y-%m-%d")))
-            pubs["option"] = request.GET.get("option", str(now.year))
-            publications = Publication.objects.filter(publication_date=option)
-
+            option = request.GET.get("option", str(now.year))
+            pubs["option"] = option
+            publications = Publication.objects.filter(publication_date__year=option)
+            # ToDo - finish here
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)
 

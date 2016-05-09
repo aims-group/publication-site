@@ -57,7 +57,6 @@ class Keyword(models.Model):
 class Model(models.Model):
     model = models.TextField()
 
-
     def __str__(self):
         return self.model
 
@@ -228,3 +227,10 @@ class Other(models.Model):
 
     def __str__(self):
         return self.other_pub
+
+
+class AvailableYears(models.Model):
+    year = models.IntegerField()
+
+    def __str__(self):
+        return self.year
