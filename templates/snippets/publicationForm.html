@@ -1,0 +1,12 @@
+<div id="pub_form" class="panel panel-default">
+    <div class="panel-heading"><span class="md-font">Publication Info</span></div>
+    <div class="panel-body">
+        {% for field in pub_form %}
+        <div class="publication-input">
+        {{ field.label_tag }}
+        {{ field.errors }}
+        {{ field }}
+        </div>
+    {% endfor %}
+    </div>
+</div>

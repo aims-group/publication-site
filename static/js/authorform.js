@@ -1,6 +1,3 @@
-
-
-
 function cloneMore(element) {
     var newElement = $(element).clone(true);
     var total = $('#id_form-TOTAL_FORMS').val();

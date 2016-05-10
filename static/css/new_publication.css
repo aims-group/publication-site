@@ -17,3 +17,7 @@
 .form-error {
     border: 1px solid red;
 }
+
+.publication-input {
+    display: block;
+}

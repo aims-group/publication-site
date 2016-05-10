@@ -7,9 +7,11 @@
             <th>Name <span class="text-hint"></span></th>
             <th>Institution</th>
             <th>
-                <a id="add_author" class="btn btn-xs btn-info " role="button" title="Add Author">
-                    <span class="glyphicon glyphicon-plus"></span>
-                </a>
+                <div class="text-center">
+                    <a id="add_author" class="btn btn-xs btn-info " role="button" title="Add Author">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                </div>
             </th>
         </tr>
         </thead>
@@ -24,9 +26,11 @@
                 {% endif %}
             {% endfor %}
             <td>
-                <a class="btn btn-xs btn-danger author-delete" role="button" title="Delete">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </a>
+                <div class="text-center">
+                    <a class="btn btn-xs btn-danger author-delete" role="button" title="Delete">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </div>
             </td>
             {% for hidden in form.hidden_fields %}
                 {{hidden}}

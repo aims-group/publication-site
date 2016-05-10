@@ -4,9 +4,7 @@
 {% endif %}
 <form action="/new" method="post">
     {% csrf_token %}
-    <div id="pub_form">
-        {{ pub_form }}
-    </div>
+    {% include "snippets/publicationForm.html" %}
     <div id="tabs" class="panel panel-default">
         <div class="panel-heading">
             <input id="pub_type" type="hidden" name="pub_type" value="Book">

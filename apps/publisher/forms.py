@@ -55,7 +55,7 @@ class AuthorFormSet(AuthorFormSetBase):
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['doi', 'title', 'url', 'status', 'project_number', 'task_number', 'publication_date', 'abstract']
+        fields = ['status', 'doi', 'title', 'url', 'project_number', 'task_number', 'publication_date', 'abstract']
         widgets = {
             'doi': forms.TextInput(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
@@ -63,7 +63,7 @@ class PublicationForm(forms.ModelForm):
             # 'status': forms.TextInput(attrs={'class': 'form-control'}),
             'project_number': forms.TextInput(attrs={'class': 'form-control'}),
             'task_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'publication_date': forms.TextInput(attrs={'class': 'form-control'}),
+            'publication_date': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "mm/dd/yyyy"}),
             'abstract': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
