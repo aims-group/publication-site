@@ -522,7 +522,7 @@ def ajax(request):
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
     citation =  pub.title + ". " + str(pub.publication_date) + ". " + pub.url
-    authors = ", ".join(["{author.title}. {author.last_name}, {author.first_name} {author.middle_name}".format(author=author) for author in pub.authors.all()])
+    authors = ", ".join(["{author.name}".format(author=author) for author in pub.authors.all()])
     citation = authors + ": " + citation
     json = "{\"key\": \"" + citation + "\"}"
     return HttpResponse(json)
