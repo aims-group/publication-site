@@ -2,24 +2,6 @@ $(document).ready(function(){
     $('#loading').hide();
 });
 
-$('#publication-form-wrapper').on('click', '#add_author', (function( event ) {
-    event.preventDefault();
-    cloneMore($('tr.author:last'));
-}));
-
-$('#publication-form-wrapper').on('click', '.author-delete', function( event ) {
-    event.preventDefault();
-    var total = $('#id_form-TOTAL_FORMS').val();
-    if(total > 1) {
-        var form = $(event.target).closest('.author');
-        $('#id_form-TOTAL_FORMS').val(total-1);
-        $(form).remove();
-    }
-    else {
-        alert('Publications must have at least 1 author.');
-    }
-});
-
 $( "#publication-form-wrapper" ).on( "tabscreate", '#tabs', function( event, ui ) {
     $('#tabs .active').removeClass('active');
     $(ui.tab).addClass('active');

@@ -540,3 +540,13 @@ def ajax_more_info(request, pub_id):
     moreinfo = experiments + "|" + model + "|" + variables + "|" + keywords
     json = "{\"key\": \"" + moreinfo + "\"}"
     return HttpResponse(json)
+
+def ajax_prefetch_authors(request):
+    authors = Author.objects.all().values_list('name', 'institution').distinct()[:250] #limit to 250 entries
+    authors = [{'name': author[0], 'institution': author[1]} for author in authors]
+    return JsonResponse(authors, safe=False)
+
+def ajax_all_authors(request):
+    authors = Author.objects.all().values_list('name', 'institution').distinct()
+    authors = [{'name': author[0], 'institution': author[1]} for author in authors]
+    return JsonResponse(authors, safe=False)
