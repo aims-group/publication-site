@@ -15,7 +15,6 @@ $(function() {
     });
 
 
-
     $('.typeahead-a').typeahead({
         hint: true,
         highlight: true,
