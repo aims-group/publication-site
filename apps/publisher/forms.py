@@ -42,8 +42,8 @@ class AuthorForm(forms.ModelForm):
         model = Author
         fields = '__all__'
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'institution': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control typeahead-a'}),
+            'institution': forms.TextInput(attrs={'class': 'form-control typeahead-i'}),
         }
 
 AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=1)

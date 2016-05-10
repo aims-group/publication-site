@@ -41,7 +41,6 @@ def save_publication(pub_form, request, author_form_set, pub_type):
     for authorform in author_form_set:
         form_is_filled = True
         if not authorform['name'].data:
-            
             form_is_filled = False
         if form_is_filled:
             author = authorform.save()
@@ -534,3 +533,16 @@ def ajax_more_info(request, pub_id):
     moreinfo = experiments + "|" + model + "|" + variables + "|" + keywords
     json = "{\"key\": \"" + moreinfo + "\"}"
     return HttpResponse(json)
+
+
+def get_authors(request):
+    authors = Author.objects.all().values_list('name', 'institution').distinct()
+    authors = [{'name': author[0], 'institution': author[1]} for author in authors]
+    return JsonResponse(authors, safe=False)
+
+
+def get_institutions(request):
+    inst = Author.objects.all().values_list('institution').distinct()
+    print inst
+    inst = [inst[0] for inst in inst]
+    return JsonResponse(inst, safe=False)

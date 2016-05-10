@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^ajax/?$', views.ajax),
     url(r'^ajax/citation/(?P<pub_id>\d+)/$', views.ajax_citation),
     url(r'^ajax/moreinfo/(?P<pub_id>\d+)/$', views.ajax_more_info),
+    url(r'^ajax/data/authors/$', views.get_authors),
+    url(r'^ajax/data/institutions/$', views.get_institutions),
 ]
