@@ -1,5 +1,6 @@
 $(function() {
-    emptyform = $('tr.author:last');
+    emptyform = $('tr.author:last').clone(true);
+    num = parseInt($('#id_form-TOTAL_FORMS').val())-1;
     authors = new Bloodhound({
     datumTokenizer: function(datum) {
         var nameTokens = Bloodhound.tokenizers.whitespace(datum.name);
@@ -13,33 +14,16 @@ $(function() {
         cache: false
         }
     });
-
-
-    $('.typeahead-a').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 1
-    },
-    {
-        name: 'authors',
-        source: authors,
-        displayKey: 'name',
-        templates: {
-            suggestion: function(data){
-                return '<p>' + data.name + ' - <em>' + data.institution + '</em></p>';
-            }
-        }
-    });
+    init_typeahead();
 });
 
 $('#author-form').on('typeahead:select', '.author-name', function(obj, datum, name) {
-    console.log($(this));
     $(this).closest('td').next('').find(':input').val(datum.institution);
 });
 
 $('#add_author').click(function( event ) {
     event.preventDefault();
-    cloneMore(emptyform);
+    cloneMore(emptyform, num);
 });
 
 $('#author-form').on('click', '.author-delete', function( event ) {
@@ -63,39 +47,40 @@ $('#author-form').on('click', '.author-delete', function( event ) {
 });
 
 
-function cloneMore(element) {
+function cloneMore(element, num) {
+    $('.typeahead-a').typeahead('destroy');
     var newElement = $(element).clone(true);
     var total = $('#id_form-TOTAL_FORMS').val();
-    newElement.find('#id_form-'+ total-1 +'-DELETE').closest('td').remove()
+    newElement.find('#id_form-'+ num +'-DELETE').closest('td').remove();
     newElement.find(':input').each(function() {
-        var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
-        console.log($(this).val());
-        var id = 'id_' + name;
-        $(this).attr({'name': name, 'id': id, "value": ''}).val('').removeAttr('checked');
+            var name = $(this).attr('name').replace('-' + (num) + '-','-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({'name': name, 'id': id, "value": ''}).val('').removeAttr('checked');
     });
     newElement.find('label').each(function() {
-        var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+        var newFor = $(this).attr('for').replace('-' + (num) + '-','-' + total + '-');
         $(this).attr('for', newFor);
     });
     total++;
     $('#id_form-TOTAL_FORMS').val(total);
     $('#author-form tr:last').after(newElement);
+    init_typeahead();
 }
 
-
-
-//var institutions = new Bloodhound({
-//datumTokenizer: Bloodhound.tokenizers.whitespace,
-//queryTokenizer: Bloodhound.tokenizers.whitespace,
-//prefetch: '../ajax/data/institutions/'
-//});
-//
-//$('.typeahead-i').typeahead({
-//    hint: true,
-//    highlight: true,
-//    minLength: 1
-//},
-//{
-//    name: 'institutions',
-//    source: institutions
-//});
+function init_typeahead() {
+    $('.typeahead-a').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: 'authors',
+        source: authors,
+        displayKey: 'name',
+        templates: {
+            suggestion: function(data){
+                return '<p>' + data.name + ' - <em>' + data.institution + '</em></p>';
+            }
+        }
+    });
+}
