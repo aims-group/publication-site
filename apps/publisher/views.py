@@ -513,6 +513,8 @@ def finddoi(request):
         all_forms.update({'message': 'Unable to pre-fill form with the given DOI'})
         return render(request, 'site/publication_details.html', all_forms)
 
+def viz(request):
+    return render(request, 'site/viz.html')
 
 # ajax
 def ajax(request):
