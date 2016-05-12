@@ -7,4 +7,4 @@ static/scripts/db_settings.py
 .idea/
 apps/publisher/migrations/
 .DS_store
-
+static/js/network-graph.json

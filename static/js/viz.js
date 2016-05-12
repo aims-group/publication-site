@@ -8,23 +8,29 @@ var focus_node = null, highlight_node = null;
 var text_center = false;
 var outline = false;
 
-var min_score = 0;
-var max_score = 1;
+var colorRange = ["lime", "yellow", "red", "cyan", "purple"];
+var facetName = ['Experiment', 'Frequency', 'Keyword', 'Model', 'Variable ']
+var color = d3.scale.ordinal()
+  .domain([0,1,2,3,4])
+  .range(colorRange);
 
-var color = d3.scale.linear()
-  .domain([min_score, (min_score+max_score)/2, max_score])
-  .range(["lime", "yellow", "red"]);
+var elem = $('ul.network-graph-legend');
+$.each(colorRange, function(i, color){
+    var span = $('<span/>', {'class': "legend-box"}).css('background-color', color);
+    var newelem = $('<li/>').append(span).append(facetName[i]);
+    $(elem).append(newelem);
+});
 
 var highlight_color = "blue";
 var highlight_trans = 0.1;
 
 var size = d3.scale.pow().exponent(1)
-  .domain([1,100])
-  .range([8,24]);
+  .domain([1,1000])
+  .range([8,200]);
 
 var force = d3.layout.force()
-  .linkDistance(60)
-  .charge(-4000)
+  .linkDistance(100)
+  .charge(-6000)
   .size([w,h]);
 
 var default_node_color = "#ccc";

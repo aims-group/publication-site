@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^edit/(\d+)', views.edit, name='edit'),
     url(r'^delete/(\d+)', views.delete, name='delete'),
     url(r'^viz/', views.viz, name='viz'),
+    url(r'^network-graph/', views.network_graph, name='network_graph'),
     url(r'^ajax/?$', views.ajax),
     url(r'^ajax/citation/(?P<pub_id>\d+)/$', views.ajax_citation),
     url(r'^ajax/moreinfo/(?P<pub_id>\d+)/$', views.ajax_more_info),

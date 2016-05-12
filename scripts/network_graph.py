@@ -4,12 +4,6 @@ import json
 import pprint
 import pdb
 
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
-
 def init_graph():
     publications = Publication.objects.all()
     nodes = []
@@ -30,7 +24,7 @@ def init_graph():
         for frequency in publication.frequency.all():
             if not str(frequency) in lookupdict.keys():
                 size = Publication.frequency.through.objects.filter(frequency_id=frequency.id).count()
-                exp = {'size': size, 'score': 0, 'id': str(frequency), 'type': "circle", 'facet_type': 'frequency'}
+                exp = {'size': size, 'score': 1, 'id': str(frequency), 'type': "circle", 'facet_type': 'frequency'}
                 nodes.append(exp)
                 lookupdict.update({str(frequency): len(nodes) - 1})
             pair_list.append(lookupdict[str(frequency)])
@@ -38,7 +32,7 @@ def init_graph():
         for keyword in publication.keywords.all():
             if not str(keyword) in lookupdict.keys():
                 size = Publication.keywords.through.objects.filter(keyword_id=keyword.id).count()
-                exp = {'size': size, 'score': 0, 'id': str(keyword), 'type': "circle", 'facet_type': 'keyword'}
+                exp = {'size': size, 'score': 2, 'id': str(keyword), 'type': "circle", 'facet_type': 'keyword'}
                 nodes.append(exp)
                 lookupdict.update({str(keyword): len(nodes) - 1})
             pair_list.append(lookupdict[str(keyword)])
@@ -46,7 +40,7 @@ def init_graph():
         for model in publication.model.all():
             if not str(model) in lookupdict.keys():
                 size = Publication.model.through.objects.filter(model_id=model.id).count()
-                exp = {'size': size, 'score': 0, 'id': str(model), 'type': "circle", 'facet_type': 'model'}
+                exp = {'size': size, 'score': 3, 'id': str(model), 'type': "circle", 'facet_type': 'model'}
                 nodes.append(exp)
                 lookupdict.update({str(model): len(nodes) - 1})
             pair_list.append(lookupdict[str(model)])
@@ -54,7 +48,7 @@ def init_graph():
         for variable in publication.variables.all():
             if not str(variable) in lookupdict.keys():
                 size = Publication.variables.through.objects.filter(variable_id=variable.id).count()
-                exp = {'size': size, 'score': 0, 'id': str(variable), 'type': "circle", 'facet_type': 'variable'}
+                exp = {'size': size, 'score': 4, 'id': str(variable), 'type': "circle", 'facet_type': 'variable'}
                 nodes.append(exp)
                 lookupdict.update({str(variable): len(nodes) - 1})
             pair_list.append(lookupdict[str(variable)])
@@ -69,5 +63,5 @@ def init_graph():
         "multigraph": False
     }
 
-    with open('static/js/debugme.json', 'w') as outfile:
+    with open('static/js/network-graph.json', 'w') as outfile:
         json.dump(data, outfile)

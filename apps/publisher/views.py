@@ -516,6 +516,9 @@ def finddoi(request):
 def viz(request):
     return render(request, 'site/viz.html')
 
+def network_graph(request):
+    return render(request, 'site/network-graph.html')
+
 # ajax
 def ajax(request):
     return HttpResponseRedirect("/search?type='all'")

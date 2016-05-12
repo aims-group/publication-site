@@ -2,21 +2,9 @@
 {% block title %} Viz {% endblock %}
 
 {% block content %}
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<style>
-
-.node {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
-
-</style>
-
-<script type="text/javascript" src="/static/js/viz.js"></script>
-
+<div class="container text-center">
+    <iframe class="network-graph " src="/network-graph" scrolling="no"></iframe>
+    <a href="/network-graph">Full Screen</a>
+</div>
+<link href="/static/css/statistics.css" rel="stylesheet">
 {% endblock %}
