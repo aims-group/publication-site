@@ -18,3 +18,8 @@ new CMDIP6 Publication reporting site
      > data_load()
     python manage.py runserver
 
+To prevent unnecessary server load, the network graph reads from a static json file.
+Create and update the json file by running the following commands:
+    python manage.py shell
+    > from scripts.network_graph import init_graph
+    > init_graph()

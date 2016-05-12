@@ -24,7 +24,7 @@ var size = d3.scale.pow().exponent(1)
 
 var force = d3.layout.force()
   .linkDistance(60)
-  .charge(-300)
+  .charge(-4000)
   .size([w,h]);
 
 var default_node_color = "#ccc";
@@ -43,7 +43,7 @@ var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
 
-d3.json("../static/js/debugme.txt", function(error, graph) {
+d3.json("../static/js/network-graph.json", function(error, graph) {
 
 var linkedByIndex = {};
     graph.links.forEach(function(d) {
