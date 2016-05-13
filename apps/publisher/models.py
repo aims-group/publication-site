@@ -94,7 +94,7 @@ class Author(models.Model):
     institution = models.TextField()
 
     def __str__(self):
-        return " ".join((AUTHOR_TITLE_CHOICE[int(self.title)][1], self.first_name, self.middle_name, self.last_name))
+        return self.name
 
 
 class Publication(models.Model):

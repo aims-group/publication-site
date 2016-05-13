@@ -8,7 +8,7 @@ var focus_node = null, highlight_node = null;
 var text_center = false;
 var outline = false;
 
-var colorRange = ["lime", "yellow", "red", "cyan", "purple"];
+var colorRange = ["red", "orange", "yellow", "green", "blue"];
 var facetName = ['Experiment', 'Frequency', 'Keyword', 'Model', 'Variable ']
 var color = d3.scale.ordinal()
   .domain([0,1,2,3,4])
@@ -25,12 +25,12 @@ var highlight_color = "blue";
 var highlight_trans = 0.1;
 
 var size = d3.scale.pow().exponent(1)
-  .domain([1,1000])
-  .range([8,200]);
+  .domain([1,4000])
+  .range([8,80]);
 
 var force = d3.layout.force()
-  .linkDistance(100)
-  .charge(-6000)
+  .linkDistance(300)
+  .charge(-2500)
   .size([w,h]);
 
 var default_node_color = "#ccc";
@@ -78,6 +78,7 @@ var linkedByIndex = {};
     .enter().append("line")
     .attr("class", "link")
 	.style("stroke-width",nominal_stroke)
+	.style("opacity", .4)
 	.style("stroke", function(d) {
 	if (isNumber(d.score) && d.score>=0) return color(d.score);
 	else return default_link_color; })
@@ -163,7 +164,7 @@ var linkedByIndex = {};
 
 		circle.style("opacity", 1);
 	  text.style("opacity", 1);
-	  link.style("opacity", 1);
+	  link.style("opacity", .5);
 	}
 		}
 

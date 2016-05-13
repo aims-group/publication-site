@@ -1,10 +1,12 @@
 {% extends "base.html" %}
-{% block title %} Viz {% endblock %}
+{% block title %} Statistics {% endblock %}
 
 {% block content %}
-<div class="container text-center">
+<div class="container-fluid text-center">
     <iframe class="network-graph " src="/network-graph" scrolling="no"></iframe>
     <a href="/network-graph">Full Screen</a>
 </div>
 <link href="/static/css/statistics.css" rel="stylesheet">
+
+
 {% endblock %}

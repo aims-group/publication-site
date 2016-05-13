@@ -2,8 +2,8 @@
 new CMDIP6 Publication reporting site
 
     virtualenv2 env
-    soruce env/bin/activate
-    pip install -r requirments.txt
+    source env/bin/activate
+    pip install -r requirements.txt
     python manage.py makemigrations
     python manage.py makemigrations publisher
     python manage.py migrate
@@ -13,13 +13,11 @@ new CMDIP6 Publication reporting site
      > email:
      > password:
      > password:
-    python manage.py shell
-     > from scripts.data_load import data_load
-     > data_load()
+    python manage.py load_data
     python manage.py runserver
 
 To prevent unnecessary server load, the network graph reads from a static json file.
-Create and update the json file by running the following commands:
-    python manage.py shell
-    > from scripts.network_graph import init_graph
-    > init_graph()
+Create and update the json file by running the following command:
+    python manage.py createjson
+
+It is recommended that this command be set up to run nightly (via a cron job for example).

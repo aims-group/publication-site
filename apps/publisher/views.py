@@ -513,8 +513,8 @@ def finddoi(request):
         all_forms.update({'message': 'Unable to pre-fill form with the given DOI'})
         return render(request, 'site/publication_details.html', all_forms)
 
-def viz(request):
-    return render(request, 'site/viz.html')
+def statistics(request):
+    return render(request, 'site/statistics.html')
 
 def network_graph(request):
     return render(request, 'site/network-graph.html')
