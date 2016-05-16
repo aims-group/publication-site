@@ -14,11 +14,12 @@ class Command(BaseCommand):
         nodes = []
         links = []
         lookupdict = {}
+        stats = {}
         pp = pprint.PrettyPrinter(indent=4)
         max_size = 1
         for publication in publications:
             pair_list = []
-
+            temp_count = []
             for experiment in publication.experiments.all():
                 if not str(experiment) in lookupdict.keys():
                     size = Publication.experiments.through.objects.filter(experiment_id=experiment.id).count()
@@ -27,6 +28,7 @@ class Command(BaseCommand):
                     nodes.append(exp)
                     lookupdict.update({str(experiment): len(nodes) - 1})
                 pair_list.append(lookupdict[str(experiment)])
+                temp_count.append(str(experiment))
 
             for frequency in publication.frequency.all():
                 if not str(frequency) in lookupdict.keys():
@@ -36,6 +38,7 @@ class Command(BaseCommand):
                     nodes.append(exp)
                     lookupdict.update({str(frequency): len(nodes) - 1})
                 pair_list.append(lookupdict[str(frequency)])
+                temp_count.append(str(frequency))
 
             for keyword in publication.keywords.all():
                 if not str(keyword) in lookupdict.keys():
@@ -45,6 +48,7 @@ class Command(BaseCommand):
                     nodes.append(exp)
                     lookupdict.update({str(keyword): len(nodes) - 1})
                 pair_list.append(lookupdict[str(keyword)])
+                temp_count.append(str(keyword))
 
             for model in publication.model.all():
                 if not str(model) in lookupdict.keys():
@@ -54,6 +58,8 @@ class Command(BaseCommand):
                     nodes.append(exp)
                     lookupdict.update({str(model): len(nodes) - 1})
                 pair_list.append(lookupdict[str(model)])
+                temp_count.append(str(model))
+
 
             for variable in publication.variables.all():
                 if not str(variable) in lookupdict.keys():
@@ -63,6 +69,17 @@ class Command(BaseCommand):
                     nodes.append(exp)
                     lookupdict.update({str(variable): len(nodes) - 1})
                 pair_list.append(lookupdict[str(variable)])
+                temp_count.append(str(variable))
+
+            for source in temp_count:
+                for target in temp_count:
+                    if not source == target:
+                        if source not in stats.keys():
+                            stats[source] = {}
+                        if target not in stats[source]:
+                            stats[source][target] = 0
+                        stats[source][target] += 1
+
 
             links = links + [{"source": comb[0], "target": comb[1]} for comb in combinations(pair_list, 2)]
 
@@ -71,6 +88,7 @@ class Command(BaseCommand):
             "graph": [],
             "links": links,
             "nodes": nodes,
+            "stats": stats,
             "directed": False,
             "multigraph": False
         }

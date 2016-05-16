@@ -1,5 +1,5 @@
 var w = window.innerWidth;
-var h = window.innerHeight;
+var h = (window.innerHeight);
 
 var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true
 
@@ -8,7 +8,7 @@ var focus_node = null, highlight_node = null;
 var text_center = false;
 var outline = false;
 
-var colorRange = ["red", "orange", "yellow", "green", "blue"];
+var colorRange = ["#800000", "#808000", "#008000", "#008080" ,"#000080"];
 var facetName = ['Experiment', 'Frequency', 'Keyword', 'Model', 'Variable ']
 var color = d3.scale.ordinal()
   .domain([0,1,2,3,4])
@@ -20,6 +20,7 @@ $.each(colorRange, function(i, color){
     var newelem = $('<li/>').append(span).append(facetName[i]);
     $(elem).append(newelem);
 });
+
 
 var highlight_color = "blue";
 var highlight_trans = 0.1;
@@ -44,7 +45,7 @@ var max_stroke = 4.5;
 var max_base_node_size = 36;
 var min_zoom = 0.1;
 var max_zoom = 7;
-var svg = d3.select("body").append("svg");
+var svg = d3.select("#svg-container").append("svg");
 var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
 var g = svg.append("g");
 svg.style("cursor","move");
@@ -201,6 +202,16 @@ if (highlight_trans<1)  {
             link.style("opacity", function(o) {
                 return o.source.index == d.index || o.target.index == d.index ? 1 : highlight_trans;
             });
+
+            stats_name = d.id;
+            var new_list = []
+            $.each(graph.stats[d.id], function(name, count){
+                new_list.push(name + ': ' + count);
+            });
+            parent.data.name = d.id;
+            parent.data.list = new_list;
+
+
 	}
 }
 

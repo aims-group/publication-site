@@ -18,6 +18,7 @@ new CMDIP6 Publication reporting site
 
 To prevent unnecessary server load, the network graph reads from a static json file.
 Create and update the json file by running the following command:
+
     python manage.py createjson
 
 It is recommended that this command be set up to run nightly (via a cron job for example).

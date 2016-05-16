@@ -3,10 +3,15 @@
 
 {% block content %}
 <div class="container-fluid text-center">
-    <iframe class="network-graph " src="/network-graph" scrolling="no"></iframe>
+    <iframe id="network-graph" src="/network-graph" scrolling="no"></iframe>
     <a href="/network-graph">Full Screen</a>
 </div>
+<div>
+    <span id="click-id"></span>
+    <ul id="click-stats"></ul>
+</div>
 <link href="/static/css/statistics.css" rel="stylesheet">
-
+<script src="/static/js/bind.js"></script>
+<script src="/static/js/statistics.js"></script>
 
 {% endblock %}
