@@ -206,7 +206,7 @@ if (highlight_trans<1)  {
             stats_name = d.id;
             var new_list = []
             $.each(graph.stats[d.id], function(name, count){
-                new_list.push(name + ': ' + count);
+                new_list.push({"name": name,  "count": count });
             });
             parent.data.name = d.id;
             parent.data.list = new_list;

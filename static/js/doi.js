@@ -32,6 +32,7 @@ function doisearch(showform) {
                 newelem = $('<input/>');
                 $(newelem).attr('id', 'ensemble_'+index);
                 $(newelem).attr('name', 'ensemble');
+                $(newelem).attr('type', 'number');
                 $(element).after(newelem);
             });
             if (showform === true) {
@@ -66,6 +67,7 @@ function submitPublication() {
             newelem = $('<input/>');
             $(newelem).attr('id', 'ensemble_'+index);
             $(newelem).attr('name', 'ensemble');
+            $(newelem).attr('type', 'number');
             $(newelem).val(ensemble[index]);
             $(element).after(newelem);
         });

@@ -36,7 +36,7 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
         model = Model.objects.get(id=model_id)
         ens = ensemble[model.id - 1]  # database index vs lists, so off by one
         pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
-        if ens: # Enforce that experiments must have an ensemble
+        if ens and ens.isdigit(): # Enforce that experiments must have an ensemble
             if pubmodel:
                 pubmodel[0].ensemble = int(ens)
                 pubmodel[0].save()
@@ -433,7 +433,10 @@ def finddoi(request):
         else:
             container_title = ''
         if 'page' in initial.keys():
-            startpage, endpage = str(initial['page']).split('-')
+            try:
+                startpage, endpage = str(initial['page']).split('-')
+            except:
+                startpage = endpage = initial['page']
         else:
             startpage = ''
             endpage = ''
