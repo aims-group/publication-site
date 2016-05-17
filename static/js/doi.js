@@ -11,7 +11,19 @@ $( "#publication-form-wrapper" ).on( "tabscreate", '#tabs', function( event, ui 
 $( "#publication-form-wrapper" ).on( "tabsactivate", '#tabs', function( event, ui ) {
         $(ui.oldTab).removeClass('active');
         $(ui.newTab).addClass('active');
-        $('#pub_type').val($(ui.newTab).text());
+
+});
+
+$( "#publication-form-wrapper" ).on( "tabscreate", '#meta-tabs', function( event, ui ) {
+    $('#meta-tabs .active').removeClass('active');
+    $(ui.tab).addClass('active');
+    $('#pub_type').val($(ui.tab).text());
+});
+
+$( "#publication-form-wrapper" ).on( "tabsactivate", '#meta-tabs', function( event, ui ) {
+        $(ui.oldTab).removeClass('active');
+        $(ui.newTab).addClass('active');
+
 });
 
 function doisearch(showform) {
@@ -50,6 +62,7 @@ function doisearch(showform) {
 function submitPublication() {
     var ensemble = []
     var active = $( "#tabs" ).tabs( "option", "active" );
+    var metaActive = $( "#meta-tabs" ).tabs( "option", "active" );
     $.each($("#id_model input[name='ensemble']"), function(index, element){
         ensemble[index] = $(element).val()
     });
@@ -77,6 +90,7 @@ function submitPublication() {
 
 function setUpForm(active = 0) {
     $( "#tabs" ).tabs({ active: active });
+    $( "#meta-tabs" ).tabs({ active: active });
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
     for(i=0; i < count; i++) {
         $('#id_form-' + i + '-DELETE').closest('td').remove();

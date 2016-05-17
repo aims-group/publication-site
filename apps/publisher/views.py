@@ -496,19 +496,24 @@ def finddoi(request):
         presentation_form = PresentationForm(prefix='pres')
         technical_form = TechnicalReportForm(prefix='tech')
         other_form = OtherForm(prefix='other')
-        exp_form = ExperimentForm()
-        freq_form = FrequencyForm()
-        keyword_form = KeywordForm()
-        model_form = ModelForm()
-        var_form = VariableForm()
+        meta_form = []
+        for project in Project.objects.all():
+            meta_form.append({
+                'name': str(project),
+                'exp_form': ExperimentForm(queryset=project.experiments),
+                'freq_form': FrequencyForm(queryset=project.frequencies),
+                'keyword_form': KeywordForm(queryset=project.keywords),
+                'model_form': ModelForm(queryset=project.models),
+                'var_form': VariableForm(queryset=project.variables),
+            })
+
         return render(request, 'site/publication_details.html',
                       {'pub_form': pub_form, 'author_form': author_form,
                        'book_form': book_form,
                        'conference_form': conference_form,
                        'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
                        'presentation_form': presentation_form, 'technical_form': technical_form,
-                       'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-                       'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form})
+                       'other_form': other_form, 'meta_form': meta_form})
     else:
         formset = formset_factory(AuthorForm, extra=1)
         author_form = formset()

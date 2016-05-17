@@ -178,6 +178,12 @@ class OtherForm(forms.ModelForm):
 class ExperimentForm(forms.ModelForm):
     experiment = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
     # The ensemble inputs are located in the doi.js file. Getting the same behavior with django is a ton more work.
+
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(ExperimentForm, self).__init__(*args, **kwargs)
+        self.fields['experiment'].queryset = queryset
+
     class Meta:
         model = Experiment
         fields = '__all__'
@@ -187,6 +193,11 @@ class ExperimentForm(forms.ModelForm):
 class FrequencyForm(forms.ModelForm):
     frequency = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Frequency.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(FrequencyForm, self).__init__(*args, **kwargs)
+        self.fields['frequency'].queryset = queryset
+
     class Meta:
         model = Frequency
         fields = '__all__'
@@ -194,7 +205,13 @@ class FrequencyForm(forms.ModelForm):
 
 
 class KeywordForm(forms.ModelForm):
+
     keyword = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Keyword.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(KeywordForm, self).__init__(*args, **kwargs)
+        self.fields['keyword'].queryset = queryset
 
     class Meta:
         model = Keyword
@@ -205,6 +222,11 @@ class KeywordForm(forms.ModelForm):
 class ModelForm(forms.ModelForm):
     model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.fields['model'].queryset = queryset
+
     class Meta:
         model = Model
         fields = '__all__'
@@ -213,6 +235,11 @@ class ModelForm(forms.ModelForm):
 
 class VariableForm(forms.ModelForm):
     variable = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Variable.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(VariableForm, self).__init__(*args, **kwargs)
+        self.fields['variable'].queryset = queryset
 
     class Meta:
         model = Variable
