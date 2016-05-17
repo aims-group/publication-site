@@ -2,8 +2,7 @@ from django.core.management import BaseCommand
 from publisher.models import Experiment, Frequency, Keyword, Model, Variable, Publication
 from itertools import combinations
 import json
-import pprint
-import pdb
+
 
 class Command(BaseCommand):
     help = "Creates static json files "
@@ -15,7 +14,6 @@ class Command(BaseCommand):
         links = []
         lookupdict = {}
         stats = {}
-        pp = pprint.PrettyPrinter(indent=4)
         max_size = 1
         for publication in publications:
             pair_list = []

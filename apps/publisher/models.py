@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models as django_models
 from django.contrib.auth.models import User
 
 AUTHOR_TITLE_CHOICE = (
@@ -33,89 +33,94 @@ PUBLICATION_STATUS_CHOICE = (
 )
 
 
-class Experiment(models.Model):
-    experiment = models.TextField()
+class Experiment(django_models.Model):
+    experiment = django_models.TextField()
 
     def __str__(self):
         return self.experiment
 
 
-class Frequency(models.Model):
-    frequency = models.TextField()
+class Frequency(django_models.Model):
+    frequency = django_models.TextField()
 
     def __str__(self):
         return self.frequency
 
 
-class Keyword(models.Model):
-    keyword = models.TextField()
+class Keyword(django_models.Model):
+    keyword = django_models.TextField()
 
     def __str__(self):
         return self.keyword
 
 
-class Model(models.Model):
-    model = models.TextField()
+class Model(django_models.Model):
+    model = django_models.TextField()
 
     def __str__(self):
         return self.model
 
 
-class Variable(models.Model):
-    variable = models.TextField()
+class Variable(django_models.Model):
+    variable = django_models.TextField()
 
     def __str__(self):
         return self.variable
 
 
-class Project(models.Model):
-    project = models.TextField()
+class Project(django_models.Model):
+    project = django_models.TextField()
+    variables = django_models.ManyToManyField(Variable)
+    frequencies = django_models.ManyToManyField(Frequency)
+    models = django_models.ManyToManyField(Model)
+    experiments = django_models.ManyToManyField(Experiment)
+    keywords = django_models.ManyToManyField(Keyword)
 
     def __str__(self):
         return self.project
 
 
-class JournalOptions(models.Model):
-    journal = models.TextField()
+class JournalOptions(django_models.Model):
+    journal = django_models.TextField()
 
     def __str__(self):
         return self.journal
 
 
-class Funding(models.Model):
-    funding = models.TextField()
+class Funding(django_models.Model):
+    funding = django_models.TextField()
 
     def __str__(self):
         return self.funding
 
 
-class Author(models.Model):
-    name = models.TextField()
-    institution = models.TextField()
+class Author(django_models.Model):
+    name = django_models.TextField()
+    institution = django_models.TextField()
 
     def __str__(self):
         return self.name
 
 
-class Publication(models.Model):
-    publication_type = models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
-    status = models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
-    submitter = models.ForeignKey(User)
-    title = models.TextField()
-    projects = models.ManyToManyField(Project)
-    funding = models.ManyToManyField(Funding)
-    project_number = models.TextField()
-    task_number = models.TextField()
-    authors = models.ManyToManyField(Author, blank=False)
-    publication_date = models.DateField()
-    url = models.URLField()
-    doi = models.TextField()
-    abstract = models.TextField()
-    experiments = models.ManyToManyField(Experiment)
-    frequency = models.ManyToManyField(Frequency)
-    keywords = models.ManyToManyField(Keyword)
-    model = models.ManyToManyField(Model, through='PubModels')
-    variables = models.ManyToManyField(Variable)
+class Publication(django_models.Model):
+    publication_type = django_models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
+    status = django_models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
+    submitter = django_models.ForeignKey(User)
+    title = django_models.TextField()
+    projects = django_models.ManyToManyField(Project)
+    funding = django_models.ManyToManyField(Funding)
+    project_number = django_models.TextField()
+    task_number = django_models.TextField()
+    authors = django_models.ManyToManyField(Author, blank=False)
+    publication_date = django_models.DateField()
+    url = django_models.URLField()
+    doi = django_models.TextField()
+    abstract = django_models.TextField()
+    experiments = django_models.ManyToManyField(Experiment)
+    frequency = django_models.ManyToManyField(Frequency)
+    keywords = django_models.ManyToManyField(Keyword)
+    model = django_models.ManyToManyField(Model, through='PubModels')
+    variables = django_models.ManyToManyField(Variable)
 
     def __str__(self):
         return self.title
@@ -133,104 +138,104 @@ class Publication(models.Model):
         return self.publication_date.year
 
 
-class PubModels(models.Model):
-    publication = models.ForeignKey(Publication)
-    model = models.ForeignKey(Model)
-    ensemble = models.IntegerField()
+class PubModels(django_models.Model):
+    publication = django_models.ForeignKey(Publication)
+    model = django_models.ForeignKey(Model)
+    ensemble = django_models.IntegerField()
 
 
-class Book(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    book_name = models.TextField()
-    chapter_title = models.TextField()
-    start_page = models.TextField()
-    end_page = models.TextField()
-    editor = models.TextField()
-    city_of_publication = models.TextField()
-    publisher = models.TextField()
+class Book(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    book_name = django_models.TextField()
+    chapter_title = django_models.TextField()
+    start_page = django_models.TextField()
+    end_page = django_models.TextField()
+    editor = django_models.TextField()
+    city_of_publication = django_models.TextField()
+    publisher = django_models.TextField()
 
     def __str__(self):
         return self.book_name
 
 
-class Conference(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    conference_name = models.TextField()
-    conference_serial_number = models.TextField()
-    event_location = models.TextField()
-    start_page = models.TextField()
-    end_page = models.TextField()
-    editor = models.TextField()
-    city_of_publication = models.TextField()
-    publisher = models.TextField()
+class Conference(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    conference_name = django_models.TextField()
+    conference_serial_number = django_models.TextField()
+    event_location = django_models.TextField()
+    start_page = django_models.TextField()
+    end_page = django_models.TextField()
+    editor = django_models.TextField()
+    city_of_publication = django_models.TextField()
+    publisher = django_models.TextField()
 
     def __str__(self):
         return self.conference_name
 
 
-class Journal(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    journal_name = models.TextField()
-    editor = models.TextField()
-    volume_number = models.TextField()
-    article_number = models.TextField()
-    start_page = models.TextField()
-    end_page = models.TextField()
+class Journal(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    journal_name = django_models.TextField()
+    editor = django_models.TextField()
+    volume_number = django_models.TextField()
+    article_number = django_models.TextField()
+    start_page = django_models.TextField()
+    end_page = django_models.TextField()
 
     def __str__(self):
         return self.journal_name
 
 
-class Magazine(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    magazine_name = models.TextField()
-    editor = models.TextField()
-    volume_number = models.TextField()
-    article_number = models.TextField()
-    start_page = models.TextField()
-    end_page = models.TextField()
+class Magazine(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    magazine_name = django_models.TextField()
+    editor = django_models.TextField()
+    volume_number = django_models.TextField()
+    article_number = django_models.TextField()
+    start_page = django_models.TextField()
+    end_page = django_models.TextField()
 
     def __str__(self):
         return self.magazine_name
 
 
-class Poster(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    poster_title = models.TextField()
-    event = models.TextField()
+class Poster(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    poster_title = django_models.TextField()
+    event = django_models.TextField()
 
     def __str__(self):
         return self.poster_title
 
 
-class Presentation(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    presentation_title = models.TextField()
+class Presentation(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    presentation_title = django_models.TextField()
 
     def __str__(self):
         return self.presentation_title
 
 
-class TechnicalReport(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    report_number = models.TextField()
-    editor = models.TextField()
-    issuer = models.TextField()
+class TechnicalReport(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    report_number = django_models.TextField()
+    editor = django_models.TextField()
+    issuer = django_models.TextField()
 
     def __str__(self):
         return self.title
 
 
-class Other(models.Model):
-    publication_id = models.ForeignKey(Publication)
-    other_pub = models.TextField()
+class Other(django_models.Model):
+    publication_id = django_models.ForeignKey(Publication)
+    other_pub = django_models.TextField()
 
     def __str__(self):
         return self.other_pub
 
 
-class AvailableYears(models.Model):
-    year = models.IntegerField()
+class AvailableYears(django_models.Model):
+    year = django_models.IntegerField()
 
     def __str__(self):
         return self.year
