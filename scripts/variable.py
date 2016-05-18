@@ -146,10 +146,6 @@ variable_data = [
          'wind speed']},
     {'project_name': 'CMIP6',
      'variables': [
-        'test variable'
-     ]},
-    {'project_name': 'TEST',
-     'variables': [
-         'test variable'
+        
      ]},
 ]

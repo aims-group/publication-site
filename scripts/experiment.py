@@ -41,12 +41,7 @@ experiment_data = [
      ]},
     {'project_name': 'CMIP6',
      'experiments': [
-        'test experiment'
-         'second test'
+
      ]},
-    {'project_name': 'TEST',
-     'experiments': [
-         'Second sort of test experiment'
-         'second test'
-     ]},
+
 ]

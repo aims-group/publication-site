@@ -12,10 +12,7 @@ frequency_data = [
      ]},
     {'project_name': 'CMIP6',
      'frequencies': [
-         'Test frequency'
+
      ]},
-    {'project_name': 'TEST',
-     'frequencies': [
-         'Second Test frequency'
-     ]},
+
 ]
