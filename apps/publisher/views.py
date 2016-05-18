@@ -19,6 +19,7 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication.submitter = request.user
     publication.publication_type = pub_type
     publication.save()
+    publication.projects.add(Project.objects.filter(project=request.POST.get('meta_type', ''))[0])
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
@@ -321,17 +322,21 @@ def edit(request, pubid):
                 media_form = TechnicalReportForm(instance=TechnicalReport.objects.get(publication_id=publication))
             elif publication.publication_type == 7:  # other
                 media_form = OtherForm(instance=Other.objects.get(publication_id=publication))
-            freq_form = FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]})
-            exp_form = ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]})
-            keyword_form = KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]})
-            model_form = ModelForm(initial={'model': [box.id for box in publication.model.all()]})
-            var_form = VariableForm(initial={'variable': [box.id for box in publication.variables.all()]})
+            meta_form = []
+            for project in publication.projects.all():
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.experiments),
+                    'freq_form': FrequencyForm(initial={'experiment': [box.id for box in publication.experiments.all()]}, queryset=project.frequencies),
+                    'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
+                    'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
+                    'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
+                })
             ensemble_data = str([[value['model_id'], value['ensemble']] for value in
                              PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
-                          {'pub_form': pub_form, 'author_form': author_form, 'freq_form': freq_form, 'exp_form': exp_form, 'keyword_form': keyword_form,
-                           'model_form': model_form, 'var_form': var_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                           'ensemble_data': ensemble_data,
+                          {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
+                           'ensemble_data': ensemble_data, 'meta_form': meta_form
                            })
         else:
             entries = Publication.objects.filter(submitter=userid)
@@ -378,11 +383,34 @@ def new(request):
             media.publication_id = publication
             media.save()
             return HttpResponse(status=200)
+        meta_form = []
+        project_string = request.POST.get('meta_type', 'CMIP5')
+        for project in Project.objects.all():
+            if str(project) == project_string:
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(request.POST, queryset=project.experiments),
+                    'freq_form': FrequencyForm(request.POST, queryset=project.frequencies),
+                    'keyword_form': KeywordForm(request.POST, queryset=project.keywords),
+                    'model_form': ModelForm(request.POST, queryset=project.models),
+                    'var_form': VariableForm(request.POST, queryset=project.variables),
+                })
+            else:
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(queryset=project.experiments),
+                    'freq_form': FrequencyForm(queryset=project.frequencies),
+                    'keyword_form': KeywordForm(queryset=project.keywords),
+                    'model_form': ModelForm(queryset=project.models),
+                    'var_form': VariableForm(queryset=project.variables),
+                })
+        all_forms.update({'meta_form': meta_form})
         return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
 def finddoi(request):
     doi = request.GET.get('doi')
+
     if not doi or doi.isspace():
         empty = True
     else:
@@ -518,7 +546,18 @@ def finddoi(request):
         formset = formset_factory(AuthorForm, extra=1)
         author_form = formset()
         all_forms = init_forms(author_form)
+        meta_form = []
+        for project in Project.objects.all():
+            meta_form.append({
+                'name': str(project),
+                'exp_form': ExperimentForm(queryset=project.experiments),
+                'freq_form': FrequencyForm(queryset=project.frequencies),
+                'keyword_form': KeywordForm(queryset=project.keywords),
+                'model_form': ModelForm(queryset=project.models),
+                'var_form': VariableForm(queryset=project.variables),
+            })
         all_forms.update({'message': 'Unable to pre-fill form with the given DOI'})
+        all_forms.update({'meta_form': meta_form})
         return render(request, 'site/publication_details.html', all_forms)
 
 def statistics(request):

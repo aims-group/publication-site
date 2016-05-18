@@ -110,6 +110,10 @@ keyword_data = [
      ]},
     {'project_name': 'CMIP6',
      'keywords': [
-
+        'test keyword'
+     ]},
+    {'project_name': 'TEST',
+     'keywords': [
+         'second test keyword'
      ]}
 ]

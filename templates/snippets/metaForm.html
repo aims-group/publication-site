@@ -1,7 +1,7 @@
 <div id="meta-tabs" class="panel panel-default">
         <div class="panel-heading">
-            <input id="project" type="hidden" name="project" value="1">
             <ul class="nav nav-tabs">
+                <input id="meta_type" type="hidden" name="meta_type" value="">
                 {% for form in meta_form %}
                 {% if forloop.first %}
                     <li class="active" role="presentation"><a href="#meta-tabs-1">{{form.name}}</a></li>

@@ -72,7 +72,10 @@ model_data = [
      ]},
     {'project_name': 'CMIP6',
      'models': [
-
-     ]}
-
+        'Test Model'
+     ]},
+    {'project_name': 'TEST',
+     'models': [
+         'Testing test Test Model'
+     ]},
 ]

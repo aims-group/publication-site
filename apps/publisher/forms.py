@@ -176,7 +176,7 @@ class OtherForm(forms.ModelForm):
 
 
 class ExperimentForm(forms.ModelForm):
-    experiment = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all())
+    experiment = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Experiment.objects.all(), required=False)
     # The ensemble inputs are located in the doi.js file. Getting the same behavior with django is a ton more work.
 
     def __init__(self, *args, **kwargs):
@@ -191,7 +191,7 @@ class ExperimentForm(forms.ModelForm):
 
 
 class FrequencyForm(forms.ModelForm):
-    frequency = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Frequency.objects.all())
+    frequency = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Frequency.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
@@ -206,7 +206,7 @@ class FrequencyForm(forms.ModelForm):
 
 class KeywordForm(forms.ModelForm):
 
-    keyword = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Keyword.objects.all())
+    keyword = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Keyword.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
@@ -220,7 +220,7 @@ class KeywordForm(forms.ModelForm):
 
 
 class ModelForm(forms.ModelForm):
-    model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all())
+    model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
@@ -234,7 +234,7 @@ class ModelForm(forms.ModelForm):
 
 
 class VariableForm(forms.ModelForm):
-    variable = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Variable.objects.all())
+    variable = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Variable.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
