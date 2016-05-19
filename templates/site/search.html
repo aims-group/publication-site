@@ -65,7 +65,17 @@
         data: {},
         dataType: 'json',
         success: function(data){
-          $("div #citation"+id).text(data.key);
+        var authorstring = ''
+            $.each(data.authors, function(index, author){
+                if(index == 0){
+                    authorstring += author;
+                }
+                authorstring += (', ' + author);
+            });
+            var citation = $('<span/>')
+            .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
+            .append($('<a/>').text(data.url).attr('href', data.url));
+          $("div #citation"+id).html(citation);
           $("div #citation"+id).toggle();
         },
         error: function(request, status, error){

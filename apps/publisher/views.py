@@ -436,8 +436,6 @@ def finddoi(request):
 
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(initial)
         if 'DOI' in initial.keys():
             doi = initial['DOI']
         else:
@@ -573,10 +571,10 @@ def ajax(request):
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
     citation =  pub.title + ". " + str(pub.publication_date) + ". " + pub.url
-    authors = ", ".join(["{author.name}".format(author=author) for author in pub.authors.all()])
-    citation = authors + ": " + citation
-    json = "{\"key\": \"" + citation + "\"}"
-    return HttpResponse(json)
+    authors = [author.name for author in pub.authors.all()]
+    #citation = authors + ": " + citation
+    json = {'title': pub.title, 'date': str(pub.publication_date), 'url': pub.url, 'authors': authors}
+    return JsonResponse(json)
 
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)

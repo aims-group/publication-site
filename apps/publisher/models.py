@@ -98,7 +98,7 @@ class Author(django_models.Model):
     name = django_models.TextField()
     institution = django_models.TextField()
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -122,7 +122,7 @@ class Publication(django_models.Model):
     model = django_models.ManyToManyField(Model, through='PubModels')
     variables = django_models.ManyToManyField(Variable)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.title
 
     @property

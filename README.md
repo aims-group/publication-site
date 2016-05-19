@@ -13,7 +13,7 @@ new CMDIP6 Publication reporting site
      > email:
      > password:
      > password:
-    python manage.py load_data
+    python manage.py loaddata
     python manage.py runserver
 
 To prevent unnecessary server load, the network graph reads from a static json file.
