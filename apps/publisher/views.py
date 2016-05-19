@@ -9,8 +9,8 @@ from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
 import datetime
-
-
+import pprint
+import pdb
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication = pub_form.save(commit=False)
@@ -436,6 +436,8 @@ def finddoi(request):
 
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(initial)
         if 'DOI' in initial.keys():
             doi = initial['DOI']
         else:
@@ -477,19 +479,32 @@ def finddoi(request):
             publisher = initial['publisher']
         else:
             publisher = ''
-        if 'published-print' in initial.keys():
-            publication_date = initial['published-print']['date-parts'][0][0]
-        elif 'created' in initial.keys():
-            try:
-                publication_date = initial['created']['date-parts'][0][0]
-            except:
+        try:
+            if 'published-print' in initial.keys():
+                datelength = len(initial['published-print']['date-parts'][0])
+                if datelength == 1:
+                    publication_date = '1/1/' + str(initial['published-print']['date-parts'][0][0])
+                elif datelength == 2:
+                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/1/' + str(initial['published-print']['date-parts'][0][0])
+                elif datelength == 3:
+                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/' + str(initial['published-print']['date-parts'][0][2]) + '/' + str(initial['published-print']['date-parts'][0][0])
+            elif 'issued' in initial.keys() and 'date-parts' in initial['issued'].keys():
+                print 'got an issued article'
+                datelength = len(initial['issued']['date-parts'][0])
+                publication_date = initial['issued']['date-parts'][0][0]
+                if datelength == 1:
+                    publication_date = '1/1/' + str(initial['issued']['date-parts'][0][0])
+                elif datelength == 2:
+                    publication_date = str(initial['issued']['date-parts'][0][1]) + '/1/' + str(initial['issued']['date-parts'][0][0])
+                elif datelength == 3:
+                    publication_date = str(initial['issued']['date-parts'][0][1]) + '/' + str(initial['issued']['date-parts'][0][2]) + '/' + str(initial['issued']['date-parts'][0][0])
+            elif 'created' in initial.keys():
+                publication_date = str(initial['created']['date-parts'][0][1]) + '/' + str(initial['created']['date-parts'][0][2]) + '/' + str(
+                    initial['created']['date-parts'][0][0])
+            else:
                 publication_date = ''
-        elif 'issued' in initial.keys():
-            try:
-                publication_date = initial['issued']['raw']
-            except:
-                publication_date = ''
-        else:
+        except Exception as e:
+            print e
             publication_date = ''
         if 'author' in initial.keys():
             authors_list = []
@@ -570,9 +585,7 @@ def ajax(request):
 
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
-    citation =  pub.title + ". " + str(pub.publication_date) + ". " + pub.url
     authors = [author.name for author in pub.authors.all()]
-    #citation = authors + ": " + citation
     json = {'title': pub.title, 'date': str(pub.publication_date), 'url': pub.url, 'authors': authors}
     return JsonResponse(json)
 
