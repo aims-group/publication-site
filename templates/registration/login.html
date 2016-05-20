@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block title %} login {% endblock %}
+{% block title %} Login {% endblock %}
 
 {% block content %}
 <link href="/static/css/form.css" rel="stylesheet">
 
 {% if form.errors %}
-<div class="alert alert-danger" role="alert">Your username and password didn't match. Please try again.</div>
+<div class="alert alert-danger" role="alert">
+Your username and password didn't match. Please try again. Forgot your password? <a href="/accounts/password/reset">Click Here</a>
+</div>
 {% endif %}
 
 <form id="login_form" action="" method="post" class="form-signin">
