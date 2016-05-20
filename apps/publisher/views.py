@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from forms import PresentationForm, TechnicalReportForm, OtherForm
@@ -11,6 +12,8 @@ import requests
 import datetime
 import pprint
 import pdb
+
+
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication = pub_form.save(commit=False)
@@ -35,7 +38,7 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
         model = Model.objects.get(id=model_id)
         ens = ensemble[model.id - 1]  # database index vs lists, so off by one
         pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
-        if ens and ens.isdigit(): # Enforce that experiments must have an ensemble
+        if ens and ens.isdigit():  # Enforce that experiments must have an ensemble
             if pubmodel:
                 pubmodel[0].ensemble = int(ens)
                 pubmodel[0].save()
@@ -73,10 +76,10 @@ def init_forms(author_form, request=None, instance=None):
     model_form = ModelForm(request)
     var_form = VariableForm(request)
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
-                       'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
-                       'presentation_form': presentation_form, 'technical_form': technical_form,
-                       'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-                       'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form}
+            'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
+            'presentation_form': presentation_form, 'technical_form': technical_form,
+            'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
+            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form}
 
 
 def get_all_options():
@@ -283,17 +286,19 @@ def edit(request, pubid):
             otherinstance = Other.objects.get(publication_id=pub_instance)
             media_form = OtherForm(request.POST or None, instance=otherinstance)
         if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
-                publication = save_publication(pub_form, request, author_form_set, pub_type, True)
-                other = media_form.save(commit=False)
-                other.publication_id = publication
-                other.save()
-                return redirect('review')
+            publication = save_publication(pub_form, request, author_form_set, pub_type, True)
+            other = media_form.save(commit=False)
+            other.publication_id = publication
+            other.save()
+            return redirect('review')
         ens = request.POST.getlist('ensemble')
-        ensemble_data = str([[index+1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
+        ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
         return render(request, 'site/edit.html',
-                      {'pub_form': pub_form, 'author_form': author_form_set, 'freq_form': FrequencyForm(initial=request.POST), 'exp_form': ExperimentForm(initial=request.POST),
+                      {'pub_form': pub_form, 'author_form': author_form_set, 'freq_form': FrequencyForm(initial=request.POST),
+                       'exp_form': ExperimentForm(initial=request.POST),
                        'keyword_form': KeywordForm(initial=request.POST),
-                       'model_form': ModelForm(initial=request.POST), 'var_form': VariableForm(initial=request.POST), 'media_form': media_form, 'pub_type': pub_type,
+                       'model_form': ModelForm(initial=request.POST), 'var_form': VariableForm(initial=request.POST), 'media_form': media_form,
+                       'pub_type': pub_type,
                        'ensemble_data': ensemble_data,
                        })
 
@@ -304,9 +309,9 @@ def edit(request, pubid):
         if userid == publication.submitter.id:
             pub_form = PublicationForm(instance=publication)
             author_form = AuthorFormSet(queryset=authors)
-            if publication.publication_type == 0: # book
+            if publication.publication_type == 0:  # book
                 media_form = BookForm(instance=Book.objects.get(publication_id=publication))
-            elif publication.publication_type == 1: # conference
+            elif publication.publication_type == 1:  # conference
                 media_form = ConferenceForm(instance=Conference.objects.get(publication_id=publication))
             elif publication.publication_type == 2:  # journal
                 media_form = JournalForm(instance=Journal.objects.get(publication_id=publication))
@@ -324,7 +329,8 @@ def edit(request, pubid):
             for project in publication.projects.all():
                 meta_form.append({
                     'name': str(project),
-                    'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]}, queryset=project.experiments),
+                    'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
+                                               queryset=project.experiments),
                     'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
                     'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
                     'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
@@ -332,7 +338,7 @@ def edit(request, pubid):
                 })
             meta_type = publication.projects.first()
             ensemble_data = str([[value['model_id'], value['ensemble']] for value in
-                             PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
+                                 PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
                            'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type,
@@ -485,11 +491,12 @@ def finddoi(request):
                 if datelength == 1:
                     publication_date = '1/1/' + str(initial['published-print']['date-parts'][0][0])
                 elif datelength == 2:
-                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/1/' + str(initial['published-print']['date-parts'][0][0])
+                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/1/' + str(
+                        initial['published-print']['date-parts'][0][0])
                 elif datelength == 3:
-                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/' + str(initial['published-print']['date-parts'][0][2]) + '/' + str(initial['published-print']['date-parts'][0][0])
+                    publication_date = str(initial['published-print']['date-parts'][0][1]) + '/' + str(
+                        initial['published-print']['date-parts'][0][2]) + '/' + str(initial['published-print']['date-parts'][0][0])
             elif 'issued' in initial.keys() and 'date-parts' in initial['issued'].keys():
-                print 'got an issued article'
                 datelength = len(initial['issued']['date-parts'][0])
                 publication_date = initial['issued']['date-parts'][0][0]
                 if datelength == 1:
@@ -497,7 +504,8 @@ def finddoi(request):
                 elif datelength == 2:
                     publication_date = str(initial['issued']['date-parts'][0][1]) + '/1/' + str(initial['issued']['date-parts'][0][0])
                 elif datelength == 3:
-                    publication_date = str(initial['issued']['date-parts'][0][1]) + '/' + str(initial['issued']['date-parts'][0][2]) + '/' + str(initial['issued']['date-parts'][0][0])
+                    publication_date = str(initial['issued']['date-parts'][0][1]) + '/' + str(initial['issued']['date-parts'][0][2]) + '/' + str(
+                        initial['issued']['date-parts'][0][0])
             elif 'created' in initial.keys():
                 publication_date = str(initial['created']['date-parts'][0][1]) + '/' + str(initial['created']['date-parts'][0][2]) + '/' + str(
                     initial['created']['date-parts'][0][0])
@@ -572,11 +580,14 @@ def finddoi(request):
         all_forms.update({'meta_form': meta_form})
         return render(request, 'site/publication_details.html', all_forms)
 
+
 def statistics(request):
     return render(request, 'site/statistics.html')
 
+
 def network_graph(request):
     return render(request, 'site/network-graph.html')
+
 
 # ajax
 def ajax(request):
@@ -588,6 +599,7 @@ def ajax_citation(request, pub_id):
     authors = [author.name for author in pub.authors.all()]
     json = {'title': pub.title, 'date': str(pub.publication_date), 'url': pub.url, 'authors': authors}
     return JsonResponse(json)
+
 
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
@@ -603,10 +615,12 @@ def ajax_more_info(request, pub_id):
     json = "{\"key\": \"" + moreinfo + "\"}"
     return HttpResponse(json)
 
+
 def ajax_prefetch_authors(request):
-    authors = Author.objects.all().values_list('name', 'institution').distinct()[:250] #limit to 250 entries
+    authors = Author.objects.all().values_list('name', 'institution').distinct()[:250]  # limit to 250 entries
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
+
 
 def ajax_all_authors(request):
     authors = Author.objects.all().values_list('name', 'institution').distinct()

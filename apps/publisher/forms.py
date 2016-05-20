@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.forms import UserCreationForm
+from registration.forms import RegistrationFormUniqueEmail
+from registration.backends.simple.views import RegistrationView
 from django.contrib.auth.models import User
 from captcha.fields import ReCaptchaField
 
@@ -16,7 +17,7 @@ class LoginForm(AuthenticationForm):
                                widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'password'}))
 
 
-class RegisterForm(UserCreationForm):
+class RegistrationForm(RegistrationFormUniqueEmail):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
                              required=True)
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
@@ -36,6 +37,8 @@ class RegisterForm(UserCreationForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
         }
 
+class RegistrationViewUniqueEmail(RegistrationView):
+    form_class = RegistrationForm
 
 class AuthorForm(forms.ModelForm):
     class Meta:

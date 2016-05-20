@@ -15,16 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
-from publisher.forms import LoginForm
-from django.views.generic.edit import CreateView
-from publisher.forms import RegisterForm
+from publisher.forms import RegistrationViewUniqueEmail
+
 
 urlpatterns = [
     url(r'^', include('publisher.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', auth_views.login, {'template_name': 'site/login.html', 'authentication_form': LoginForm}),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
-    url('^register/', CreateView.as_view(template_name='site/registration.html', form_class=RegisterForm, success_url='/')),
-    #(r'^reset_password/$', password_reset, {'template_name': 'my_templates/password_reset.html'})
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login'),
+    url(r'^accounts/register/$', RegistrationViewUniqueEmail.as_view()),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 ]
+
+
+

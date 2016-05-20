@@ -19,6 +19,7 @@
         <!-- Custom styles for this template -->
     <link href="http://getbootstrap.com/examples/navbar/navbar.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/base.css">
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -26,7 +27,6 @@
 
 
     {% block extra_headers %} {% endblock %}
-
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -36,10 +36,13 @@
 
   <body>
 
-    <div class="container">
+      <div class="content-wrapper container">
       {% include 'site/nav.html' %}
       {% block content %} {% endblock %}
+      </div>
+      <div class="footer">
       {% include 'site/footer.html' %}
+      </div>
     </div> <!-- /container -->
 
   </body>
