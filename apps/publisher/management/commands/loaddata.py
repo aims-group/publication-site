@@ -106,8 +106,7 @@ class Command(BaseCommand):
         else:
             print 'loading journal names'
             for jour in journal_names:
-                new_jour = JournalOptions()
-                new_jour.journal = jour
+                new_jour = JournalOptions(journal_name=jour)
                 new_jour.save()
             print 'journal names done'
 

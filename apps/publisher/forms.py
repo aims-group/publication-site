@@ -105,12 +105,13 @@ class ConferenceForm(forms.ModelForm):
 
 
 class JournalForm(forms.ModelForm):
+    journal_name = forms.ModelChoiceField(queryset=JournalOptions.objects.all(), empty_label="N/A", widget=forms.Select(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Journal
         fields = '__all__'
         exclude = ['publication_id']
         widgets = {
-            'journal_name': forms.TextInput(attrs={'class': 'form-control'}),
             'editor': forms.TextInput(attrs={'class': 'form-control'}),
             'volume_number': forms.TextInput(attrs={'class': 'form-control'}),
             'article_number': forms.TextInput(attrs={'class': 'form-control'}),
