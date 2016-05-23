@@ -25,3 +25,7 @@
 .margin-b {
     margin-bottom: 20px;
 }
+
+.required label::after {
+    content: "*";
+}

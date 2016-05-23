@@ -1,12 +1,45 @@
 <div id="pub_form" class="panel panel-default">
     <div class="panel-heading"><span class="md-font">Publication Info</span></div>
     <div class="panel-body">
-        {% for field in pub_form %}
         <div class="publication-input">
-        {{ field.label_tag }}
-        {{ field.errors }}
-        {{ field }}
+        {{ pub_form.doi.label_tag }}
+        {{ pub_form.doi.errors }}
+        {{ pub_form.doi }}
         </div>
-    {% endfor %}
+        <div class="publication-input required">
+        {{ pub_form.title.label_tag }}
+        {{ pub_form.title.errors }}
+        {{ pub_form.title }}
+        </div>
+        <div class="publication-input required">
+        {{ pub_form.publication_date.label_tag }}
+        {{ pub_form.publication_date.errors }}
+        {{ pub_form.publication_date }}
+        </div>
+        <div class="publication-input">
+        {{ pub_form.abstract.label_tag }}
+        {{ pub_form.abstract.errors }}
+        {{ pub_form.abstract }}
+        </div>
+        <div id="publication-optional-inputs">
+            <h5 class="btn btn-info">Optional Info</h5>
+            <div>
+                <div class="publication-input">
+                {{ pub_form.url.label_tag }}
+                {{ pub_form.url.errors }}
+                {{ pub_form.url }}
+                </div>
+                <div class="publication-input">
+                {{ pub_form.project_number.label_tag }}
+                {{ pub_form.project_number.errors }}
+                {{ pub_form.project_number }}
+                </div>
+                <div class="publication-input">
+                {{ pub_form.task_number.label_tag }}
+                {{ pub_form.task_number.errors }}
+                {{ pub_form.task_number }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>

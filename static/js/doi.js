@@ -91,6 +91,9 @@ function submitPublication() {
 }
 
 function setUpForm(active = 0, metaActive = 0) {
+    $('#publication-optional-inputs').accordion({
+      collapsible: true, active: false
+    });
     $( "#tabs" ).tabs({ active: active });
     $( "#meta-tabs" ).tabs({ active: metaActive });
     var count = parseInt($('#id_form-TOTAL_FORMS').val());

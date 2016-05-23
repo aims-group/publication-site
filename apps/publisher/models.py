@@ -176,7 +176,6 @@ class Conference(django_models.Model):
 class Journal(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     journal_name = django_models.ForeignKey(JournalOptions)
-    editor = django_models.TextField()
     volume_number = django_models.TextField()
     article_number = django_models.TextField()
     start_page = django_models.TextField()

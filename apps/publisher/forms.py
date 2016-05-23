@@ -56,6 +56,14 @@ class AuthorFormSet(AuthorFormSetBase):
 
 
 class PublicationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(PublicationForm, self).__init__(*args, **kwargs)
+        self.fields['doi'].required = False
+        self.fields['url'].required = False
+        self.fields['project_number'].required = False
+        self.fields['task_number'].required = False
+        self.fields['abstract'].required = False
+
     class Meta:
         model = Publication
         fields = ['status', 'doi', 'title', 'url', 'project_number', 'task_number', 'publication_date', 'abstract']
@@ -112,7 +120,6 @@ class JournalForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['publication_id']
         widgets = {
-            'editor': forms.TextInput(attrs={'class': 'form-control'}),
             'volume_number': forms.TextInput(attrs={'class': 'form-control'}),
             'article_number': forms.TextInput(attrs={'class': 'form-control'}),
             'start_page': forms.TextInput(attrs={'class': 'form-control'}),
