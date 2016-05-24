@@ -176,10 +176,10 @@ class Conference(django_models.Model):
 class Journal(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     journal_name = django_models.ForeignKey(JournalOptions)
-    volume_number = django_models.TextField()
-    article_number = django_models.TextField()
-    start_page = django_models.TextField()
-    end_page = django_models.TextField()
+    volume_number = django_models.TextField(blank=True)
+    article_number = django_models.TextField(blank=True)
+    start_page = django_models.TextField(blank=True)
+    end_page = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.journal_name

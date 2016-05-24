@@ -1,6 +1,11 @@
 <div id="pub_form" class="panel panel-default">
     <div class="panel-heading"><span class="md-font">Publication Info</span></div>
     <div class="panel-body">
+        <div class="publication-input required">
+        {{ pub_form.status.label_tag }}
+        {{ pub_form.status.errors }}
+        {{ pub_form.status }}
+        </div>
         <div class="publication-input">
         {{ pub_form.doi.label_tag }}
         {{ pub_form.doi.errors }}

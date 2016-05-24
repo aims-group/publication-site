@@ -352,7 +352,22 @@ def edit(request, pubid):
 @login_required()
 def new(request):
     if request.method == 'GET':
-        return render(request, 'site/new_publication.html')
+        formset = formset_factory(AuthorForm, extra=1)
+        author_form = formset()
+        all_forms = init_forms(author_form)
+        meta_form = []
+        for project in Project.objects.all():
+            meta_form.append({
+                'name': str(project),
+                'exp_form': ExperimentForm(queryset=project.experiments),
+                'freq_form': FrequencyForm(queryset=project.frequencies),
+                'keyword_form': KeywordForm(queryset=project.keywords),
+                'model_form': ModelForm(queryset=project.models),
+                'var_form': VariableForm(queryset=project.variables),
+            })
+        all_forms.update({'meta_form': meta_form})
+        return render(request, 'site/new_publication.html', all_forms)
+
     elif request.method == 'POST':
         pub_type = request.POST.get('pub_type', '')
         formset = formset_factory(AuthorForm)
@@ -415,7 +430,6 @@ def new(request):
 
 def finddoi(request):
     doi = request.GET.get('doi')
-
     if not doi or doi.isspace():
         empty = True
     else:
@@ -439,7 +453,6 @@ def finddoi(request):
         except:
             status = 500
     if not empty and status == 200:
-
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
         pp = pprint.PrettyPrinter(indent=4)
@@ -512,73 +525,30 @@ def finddoi(request):
             else:
                 publication_date = ''
         except Exception as e:
-            print e
+            print(e)
             publication_date = ''
+        authors_list = []
         if 'author' in initial.keys():
-            authors_list = []
-            formset = formset_factory(AuthorForm, extra=0)
+
             if 'given' in initial['author'][0].keys():
                 for author in initial['author']:
                     authors_list.append({'name': author['family'] + ', ' + author['given']})
-                author_form = formset(initial=authors_list)
+
             elif 'literal' in initial['author'][0].keys():
                 for author in initial['author']:
                     authors_list.append({'name': author['literal']})
-                author_form = formset(initial=authors_list)
             else:
-                formset = formset_factory(AuthorForm, extra=1)
-                author_form = formset()
+                pass
         else:
-            formset = formset_factory(AuthorForm, extra=1)
-            author_form = formset()
+            pass
 
-        init = {'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
-                'publication_date': publication_date, 'volume_number': volume, 'issue': issue,}
-        init.update(dict.fromkeys(['book_name', 'conference_name', 'journal_name', 'magazine_name'], container_title))
-        pub_form = PublicationForm(prefix='pub', initial=init)
-        book_form = BookForm(prefix='book', initial=init)
-        conference_form = ConferenceForm(prefix='conf', initial=init)
-        journal_form = JournalForm(prefix='journal', initial=init)
-        magazine_form = MagazineForm(prefix='mag', initial=init)
-        poster_form = PosterForm(prefix='poster')
-        presentation_form = PresentationForm(prefix='pres')
-        technical_form = TechnicalReportForm(prefix='tech')
-        other_form = OtherForm(prefix='other')
-        meta_form = []
-        for project in Project.objects.all():
-            meta_form.append({
-                'name': str(project),
-                'exp_form': ExperimentForm(queryset=project.experiments),
-                'freq_form': FrequencyForm(queryset=project.frequencies),
-                'keyword_form': KeywordForm(queryset=project.keywords),
-                'model_form': ModelForm(queryset=project.models),
-                'var_form': VariableForm(queryset=project.variables),
-            })
-
-        return render(request, 'site/publication_details.html',
-                      {'pub_form': pub_form, 'author_form': author_form,
-                       'book_form': book_form,
-                       'conference_form': conference_form,
-                       'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
-                       'presentation_form': presentation_form, 'technical_form': technical_form,
-                       'other_form': other_form, 'meta_form': meta_form})
+        data = {'success': True, 'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
+                'publication_date': publication_date, 'volume_number': volume, 'issue': issue, 'authors_list': authors_list}
+        data.update(dict.fromkeys(['book_name', 'conference_name', 'journal_name', 'magazine_name'], container_title))
+        return JsonResponse(data)
     else:
-        formset = formset_factory(AuthorForm, extra=1)
-        author_form = formset()
-        all_forms = init_forms(author_form)
-        meta_form = []
-        for project in Project.objects.all():
-            meta_form.append({
-                'name': str(project),
-                'exp_form': ExperimentForm(queryset=project.experiments),
-                'freq_form': FrequencyForm(queryset=project.frequencies),
-                'keyword_form': KeywordForm(queryset=project.keywords),
-                'model_form': ModelForm(queryset=project.models),
-                'var_form': VariableForm(queryset=project.variables),
-            })
-        all_forms.update({'message': 'Unable to pre-fill form with the given DOI'})
-        all_forms.update({'meta_form': meta_form})
-        return render(request, 'site/publication_details.html', all_forms)
+        data = {'success': False, 'message': 'Unable to pre-fill form with the given DOI'}
+        return JsonResponse(data)
 
 
 def statistics(request):
