@@ -27,7 +27,36 @@
                 {{ conference_form }}
             </div>
             <div id="tabs-3">
-                {{ journal_form }}
+                <div class="required">
+                {{ journal_form.journal_name.label_tag }}
+                {{ journal_form.journal_name.errors }}
+                {{ journal_form.journal_name }}
+                </div>
+                <div id="journal-optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div>
+                        <div>
+                        {{ journal_form.volume_number.label_tag }}
+                        {{ journal_form.volume_number.errors }}
+                        {{ journal_form.volume_number }}
+                        </div>
+                        <div>
+                        {{ journal_form.article_number.label_tag }}
+                        {{ journal_form.article_number.errors }}
+                        {{ journal_form.article_number}}
+                        </div>
+                        <div>
+                        {{ journal_form.start_page.label_tag }}
+                        {{ journal_form.start_page.errors }}
+                        {{ journal_form.start_page }}
+                        </div>
+                        <div>
+                        {{ journal_form.end_page.label_tag }}
+                        {{ journal_form.end_page.errors }}
+                        {{ journal_form.end_page }}
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="tabs-4">
                 {{ magazine_form }}

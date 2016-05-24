@@ -115,6 +115,13 @@ class ConferenceForm(forms.ModelForm):
 class JournalForm(forms.ModelForm):
     journal_name = forms.ModelChoiceField(queryset=JournalOptions.objects.all(), empty_label="N/A", widget=forms.Select(attrs={'class': 'form-control'}))
 
+    def __init__(self, *args, **kwargs):
+        super(JournalForm, self).__init__(*args, **kwargs)
+        self.fields['volume_number'].required = False
+        self.fields['article_number'].required = False
+        self.fields['start_page'].required = False
+        self.fields['end_page'].required = False
+
     class Meta:
         model = Journal
         fields = '__all__'
