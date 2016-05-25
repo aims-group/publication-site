@@ -114,7 +114,7 @@ class Publication(django_models.Model):
     authors = django_models.ManyToManyField(Author, blank=False)
     publication_date = django_models.DateField()
     url = django_models.URLField()
-    doi = django_models.TextField()
+    doi = django_models.TextField(blank=True)
     abstract = django_models.TextField()
     experiments = django_models.ManyToManyField(Experiment)
     frequency = django_models.ManyToManyField(Frequency)
@@ -147,12 +147,12 @@ class PubModels(django_models.Model):
 class Book(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     book_name = django_models.TextField()
-    chapter_title = django_models.TextField()
-    start_page = django_models.TextField()
-    end_page = django_models.TextField()
-    editor = django_models.TextField()
-    city_of_publication = django_models.TextField()
-    publisher = django_models.TextField()
+    chapter_title = django_models.TextField(blank=True)
+    start_page = django_models.TextField(blank=True)
+    end_page = django_models.TextField(blank=True)
+    editor = django_models.TextField(blank=True)
+    city_of_publication = django_models.TextField(blank=True)
+    publisher = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.book_name
@@ -161,13 +161,13 @@ class Book(django_models.Model):
 class Conference(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     conference_name = django_models.TextField()
-    conference_serial_number = django_models.TextField()
-    event_location = django_models.TextField()
-    start_page = django_models.TextField()
-    end_page = django_models.TextField()
-    editor = django_models.TextField()
-    city_of_publication = django_models.TextField()
-    publisher = django_models.TextField()
+    conference_serial_number = django_models.TextField(blank=True)
+    event_location = django_models.TextField(blank=True)
+    start_page = django_models.TextField(blank=True)
+    end_page = django_models.TextField(blank=True)
+    editor = django_models.TextField(blank=True)
+    city_of_publication = django_models.TextField(blank=True)
+    publisher = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.conference_name
@@ -188,11 +188,11 @@ class Journal(django_models.Model):
 class Magazine(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     magazine_name = django_models.TextField()
-    editor = django_models.TextField()
-    volume_number = django_models.TextField()
-    article_number = django_models.TextField()
-    start_page = django_models.TextField()
-    end_page = django_models.TextField()
+    editor = django_models.TextField(blank=True)
+    volume_number = django_models.TextField(blank=True)
+    article_number = django_models.TextField(blank=True)
+    start_page = django_models.TextField(blank=True)
+    end_page = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.magazine_name
@@ -201,7 +201,7 @@ class Magazine(django_models.Model):
 class Poster(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     poster_title = django_models.TextField()
-    event = django_models.TextField()
+    event = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.poster_title
@@ -218,8 +218,8 @@ class Presentation(django_models.Model):
 class TechnicalReport(django_models.Model):
     publication_id = django_models.ForeignKey(Publication)
     report_number = django_models.TextField()
-    editor = django_models.TextField()
-    issuer = django_models.TextField()
+    editor = django_models.TextField(blank=True)
+    issuer = django_models.TextField(blank=True)
 
     def __str__(self):
         return self.title

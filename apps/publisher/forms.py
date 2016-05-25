@@ -87,6 +87,17 @@ class PublicationForm(forms.ModelForm):
 
 
 class BookForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(BookForm, self).__init__(*args, **kwargs)
+        self.fields['book_name'].required = True
+        self.fields['chapter_title'].required = False
+        self.fields['start_page'].required = False
+        self.fields['end_page'].required = False
+        self.fields['editor'].required = False
+        self.fields['city_of_publication'].required = False
+        self.fields['publisher'].required = False
+
     class Meta:
         model = Book
         fields = '__all__'
@@ -103,6 +114,18 @@ class BookForm(forms.ModelForm):
 
 
 class ConferenceForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ConferenceForm, self).__init__(*args, **kwargs)
+        self.fields['conference_name'].required = True
+        self.fields['conference_serial_number'].required = False
+        self.fields['event_location'].required = False
+        self.fields['start_page'].required = False
+        self.fields['end_page'].required = False
+        self.fields['editor'].required = False
+        self.fields['city_of_publication'].required = False
+        self.fields['publisher'].required = False
+
     class Meta:
         model = Conference
         fields = '__all__'
@@ -124,10 +147,7 @@ class JournalForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
-        self.fields['volume_number'].required = False
-        self.fields['article_number'].required = False
-        self.fields['start_page'].required = False
-        self.fields['end_page'].required = False
+        pass
 
     class Meta:
         model = Journal
@@ -142,6 +162,15 @@ class JournalForm(forms.ModelForm):
 
 
 class MagazineForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(MagazineForm, self).__init__(*args, **kwargs)
+        self.fields['editor'].required = False
+        self.fields['volume_number'].required = False
+        self.fields['article_number'].required = False
+        self.fields['start_page'].required = False
+        self.fields['end_page'].required = False
+
     class Meta:
         model = Magazine
         fields = '__all__'

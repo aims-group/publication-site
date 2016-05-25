@@ -1,4 +1,5 @@
 {% load my_json %}
+
 <div class="warning-message"></div>
 
 <form action="/new" method="post">
@@ -20,10 +21,54 @@
         </div>
         <div class="panel-body">
             <div id="tabs-1">
-                {{ book_form }}
+                <div class="required">
+                {% for field in book_form %}
+                    {% if field.field.required %}
+                        {{ field.label_tag }}
+                        {{ field.errors }}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div id="book-optional-inputs" class="optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div class="well well-sm">
+                    {% for field in book_form %}
+                        {% if not field.field.required %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
             <div id="tabs-2">
-                {{ conference_form }}
+                <div class="required">
+                {% for field in conference_form  %}
+                    {% if field.field.required %}
+                        {{ field.label_tag }}
+                        {{ field.errors }}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div id="conference-optional-inputs" class="optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div class="well well-sm">
+                    {% for field in conference_form  %}
+                        {% if not field.field.required %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
             <div id="tabs-3">
                 <div class="required">
@@ -58,7 +103,29 @@
                 </div>
             </div>
             <div id="tabs-4">
-                {{ magazine_form }}
+                <div class="required">
+                {% for field in magazine_form  %}
+                    {% if field.field.required %}
+                        {{ field.label_tag }}
+                        {{ field.errors }}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div id="magazine-optional-inputs" class="optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div class="well well-sm">
+                    {% for field in magazine_form  %}
+                        {% if not field.field.required %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
             <div id="tabs-5">
                 {{ poster_form }}

@@ -4,24 +4,29 @@
 {% load my_json %}
 <link href="/static/css/new_publication.css" rel="stylesheet">
 <div class="row margin-b">
-        <div class="col-lg-6">
-            <div class="input-group">
-                <input type="text" class="form-control" id="doi-field" placeholder="doi:">
+    <div class="col-lg-6">
+        <div class="input-group">
+            <input type="text" class="form-control" id="doi-field" placeholder="doi:">
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" onclick="doisearch()">Search</button>
                 </span>
-            </div><!-- /input-group -->
-        </div><!-- /.col-lg-6 -->
-    </div><!-- /.row -->
+        </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+<div id="loading" class="text-center">
+    <br>
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
+    <span class="sr-only">Loading...</span>
+</div>
 <form action="" method="post">
     {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
     {% include "snippets/publicationForm.html" %}
     <div class="panel panel-default">
-    <div class="panel-heading"><span class="md-font">Publication Details</span></div>
-    <div class="panel-body">
-        {{ media_form }}
-      </div>
+        <div class="panel-heading"><span class="md-font">Publication Details</span></div>
+        <div class="panel-body">
+            {{ media_form }}
+        </div>
     </div>
     {% include 'snippets/authorForm.html' %}
     {% include 'snippets/metaForm.html' %}
@@ -33,6 +38,7 @@
     ensemble = JSON.parse({{ ensemble_data|my_json|safe }});
     {# example ensemble: [[1,1], [2,5], [3,1]] #}
     {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
+
 </script>
 <script type="text/javascript" src="/static/js/editform.js"></script>
 

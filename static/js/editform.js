@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('#loading').hide();
     $.each($('#id_model li label'), function(index, element) {
         newelem = $('<input/>');
         $(newelem).attr('id', 'ensemble_'+index);

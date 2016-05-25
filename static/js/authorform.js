@@ -68,6 +68,7 @@ function cloneMore(element, num) {
 }
 
 function init_typeahead() {
+//https://github.com/twitter/typeahead.js/issues/28
     $('.typeahead-a').typeahead({
         hint: true,
         highlight: true,

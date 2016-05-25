@@ -26,18 +26,20 @@ $( "#publication-form-wrapper" ).on( "tabsactivate", '#meta-tabs', function( eve
         $(ui.oldTab).removeClass('active');
         $(ui.newTab).addClass('active');
         $('#meta_type').val($(ui.newTab).text());
-
 });
 
-$( "#id_pub-status" ).change(function() {
+$( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
+    isDoiRequired();
+});
+
+function isDoiRequired(){
     if($("#id_pub-status option:selected").text() === "Published"){
         $( "#id_pub-doi" ).parent().addClass('required');
     }
     else{
         $( "#id_pub-doi" ).parent().removeClass('required');
     }
-});
-
+}
 
 function doisearch(showFormClicked) {
     if (showFormClicked === true) {
@@ -129,11 +131,12 @@ function setUpForm(active = 0, metaActive = 0) {
     $('#publication-optional-inputs').accordion({
       collapsible: true, active: false
     });
-    $('#journal-optional-inputs').accordion({
+    $('.optional-inputs').accordion({
       collapsible: true, active: false
     });
     $( "#tabs" ).tabs({ active: active });
     $( "#meta-tabs" ).tabs({ active: metaActive });
+    isDoiRequired();
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
     for(i=0; i < count; i++) {
         $('#id_form-' + i + '-DELETE').closest('td').remove();
@@ -151,5 +154,6 @@ function showForm(){
 //    https://bugs.jqueryui.com/ticket/3905
     $("#publication-form-wrapper").removeClass("hidden");
     $('#publication-optional-inputs').accordion( "refresh" );
+    $('.optional-inputs').accordion( "refresh" );
 }
 
