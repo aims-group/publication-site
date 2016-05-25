@@ -2,6 +2,17 @@
 {% block title %}edit{% endblock %}
 {% block content %}
 {% load my_json %}
+<link href="/static/css/new_publication.css" rel="stylesheet">
+<div class="row margin-b">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control" id="doi-field" placeholder="doi:">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" onclick="doisearch()">Search</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div><!-- /.row -->
 <form action="" method="post">
     {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
@@ -24,5 +35,5 @@
     {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
 </script>
 <script type="text/javascript" src="/static/js/editform.js"></script>
-<link href="/static/css/new_publication.css" rel="stylesheet">
+
 {% endblock %}

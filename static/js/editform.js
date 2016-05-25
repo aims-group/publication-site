@@ -9,6 +9,9 @@ $(document).ready(function(){
         }
         $(element).after(newelem);
     });
+    $('#publication-optional-inputs').accordion({
+      collapsible: true
+    });
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -17,3 +20,74 @@ for(i=0; i < count; i++) {
     $('#id_form-' + i + '-DELETE').closest('td').hide();
 }
 
+function doisearch() {
+    $('#loading').show();
+    var doi = $("#doi-field").val();
+    $.ajax({
+        url: '/finddoi',
+        method: 'GET',
+        data: {'doi': doi},
+        success: function(data){
+        console.log(data);
+            if(data.success){
+                $('.warning-message').removeClass('alert alert-warning').text('');
+                if(data.doi) $('#id_pub-doi').val(data.doi);
+                if(data.title) $('#id_pub-title').val(data.title);
+                if(data.publication_date) $('#id_pub-publication_date').val(data.publication_date);
+                if(data.url) $('#id_pub-url').val(data.url);
+                if(data.title) $('#id_pub-title').val(data.title);
+                if($('#id_book-book_name').length){
+                    if(data.book_name) $($('#id_book-book_name')).val(data.book_name)
+                    if(data.book_name) $('#id_book-book_name').val(data.book_name);
+                    if(data.start_page) $('#id_book-start_page').val(data.start_page);
+                    if(data.end_page) $('#id_book-end_page').val(data.end_page);
+                    if(data.publisher) $('#id_book-publisher').val(data.publisher);
+                }
+                else if($('id_conf-conference_name').length){
+                    if(data.conference_name) $('#id_conf-conference_name').val(data.conference_name);
+                    if(data.start_page) $('#id_conf-start_page').val(data.start_page);
+                    if(data.end_page) $('#id_conf-end_page').val(data.end_page);
+                    if(data.publisher) $('#id_conf-publisher').val(data.publisher);
+                }
+                else if($('#id_journal-name')){
+                    if(data.journal_name) $('#id_journal-name').val(data.journal_name);
+                    if(data.volume_number) $('#id_journal-volume_number').val(data.volume_number);
+                    if(data.article_number) $('#id_journal-article_number').val(data.article_number);
+                    if(data.start_page) $('#id_journal-start_page').val(data.start_page);
+                    if(data.end_page) $('#id_journal-end_page').val(data.end_page);
+                }
+                else if($('#id_mag-name')){
+                    if(data.mag_name) $('#id_mag-name').val(data.magazine_name);
+                    if(data.volume_number) $('#id_mag-volume_number').val(data.volume_number);
+                    if(data.article_number) $('#id_mag-article_number').val(data.article_number);
+                    if(data.start_page) $('#id_mag-start_page').val(data.start_page);
+                    if(data.end_page) $('#id_mag-end_page').val(data.end_page);
+                }
+                var authorCount = $('#id_form-TOTAL_FORMS').val();
+                while(data.authors_list.length > authorCount){
+                    cloneMore(emptyform, num);
+                    authorCount = $('#id_form-TOTAL_FORMS').val();
+                }
+                $.each($('.author-name.tt-input'), function(index, elem){
+                    if(data.authors_list.length > index){
+                        $(elem).val(data.authors_list[index].name);
+                    }
+                    else{
+                        return false; //break out of loop
+                    }
+                });
+            }
+            else{
+                $('.warning-message').addClass('alert alert-warning').text(data.message);
+            }
+            $('#loading').hide();
+            showForm();
+        },
+        error: function(jqxhr, status, error){
+            $('.warning-message').removeClass('alert alert-warning').text('');
+            $('#loading').hide();
+            showForm();
+            alert("Ajax Failed");
+        }
+    });
+}

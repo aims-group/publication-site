@@ -6,7 +6,7 @@
         {{ pub_form.status.errors }}
         {{ pub_form.status }}
         </div>
-        <div class="publication-input">
+        <div class="publication-input required">
         {{ pub_form.doi.label_tag }}
         {{ pub_form.doi.errors }}
         {{ pub_form.doi }}
@@ -28,7 +28,7 @@
         </div>
         <div id="publication-optional-inputs">
             <h5 class="btn btn-sm btn-info">Optional Info</h5>
-            <div>
+            <div class="well well-sm">
                 <div class="publication-input">
                 {{ pub_form.url.label_tag }}
                 {{ pub_form.url.errors }}

@@ -29,6 +29,16 @@ $( "#publication-form-wrapper" ).on( "tabsactivate", '#meta-tabs', function( eve
 
 });
 
+$( "#id_pub-status" ).change(function() {
+    if($("#id_pub-status option:selected").text() === "Published"){
+        $( "#id_pub-doi" ).parent().addClass('required');
+    }
+    else{
+        $( "#id_pub-doi" ).parent().removeClass('required');
+    }
+});
+
+
 function doisearch(showFormClicked) {
     if (showFormClicked === true) {
         $('.warning-message').removeClass('alert alert-warning').text('');
@@ -58,6 +68,7 @@ function doisearch(showFormClicked) {
                     $('#id_conf-start_page').val(data.start_page);
                     $('#id_conf-end_page').val(data.end_page);
                     $('#id_conf-publisher').val(data.publisher);
+                    $('#id_journal-name').val(data.journal_name);
                     $('#id_journal-volume_number').val(data.volume_number);
                     $('#id_journal-article_number').val(data.article_number);
                     $('#id_journal-start_page').val(data.start_page);
@@ -116,10 +127,10 @@ function submitPublication() {
 
 function setUpForm(active = 0, metaActive = 0) {
     $('#publication-optional-inputs').accordion({
-      collapsible: true, active: false, autoHeight: false
+      collapsible: true, active: false
     });
     $('#journal-optional-inputs').accordion({
-      collapsible: true, active: false, autoHeight: false
+      collapsible: true, active: false
     });
     $( "#tabs" ).tabs({ active: active });
     $( "#meta-tabs" ).tabs({ active: metaActive });

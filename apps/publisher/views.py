@@ -509,7 +509,7 @@ def finddoi(request):
                 elif datelength == 3:
                     publication_date = str(initial['published-print']['date-parts'][0][1]) + '/' + str(
                         initial['published-print']['date-parts'][0][2]) + '/' + str(initial['published-print']['date-parts'][0][0])
-            elif 'issued' in initial.keys() and 'date-parts' in initial['issued'].keys():
+            elif 'issued' in initial.keys() and 'date-parts' in initial['issued'].keys() and initial['issued']['date-parts'][0][0]:
                 datelength = len(initial['issued']['date-parts'][0])
                 publication_date = initial['issued']['date-parts'][0][0]
                 if datelength == 1:
