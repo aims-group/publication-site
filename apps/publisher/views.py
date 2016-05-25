@@ -16,6 +16,9 @@ import pdb
 
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type, edit):
+    print request
+    print 'now printing post'
+    print request.POST
     publication = pub_form.save(commit=False)
     publication.submitter = request.user
     publication.publication_type = pub_type
@@ -291,15 +294,22 @@ def edit(request, pubid):
             other.publication_id = publication
             other.save()
             return redirect('review')
+        meta_form = []
+        for project in pub_instance.projects.all():
+            meta_form.append({
+                'name': str(project),
+                'exp_form': ExperimentForm(initial={'experiment': [box.id for box in pub_instance.experiments.all()]}, queryset=project.experiments),
+                'freq_form': FrequencyForm(initial={'frequency': [box.id for box in pub_instance.frequency.all()]}, queryset=project.frequencies),
+                'keyword_form': KeywordForm(initial={'keyword': [box.id for box in pub_instance.keywords.all()]}, queryset=project.keywords),
+                'model_form': ModelForm(initial={'model': [box.id for box in pub_instance.model.all()]}, queryset=project.models),
+                'var_form': VariableForm(initial={'variable': [box.id for box in pub_instance.variables.all()]}, queryset=project.variables),
+            })
+        meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
         return render(request, 'site/edit.html',
-                      {'pub_form': pub_form, 'author_form': author_form_set, 'freq_form': FrequencyForm(initial=request.POST),
-                       'exp_form': ExperimentForm(initial=request.POST),
-                       'keyword_form': KeywordForm(initial=request.POST),
-                       'model_form': ModelForm(initial=request.POST), 'var_form': VariableForm(initial=request.POST), 'media_form': media_form,
-                       'pub_type': pub_type,
-                       'ensemble_data': ensemble_data,
+                      {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
+                       'ensemble_data': ensemble_data, 'meta_form': meta_form
                        })
 
     else:
@@ -337,6 +347,7 @@ def edit(request, pubid):
                     'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
                 })
             meta_type = publication.projects.first()
+            # Technically, publications can have more than one project. currently only one is ever used, so take the first
             ensemble_data = str([[value['model_id'], value['ensemble']] for value in
                                  PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',

@@ -12,6 +12,9 @@ $(document).ready(function(){
     $('#publication-optional-inputs').accordion({
       collapsible: true
     });
+    if($("#id_status option:selected").text() !== "Published"){
+        $( "#id_doi" ).parent().removeClass('required');
+    }
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -19,6 +22,15 @@ var count = parseInt($('#id_form-TOTAL_FORMS').val());
 for(i=0; i < count; i++) {
     $('#id_form-' + i + '-DELETE').closest('td').hide();
 }
+
+$( "#id_status" ).change(function() {
+    if($("#id_status option:selected").text() === "Published"){
+        $( "#id_doi" ).parent().addClass('required');
+    }
+    else{
+        $( "#id_doi" ).parent().removeClass('required');
+    }
+});
 
 function doisearch() {
     $('#loading').show();
@@ -31,37 +43,37 @@ function doisearch() {
         console.log(data);
             if(data.success){
                 $('.warning-message').removeClass('alert alert-warning').text('');
-                if(data.doi) $('#id_pub-doi').val(data.doi);
-                if(data.title) $('#id_pub-title').val(data.title);
-                if(data.publication_date) $('#id_pub-publication_date').val(data.publication_date);
-                if(data.url) $('#id_pub-url').val(data.url);
-                if(data.title) $('#id_pub-title').val(data.title);
+                if(data.doi) $('#id_doi').val(data.doi);
+                if(data.title) $('#id_title').val(data.title);
+                if(data.publication_date) $('#id_publication_date').val(data.publication_date);
+                if(data.url) $('#id_url').val(data.url);
+                if(data.title) $('#id_title').val(data.title);
                 if($('#id_book-book_name').length){
-                    if(data.book_name) $($('#id_book-book_name')).val(data.book_name)
-                    if(data.book_name) $('#id_book-book_name').val(data.book_name);
-                    if(data.start_page) $('#id_book-start_page').val(data.start_page);
-                    if(data.end_page) $('#id_book-end_page').val(data.end_page);
-                    if(data.publisher) $('#id_book-publisher').val(data.publisher);
+                    if(data.book_name) $($('#id_book_name')).val(data.book_name);
+                    if(data.book_name) $('#id_book_name').val(data.book_name);
+                    if(data.start_page) $('#id_start_page').val(data.start_page);
+                    if(data.end_page) $('#id_end_page').val(data.end_page);
+                    if(data.publisher) $('#id_publisher').val(data.publisher);
                 }
                 else if($('id_conf-conference_name').length){
-                    if(data.conference_name) $('#id_conf-conference_name').val(data.conference_name);
-                    if(data.start_page) $('#id_conf-start_page').val(data.start_page);
-                    if(data.end_page) $('#id_conf-end_page').val(data.end_page);
-                    if(data.publisher) $('#id_conf-publisher').val(data.publisher);
+                    if(data.conference_name) $('#id_conference_name').val(data.conference_name);
+                    if(data.start_page) $('#id_start_page').val(data.start_page);
+                    if(data.end_page) $('#id_end_page').val(data.end_page);
+                    if(data.publisher) $('#id_publisher').val(data.publisher);
                 }
                 else if($('#id_journal-name')){
-                    if(data.journal_name) $('#id_journal-name').val(data.journal_name);
-                    if(data.volume_number) $('#id_journal-volume_number').val(data.volume_number);
-                    if(data.article_number) $('#id_journal-article_number').val(data.article_number);
-                    if(data.start_page) $('#id_journal-start_page').val(data.start_page);
-                    if(data.end_page) $('#id_journal-end_page').val(data.end_page);
+                    if(data.journal_name) $('#id_name').val(data.journal_name);
+                    if(data.volume_number) $('#id_volume_number').val(data.volume_number);
+                    if(data.article_number) $('#id_article_number').val(data.article_number);
+                    if(data.start_page) $('#id_start_page').val(data.start_page);
+                    if(data.end_page) $('#id_end_page').val(data.end_page);
                 }
                 else if($('#id_mag-name')){
                     if(data.mag_name) $('#id_mag-name').val(data.magazine_name);
-                    if(data.volume_number) $('#id_mag-volume_number').val(data.volume_number);
-                    if(data.article_number) $('#id_mag-article_number').val(data.article_number);
-                    if(data.start_page) $('#id_mag-start_page').val(data.start_page);
-                    if(data.end_page) $('#id_mag-end_page').val(data.end_page);
+                    if(data.volume_number) $('#id_volume_number').val(data.volume_number);
+                    if(data.article_number) $('#id_article_number').val(data.article_number);
+                    if(data.start_page) $('#id_start_page').val(data.start_page);
+                    if(data.end_page) $('#id_end_page').val(data.end_page);
                 }
                 var authorCount = $('#id_form-TOTAL_FORMS').val();
                 while(data.authors_list.length > authorCount){

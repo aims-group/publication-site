@@ -58,11 +58,18 @@ class AuthorFormSet(AuthorFormSetBase):
 class PublicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PublicationForm, self).__init__(*args, **kwargs)
-        self.fields['doi'].required = False
+        self.fields['doi'].required = True
         self.fields['url'].required = False
         self.fields['project_number'].required = False
         self.fields['task_number'].required = False
         self.fields['abstract'].required = False
+
+    def clean(self):
+        data = super(PublicationForm, self).clean()
+        print data.get('status')
+        if data.get('status') != 0 and 'doi' in self.errors:
+            del self.errors['doi']
+        return data
 
     class Meta:
         model = Publication
