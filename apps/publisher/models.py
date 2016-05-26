@@ -96,7 +96,7 @@ class Funding(django_models.Model):
 
 class Author(django_models.Model):
     name = django_models.TextField()
-    institution = django_models.TextField()
+    institution = django_models.TextField(blank=True)
 
     def __unicode__(self):
         return self.name

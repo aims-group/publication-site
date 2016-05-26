@@ -42,6 +42,10 @@ class RegistrationViewUniqueEmail(RegistrationView):
     form_class = RegistrationForm
 
 class AuthorForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AuthorForm, self).__init__(*args, **kwargs)
+        self.fields['institution'].required = False
+
     class Meta:
         model = Author
         fields = '__all__'
