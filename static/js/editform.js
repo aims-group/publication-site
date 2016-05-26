@@ -70,7 +70,7 @@ function doisearch() {
                     if(data.end_page) $('#id_end_page').val(data.end_page);
                 }
                 else if($('#id_mag-name')){
-                    if(data.mag_name) $('#id_mag-name').val(data.magazine_name);
+                    if(data.mag_name) $('#id_magazine-name').val(data.magazine_name);
                     if(data.volume_number) $('#id_volume_number').val(data.volume_number);
                     if(data.article_number) $('#id_article_number').val(data.article_number);
                     if(data.start_page) $('#id_start_page').val(data.start_page);

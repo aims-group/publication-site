@@ -15,7 +15,7 @@
                 <li role="presentation"><a href="#tabs-4">Magazine</a></li>
                 <li role="presentation"><a href="#tabs-5">Poster</a></li>
                 <li role="presentation"><a href="#tabs-6">Presentation</a></li>
-                <li role="presentation"><a href="#tabs-7">Technical_Report</a></li>
+                <li role="presentation"><a href="#tabs-7">Technical Report</a></li>
                 <li role="presentation"><a href="#tabs-8">Other</a></li>
             </ul>
         </div>
@@ -128,16 +128,64 @@
                 </div>
             </div>
             <div id="tabs-5">
-                {{ poster_form }}
+                <div class="required">
+                {% for field in poster_form  %}
+                    {% if field.field.required %}
+                        {{ field.label_tag }}
+                        {{ field.errors }}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div id="poster-optional-inputs" class="optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div class="well well-sm">
+                    {% for field in poster_form  %}
+                        {% if not field.field.required %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
             <div id="tabs-6">
-                {{ presentation_form }}
+                <div class="required">
+                    {{ presentation_form }}
+                </div>
             </div>
             <div id="tabs-7">
-                {{ technical_form }}
+                <div class="required">
+                {% for field in technical_form  %}
+                    {% if field.field.required %}
+                        {{ field.label_tag }}
+                        {{ field.errors }}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+                <div id="technical-optional-inputs" class="optional-inputs">
+                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <div class="well well-sm">
+                    {% for field in technical_form  %}
+                        {% if not field.field.required %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
             <div id="tabs-8">
-                {{ other_form }}
+                <div class="required">
+                    {{ other_form }}
+                </div>
             </div>
         </div>
     </div>

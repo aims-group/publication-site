@@ -25,7 +25,21 @@
     <div class="panel panel-default">
         <div class="panel-heading"><span class="md-font">Publication Details</span></div>
         <div class="panel-body">
-            {{ media_form }}
+            {% for field in media_form %}
+                {% if field.field.required %}
+                    <div class="required">
+                    {{ field.label_tag }}
+                    {{ field.errors }}
+                    {{ field }}
+                    </div>
+                {% else %}
+                    <div>
+                    {{ field.label_tag }}
+                    {{ field.errors }}
+                    {{ field }}
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
     {% include 'snippets/authorForm.html' %}

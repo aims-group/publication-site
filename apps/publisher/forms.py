@@ -4,6 +4,7 @@ from registration.forms import RegistrationFormUniqueEmail
 from registration.backends.simple.views import RegistrationView
 from django.contrib.auth.models import User
 from captcha.fields import ReCaptchaField
+from django.core.exceptions import ValidationError
 
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
@@ -64,9 +65,14 @@ class PublicationForm(forms.ModelForm):
         self.fields['task_number'].required = False
         self.fields['abstract'].required = False
 
+    def clean_doi(self):
+        doi = self.cleaned_data['doi']
+        if Publication.objects.filter(doi=doi).exists():
+            raise ValidationError("Doi already exists")
+        return doi
+
     def clean(self):
         data = super(PublicationForm, self).clean()
-        print data.get('status')
         if data.get('status') != 0 and 'doi' in self.errors:
             del self.errors['doi']
         return data
