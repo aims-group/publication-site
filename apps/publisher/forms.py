@@ -54,7 +54,7 @@ class AuthorForm(forms.ModelForm):
             'institution': forms.TextInput(attrs={'class': 'form-control author-inst'}),
         }
 
-AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=1)
+AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=0, min_num=1, validate_min=True)
 
 class AuthorFormSet(AuthorFormSetBase):
     pass
@@ -62,6 +62,7 @@ class AuthorFormSet(AuthorFormSetBase):
 
 class PublicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        self.pub_id = kwargs.pop('pub_id', None)
         super(PublicationForm, self).__init__(*args, **kwargs)
         self.fields['doi'].required = True
         self.fields['url'].required = False
@@ -71,7 +72,8 @@ class PublicationForm(forms.ModelForm):
 
     def clean_doi(self):
         doi = self.cleaned_data['doi']
-        if Publication.objects.filter(doi=doi).exists():
+        pub = Publication.objects.filter(doi=doi)
+        if pub.exists() and pub.first().id != int(self.pub_id):
             raise ValidationError("Doi already exists")
         return doi
 

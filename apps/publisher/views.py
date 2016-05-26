@@ -261,7 +261,7 @@ def edit(request, pubid):
             entries = Publication.objects.filter(submitter=request.user.id)
             error = 'Error: You must be the owner of a submission to edit it.'
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
-        pub_form = PublicationForm(request.POST or None, instance=pub_instance)
+        pub_form = PublicationForm(request.POST or None, pub_id=pubid, instance=pub_instance)
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
@@ -363,7 +363,7 @@ def edit(request, pubid):
 @login_required()
 def new(request):
     if request.method == 'GET':
-        formset = formset_factory(AuthorForm, extra=1)
+        formset = formset_factory(AuthorForm, extra=0, min_num=1, validate_min=True)
         author_form = formset()
         all_forms = init_forms(author_form)
         meta_form = []
@@ -381,7 +381,7 @@ def new(request):
 
     elif request.method == 'POST':
         pub_type = request.POST.get('pub_type', '')
-        formset = formset_factory(AuthorForm)
+        formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
         author_form_set = formset(request.POST)
         all_forms = init_forms(author_form_set, request.POST)
         if pub_type == 'Book':
