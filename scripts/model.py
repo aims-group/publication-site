@@ -68,7 +68,8 @@ model_data = [
          'MRI-ESM1',
          'NICAM.09',
          'NorESM1-M',
-         'NorESM1-ME'
+         'NorESM1-ME',
+         'Other'
      ]},
     {'project_name': 'CMIP6',
      'models': [

@@ -96,5 +96,6 @@ journal_names = [
     'The Holocene',
     'Theoretical and Applied Climatology',
     'Water Resources Research',
-    'Weather and Forecasting'
+    'Weather and Forecasting',
+    'Other'
 ]

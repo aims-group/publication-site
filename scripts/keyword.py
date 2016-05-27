@@ -106,7 +106,8 @@ keyword_data = [
          'Weather',
          'WG1 (physical climate system)',
          'WG2 (climate change impacts)',
-         'WG3 (assessment / mitigation)'
+         'WG3 (assessment / mitigation)',
+         'Other'
      ]},
     {'project_name': 'CMIP6',
      'keywords': [

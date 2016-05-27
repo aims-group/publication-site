@@ -143,7 +143,9 @@ variable_data = [
          'water evaporation flux from soil',
          'water flux correction',
          'water sublimation flux',
-         'wind speed']},
+         'wind speed',
+         'Other'
+     ]},
     {'project_name': 'CMIP6',
      'variables': [
 

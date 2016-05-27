@@ -9,6 +9,7 @@ frequency_data = [
          'Monthly',
          'Sub-Hourly',
          'Yearly',
+         'Other'
      ]},
     {'project_name': 'CMIP6',
      'frequencies': [

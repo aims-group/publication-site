@@ -37,7 +37,8 @@ experiment_data = [
          'sstClim4xCO2',
          'sstClimAerosol',
          'sstClimSulfate',
-         'volcIn2010'
+         'volcIn2010',
+         'Other'
      ]},
     {'project_name': 'CMIP6',
      'experiments': [
