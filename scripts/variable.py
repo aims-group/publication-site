@@ -60,6 +60,7 @@ variable_data = [
          'northward ocean heat transport due to overturning',
          'northward sea ice velocity',
          'northward wind',
+         'ocean chlorophyll',
          'ocean mixed layer thickness defined by mixing scheme',
          'ocean mixed layer thickness defined by sigma t',
          'ocean volume',
