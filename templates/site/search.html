@@ -5,19 +5,20 @@
 <link rel="stylesheet" href="/static/css/search.css">
 <h1>{{ type.title }}: {{ option }}</h1><hr>
 
-<div class="col-sm-9">
+<div class="publication-container col-sm-9">
 
 
     <div class="row">
-        <div class="col-md-2"><h4>Published</h4></div>
+        <div class="col-md-2"><h4 id="year-published">Published</h4></div>
         <div class="col-md-9"><h4>Title</h4></div>
         <div class="col-md-1"><h4>Type</h4></div>
     </div>
 
     {% if publications %}
         {% for publication in publications %}
+            <div class="publication">
             <div class="row">
-                <div class="col-md-2">{{ publication.publication_date|date:"Y" }} </div>
+                <div class="date col-md-2">{{ publication.publication_date|date:"Y" }} </div>
                 <div class="col-md-9">
                     {{ publication.title }}<br/>
                         (<a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">Citation</a>)
@@ -26,8 +27,10 @@
                         <div id="more_info{{ publication.id }}"style="display:none">empty</div>
                 </div>
             <div class="col-md-1">{{ publication.get_publication_type_display }} </div>
+
             </div>
             <hr>
+                </div>
         {% endfor %}
     {% else %}
         <p>No publications found.</p>
@@ -51,70 +54,8 @@
     {% endif %}
 </div>
 
-<script>
-  function show_citation(id){
-    if ($("div #citation"+id).html() == "empty"){
-      url = "/ajax/citation/" + id
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: 'json',
-        success: function(data){
-        var authorstring = ''
-            $.each(data.authors, function(index, author){
-                if(index == 0){
-                    authorstring += author;
-                }
-                authorstring += (', ' + author);
-            });
-            var citation = $('<span/>')
-            .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
-            .append($('<a/>').text(data.url).attr('href', data.url));
-          $("div #citation"+id).html(citation);
-          $("div #citation"+id).toggle();
-        },
-        error: function(request, status, error){
-          alert(request + " | " +  status + " | " +  error);
-        }
-      });
-    }
-    else{
-       $("div #citation"+id).toggle();
-    }
-  }
-  function show_more_info(id){
-    if ($("div #more_info"+id).html() == "empty"){
-      url = "/ajax/moreinfo/" + id
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: 'json',
-        success: function(data){
-          output = data.key;
-          output = output.replace(/,/g, '<br/>');
-          metadata = output.split("|");
-          data =  "<table class=\"table\">" +
-                  "<th>Experiments</th><th>models</th><th>Variables</th><th>Keywords</th><tr>" +
-                  "<td>" + metadata[0] + "</td>" +
-                  "<td>" + metadata[1] + "</td>" +
-                  "<td>" + metadata[2] + "</td>" +
-                  "<td>" + metadata[3] + "</td>" +
-                  "</tr></table>";
-          $("div #more_info"+id).html(data);
-          $("div #more_info"+id).toggle();
-        },
-        error: function(request, status, error){
-          alert(request + " | " +  status + " | " +  error);
-        }
-      });
-    }
-    else{
-      $("div #more_info"+id).toggle();
-    }
-  }
-</script>
+<div class="test"></div>
 
+<script type="text/javascript" src="/static/js/search.js"></script>
 
 {% endblock %}

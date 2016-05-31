@@ -62,7 +62,11 @@ class AuthorFormSet(AuthorFormSetBase):
 
 class PublicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        self.pub_id = kwargs.pop('pub_id', None)
+        try:
+            self.pub_id = int(kwargs.pop('pub_id', 0))
+        except Exception as e:
+            print e
+            self.pub_id = 0
         super(PublicationForm, self).__init__(*args, **kwargs)
         self.fields['doi'].required = True
         self.fields['url'].required = False
@@ -73,6 +77,7 @@ class PublicationForm(forms.ModelForm):
     def clean_doi(self):
         doi = self.cleaned_data['doi']
         pub = Publication.objects.filter(doi=doi)
+        print self.pub_id
         if pub.exists() and pub.first().id != int(self.pub_id):
             raise ValidationError("Doi already exists")
         return doi
