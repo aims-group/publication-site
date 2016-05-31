@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
-import pdb
+
 
 # If you don't do this you cannot use Bootstrap CSS
 class LoginForm(AuthenticationForm):

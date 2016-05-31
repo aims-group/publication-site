@@ -5,6 +5,7 @@
 <form action="/new" method="post">
     {% csrf_token %}
     {% include "snippets/publicationForm.html" %}
+    {% include "snippets/authorForm.html" %}
     <div id="tabs" class="panel panel-default">
         <div class="panel-heading">
             <input id="pub_type" type="hidden" name="pub_type" value="Book">
@@ -189,8 +190,6 @@
             </div>
         </div>
     </div>
-
-    {% include "snippets/authorForm.html" %}
 
     {% include "snippets/metaForm.html" %}
 </form>

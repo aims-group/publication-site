@@ -10,15 +10,12 @@ from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
 import datetime
-import pprint
-import pdb
+
 
 
 # Helper functions
 def save_publication(pub_form, request, author_form_set, pub_type, edit):
-    print request
-    print 'now printing post'
-    print request.POST
+
     publication = pub_form.save(commit=False)
     publication.submitter = request.user
     publication.publication_type = pub_type
@@ -473,8 +470,6 @@ def finddoi(request):
     if not empty and status == 200:
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(initial)
         if 'DOI' in initial.keys():
             doi = initial['DOI']
         else:
@@ -605,7 +600,7 @@ def ajax_more_info(request, pub_id):
 
 
 def ajax_prefetch_authors(request):
-    authors = Author.objects.all().values_list('name', 'institution').distinct()[:250]  # limit to 250 entries
+    authors = Author.objects.all().values_list('name', 'institution').distinct()[:400]  # limit to 400 entries
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
 
