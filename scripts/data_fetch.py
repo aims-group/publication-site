@@ -67,6 +67,14 @@ def main():
         for ptype in publication_type.fetchall():
             pub_type = ptype[0]
         publication_type.close()
+        if pub_type == 'J':
+            new_publication.publication_type = 2
+        elif pub_type == 'A' or pub_type == 'P':
+            new_publication.publication_type = 1
+        elif pub_type == 'T':
+            new_publication.publication_type = 6
+        else:
+            new_publication.publication_type = 7
         # END TYPE #
 
         # URL #
@@ -84,6 +92,11 @@ def main():
         for year in publication_date:
             new_publication.publication_date = datetime.strptime("1/1/" + str(year[0]), '%m/%d/%Y')
             # print new_publication.publication_date
+            if not AvailableYears.objects.filter(year=year[0]):
+                print year[0]
+                new_year = AvailableYears()
+                new_year.year = year[0]
+                new_year.save()
         publication_date.close()
         # END DATE #
 
@@ -111,11 +124,10 @@ def main():
             journal_name = db.cursor()
             journal_name.execute("SELECT a.attribute_value FROM publication as p, attribute as a, publication_has_attribute as pa where p.publication_id = pa.publication_id and a.attribute_id = pa.attribute_id AND attribute_key = 'journal' AND p.publication_id = " + str(current_id))
             for name in journal_name.fetchall():
-                # print JournalOptions.objects.filter(journal_name=name[0])
-                # print name[0]
                 if JournalOptions.objects.filter(journal_name=name[0]):
                     new_journal.journal_name = JournalOptions.objects.filter(journal_name=name[0])[0]
                 else:
+                    new_journal.journal_name = JournalOptions.objects.filter(journal_name='Other')[0]
                     print str(current_id) + " -- FAIL -- JOURNAL NAME"
             journal_name.close()
             # Volume Number
@@ -225,6 +237,7 @@ def main():
             for ri in report_issuer.fetchall():
                 new_technical_report.issuer = ri[0]
             report_issuer.close()
+            new_technical_report.save()
         else:
             new_other = Other()
             # publication_id
@@ -235,6 +248,7 @@ def main():
             for op in other_publication.fetchall():
                 new_other.other_pub = op[0]
             other_publication.close()
+            new_other.save()
         # END TYPE #
 
         # AUTHORS #
@@ -302,5 +316,17 @@ def main():
                 print pub_exp[0] + " -- FAIL -- EXPERIMENT"
         publication_experiment.close()
         # END EXPERIMENT #
+
+        # FREQUENCY #
+        publication_frequency = db.cursor()
+        publication_frequency.execute("SELECT attribute.display_name FROM publication, publication_has_attribute, attribute WHERE attribute.attribute_key = 'frequency' and publication.publication_id = publication_has_attribute.publication_id and publication_has_attribute.attribute_id= attribute.attribute_id and publication.publication_id = " + str(current_id))
+        for pub_freq in publication_frequency.fetchall():
+            if Frequency.objects.filter(frequency=pub_freq[0]):
+                new_publication.frequency.add(Frequency.objects.filter(frequency=pub_freq[0])[0])
+                # print Frequency.objects.filter(frequency=pub_freq[0])[0]
+            else:
+                print pub_freq[0] + " -- FAIL FREQUENCY"
+        publication_frequency.close()
+        # END FREQUENCY #
 
     publication_list.close()

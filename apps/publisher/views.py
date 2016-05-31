@@ -197,14 +197,15 @@ def search(request):
                     lookup = k
                     break
             publications = Publication.objects.filter(publication_type=lookup)
-            for pt in range(0, len(PUBLICATION_TYPE_CHOICE)):
+            for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
                 if Publication.objects.filter(publication_type=pt).count() == 0:
                     continue
-                pubttpe = {}
-                pubttpe['type'] = 'type'
-                pubttpe['options'] = PUBLICATION_TYPE_CHOICE[pt][1]
-                pubttpe['count'] = Publication.objects.filter(publication_type=pt).count()
-                data[str(PUBLICATION_STATUS_CHOICE[pt][1])] = pubttpe
+                pubtype = {}
+                pubtype['type'] = 'type'
+                typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
+                pubtype['options'] = typename
+                pubtype['count'] = Publication.objects.filter(publication_type=pt).count()
+                data[typename] = pubtype
             pubs["pages"] = data
 
         elif page_filter == 'variable':
@@ -226,7 +227,13 @@ def search(request):
             option = request.GET.get("option", str(now.year))
             pubs["option"] = option
             publications = Publication.objects.filter(publication_date__year=option)
-            # ToDo - finish here
+            for pub_years in AvailableYears.objects.all():
+                years = {}
+                years['type'] = 'year'
+                years['options'] = str(pub_years.year)
+                years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
+                data[str(pub_years.year)] = years
+            pubs["pages"] = data
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)
 
