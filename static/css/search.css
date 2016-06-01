@@ -10,3 +10,15 @@ hr {
 .sortable {
     cursor: pointer;
 }
+
+.sortable.ascending:after {
+    content:"▲";
+    font-size: small;
+    margin-left: 2px;
+}
+
+.sortable.descending:after {
+    content:"▼";
+    font-size: small;
+    margin-left: 2px;
+}

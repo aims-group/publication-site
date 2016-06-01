@@ -10,6 +10,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from models import *
 import requests
 import datetime
+import collections
 
 
 
@@ -230,7 +231,7 @@ def search(request):
                 years['options'] = str(pub_years.year)
                 years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
                 data[str(pub_years.year)] = years
-            pubs["pages"] = data
+            pubs["pages"] = collections.OrderedDict(sorted(data.items(), reverse=True))
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)
 

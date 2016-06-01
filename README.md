@@ -33,3 +33,7 @@ Inside of the local_setting.py you will want to set the following values as well
     EMAIL_PORT = 1025
 
 Production versions should set the full suite of smtp options according to the mail server being used.
+
+Performance Note:
+    Page load speed can be improved by optimizing the get_authors property in models.py
+    (It currently is about a second slower than calling .first() on the 'all' page)

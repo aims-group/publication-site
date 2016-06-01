@@ -16,7 +16,9 @@ $( document ).ready(function() {
                 if(index == 0){
                     authorstring += author;
                 }
-                authorstring += (', ' + author);
+                else{
+                    authorstring += (', ' + author);
+                }
             });
             var citation = $('<span/>')
             .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
@@ -83,13 +85,52 @@ $('#year-published').click(function(event){
             return a.year - b.year;
         });
         year_sort_toggle = !year_sort_toggle;
+        $('.ascending').removeClass('ascending');
+        $('.descending').removeClass('descending');
+        $('#year-published').addClass('ascending');
     }
     else {
         array.sort(function(a, b){
             return b.year - a.year;
         });
+        $('.ascending').removeClass('ascending');
+        $('.descending').removeClass('descending');
+        $('#year-published').addClass('descending');
         year_sort_toggle = !year_sort_toggle;
     }
+    jq = $();
+    array.forEach(function(obj){
+         jq = $(jq).push(obj.elem);
+    });
+    $(jq).appendTo('.publication-container');
+});
+
+$('#author-published').click(function(event){
+    //Note: chrome does not do a stable sort, whereas firefox and safari do.
+    var array = []
+    $('.publication').each(function(ind){
+        var obj = {author: $(this).find('.authors').text(), elem: $(this).detach()};
+        array.push(obj);
+    });
+    if (!author_sort_toggle){
+        array.sort(function(a, b){
+            return a.author.localeCompare(b.author);
+        });
+        author_sort_toggle = !author_sort_toggle;
+        $('.ascending').removeClass('ascending');
+        $('.descending').removeClass('descending');
+        $('#author-published').addClass('ascending');
+    }
+    else {
+        array.sort(function(a, b){
+            return b.author.localeCompare(a.author);
+        });
+        $('.ascending').removeClass('ascending');
+        $('.descending').removeClass('descending');
+        $('#author-published').addClass('descending');
+        author_sort_toggle = !author_sort_toggle;
+    }
+    console.log(array);
     jq = $();
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);

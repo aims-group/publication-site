@@ -1,6 +1,6 @@
 from django.db import models as django_models
 from django.contrib.auth.models import User
-
+import pdb
 AUTHOR_TITLE_CHOICE = (
     (0, 'Dr'),
     (1, 'Hon'),
@@ -136,6 +136,21 @@ class Publication(django_models.Model):
     @property
     def get_year(self):
         return self.publication_date.year
+
+    @property
+    def get_authors(self):
+        # return self.authors.first()
+        count = self.authors.count()
+        authors = self.authors.all()
+        if count > 2:
+            return "{0}, {1}, et al.".format(str(authors[0]), str(authors[1]))
+        elif count == 2:
+            return "{0}, {1}".format(str(authors[0]), str(authors[1]))
+        elif count == 1:
+            return str(authors[0])
+        else:
+            return ''
+
 
 
 class PubModels(django_models.Model):
