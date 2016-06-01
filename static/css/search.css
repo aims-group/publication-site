@@ -11,6 +11,9 @@ hr {
     cursor: pointer;
 }
 
+.sortable:hover {
+    background-color: #f2f2f2;
+}
 .sortable.ascending:after {
     content:"▲";
     font-size: small;
@@ -22,3 +25,5 @@ hr {
     font-size: small;
     margin-left: 2px;
 }
+
+

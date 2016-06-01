@@ -9,9 +9,9 @@
 
 
     <div class="row">
-        <div class="col-md-2"><h4 id="year-published" class="sortable">Year</h4></div>
-        <div class="col-md-2"><h4 id="author-published" class="sortable">Author</h4></div>
-        <div class="col-md-8"><h4>Title</h4></div>
+        <div class="col-md-2"><h4 id="year-heading" class="sortable">Year</h4></div>
+        <div class="col-md-2"><h4 id="author-heading" class="sortable">Author</h4></div>
+        <div class="col-md-8"><h4 id="title-heading" class="sortable">Title</h4></div>
 
     </div>
 
@@ -19,9 +19,9 @@
         {% for publication in publications %}
             <div class="publication">
             <div class="row">
-                <div class="date col-md-2">{{ publication.publication_date|date:"Y" }} </div>
+                <div class="dates col-md-2">{{ publication.publication_date|date:"Y" }} </div>
                 <div class="authors col-md-2">{{ publication.get_authors }} </div>
-                <div class="col-md-8">
+                <div class="titles col-md-8">
                     {{ publication.title }}<br/>
                         (<a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">Citation</a>)
                         (<a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">More Info</a>)
