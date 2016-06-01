@@ -77,7 +77,6 @@ class PublicationForm(forms.ModelForm):
     def clean_doi(self):
         doi = self.cleaned_data['doi']
         pub = Publication.objects.filter(doi=doi)
-        print self.pub_id
         if pub.exists() and pub.first().id != int(self.pub_id):
             raise ValidationError("Doi already exists")
         return doi

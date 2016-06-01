@@ -33,6 +33,7 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
         avail.save()
     ensemble = request.POST.getlist('ensemble')
     models = request.POST.getlist('model')
+    print models
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
     for model_id in models:

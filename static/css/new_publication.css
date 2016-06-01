@@ -33,3 +33,20 @@
 .hidden {
     display: none;
 }
+
+#id_model {
+    display: table;
+    width: 100%
+}
+#id_model li {
+    display: table-row;
+}
+
+#id_model li label {
+    display: table-cell;
+    text-align: left;
+}
+
+#id_model li input {
+    display: table-cell;
+}
