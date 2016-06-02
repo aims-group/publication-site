@@ -119,7 +119,7 @@ class Publication(django_models.Model):
     experiments = django_models.ManyToManyField(Experiment)
     frequency = django_models.ManyToManyField(Frequency)
     keywords = django_models.ManyToManyField(Keyword)
-    model = django_models.ManyToManyField(Model)
+    model = django_models.ManyToManyField(Model, through='PubModels')
     variables = django_models.ManyToManyField(Variable)
 
     def __unicode__(self):
