@@ -15,7 +15,7 @@ class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Username", max_length=30,
                                widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'username'}))
     password = forms.CharField(label="Password", max_length=30,
-                               widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'password'}))
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'passwrd', 'autocomplete': 'off'}))
 
 
 class RegistrationForm(RegistrationFormUniqueEmail):
@@ -23,10 +23,10 @@ class RegistrationForm(RegistrationFormUniqueEmail):
                              required=True)
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
     password1 = forms.CharField(label="Password",
-                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+                                widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password', 'autocomplete': 'off'}))
     password2 = forms.CharField(label="Confirm Password",
                                 widget=forms.PasswordInput(
-                                    attrs={'class': 'form-control', 'placeholder': 'Verify Password'}))
+                                    attrs={'class': 'form-control', 'placeholder': 'Verify Password', 'autocomplete': 'off'}))
 
     class Meta:
         model = User
