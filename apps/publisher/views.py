@@ -11,6 +11,7 @@ from models import *
 import requests
 import datetime
 import collections
+import pdb
 
 
 
@@ -33,7 +34,6 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
         avail.save()
     ensemble = request.POST.getlist('ensemble')
     models = request.POST.getlist('model')
-    print models
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
     for model_id in models:
@@ -85,7 +85,7 @@ def init_forms(author_form, request=None, instance=None):
 
 
 def get_all_options():
-    all_options = {}
+    all_options = collections.OrderedDict()
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
@@ -99,7 +99,7 @@ def get_all_options():
 
 def search(request):
     pubs = {}
-    data = {}
+    data = collections.OrderedDict()
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
@@ -116,7 +116,7 @@ def search(request):
             option = request.GET.get("option", "1pctCO2")
             pubs["option"] = option
             publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
-            for exp in Experiment.objects.all():
+            for exp in Experiment.objects.all().order_by('experiment'):
                 if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
                     continue
                 exps = {}
@@ -130,7 +130,7 @@ def search(request):
             option = request.GET.get("option", "3-hourly")
             pubs["option"] = option
             publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
-            for frq in Frequency.objects.all():
+            for frq in Frequency.objects.all().order_by('frequency'):
                 if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
                     continue
                 frqs = {}
@@ -144,7 +144,7 @@ def search(request):
             option = request.GET.get("option", "Abrupt change")
             pubs["option"] = option
             publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
-            for kyw in Keyword.objects.all():
+            for kyw in Keyword.objects.all().order_by('keyword'):
                 if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
                     continue
                 kyws = {}
@@ -158,7 +158,7 @@ def search(request):
             option = request.GET.get("option", "ACCESS1.0")
             pubs["option"] = option
             publications = Publication.objects.filter(model=Model.objects.filter(model=option))
-            for mod in Model.objects.all():
+            for mod in Model.objects.all().order_by('model'):
                 if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
                     continue
                 mods = {}
@@ -211,7 +211,7 @@ def search(request):
             option = request.GET.get("option", "air pressure")
             pubs["option"] = request.GET.get("option", "air pressure")
             publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
-            for var in Variable.objects.all():
+            for var in Variable.objects.all().order_by('variable'):
                 if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
                     continue
                 vars = {}
@@ -226,13 +226,13 @@ def search(request):
             option = request.GET.get("option", str(now.year))
             pubs["option"] = option
             publications = Publication.objects.filter(publication_date__year=option)
-            for pub_years in AvailableYears.objects.all():
+            for pub_years in AvailableYears.objects.all().order_by('-year'):
                 years = {}
                 years['type'] = 'year'
                 years['options'] = str(pub_years.year)
                 years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
                 data[str(pub_years.year)] = years
-            pubs["pages"] = collections.OrderedDict(sorted(data.items(), reverse=True))
+            pubs["pages"] = data
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)
 
