@@ -38,8 +38,10 @@ class RegistrationForm(RegistrationFormUniqueEmail):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
         }
 
+
 class RegistrationViewUniqueEmail(RegistrationView):
     form_class = RegistrationForm
+
 
 class AuthorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -55,6 +57,7 @@ class AuthorForm(forms.ModelForm):
         }
 
 AuthorFormSetBase = forms.modelformset_factory(Author, fields=["name", "institution"], form=AuthorForm, can_delete=True, extra=0, min_num=1, validate_min=True)
+
 
 class AuthorFormSet(AuthorFormSetBase):
     pass
@@ -315,5 +318,3 @@ class VariableForm(forms.ModelForm):
         model = Variable
         fields = '__all__'
         exclude = ['variable']
-
-

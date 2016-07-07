@@ -70,9 +70,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'admin.wsgi.application'
 
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -116,5 +113,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 
 STATICFILES_DIRS = (
-        'static',
-    )
+    'static',
+)

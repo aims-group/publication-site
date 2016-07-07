@@ -152,7 +152,6 @@ class Publication(django_models.Model):
             return ''
 
 
-
 class PubModels(django_models.Model):
     publication = django_models.ForeignKey(Publication)
     model = django_models.ForeignKey(Model)

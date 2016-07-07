@@ -58,7 +58,6 @@ class Command(BaseCommand):
                 pair_list.append(lookupdict[str(model)])
                 temp_count.append(str(model))
 
-
             for variable in publication.variables.all():
                 if not str(variable) in lookupdict.keys():
                     size = Publication.variables.through.objects.filter(variable_id=variable.id).count()
@@ -77,7 +76,6 @@ class Command(BaseCommand):
                         if target not in stats[source]:
                             stats[source][target] = 0
                         stats[source][target] += 1
-
 
             links = links + [{"source": comb[0], "target": comb[1]} for comb in combinations(pair_list, 2)]
 
