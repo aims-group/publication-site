@@ -127,7 +127,9 @@ function submitPublication() {
     });
 }
 
-function setUpForm(active = 0, metaActive = 0) {
+function setUpForm() {
+    var active = arguments[0] === undefined ? 0 : arguments[0];
+    var metaActive = arguments[1] === undefined ? 0 : arguments[1];
     $('#publication-optional-inputs').accordion({
       collapsible: true, active: false
     });

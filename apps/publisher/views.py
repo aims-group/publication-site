@@ -600,7 +600,7 @@ def ajax_more_info(request, pub_id):
 
 
 def ajax_prefetch_authors(request):
-    authors = Author.objects.all().values_list('name', 'institution').distinct()[:400]  # limit to 400 entries
+    authors = Author.objects.all().values_list('name', 'institution').distinct()  # limit to 400 entries
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
 
