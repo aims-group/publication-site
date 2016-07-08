@@ -50,3 +50,11 @@
 #id_model li input {
     display: table-cell;
 }
+
+#model-ensemble-labels {
+    width:100%;
+}
+
+#model-label {
+    width:53%;
+}
