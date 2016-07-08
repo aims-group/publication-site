@@ -584,6 +584,11 @@ def ajax_citation(request, pub_id):
     return JsonResponse(json)
 
 
+def ajax_abstract(request, pub_id):
+    pub = Publication.objects.get(id=pub_id)
+    return JsonResponse({'abstract': pub.abstract})
+
+
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
 

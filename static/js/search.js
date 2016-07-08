@@ -68,6 +68,34 @@ $( document ).ready(function() {
     }
   }
 
+  function show_abstract(id){
+    if ($("div #abstract"+id).html() == "empty"){
+      url = "/ajax/abstract/" + id + "/";
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: {},
+        dataType: 'json',
+        success: function(data){
+        if(data.abstract) {
+            var abstract = "<p><em>Abstract:</em> " + data.abstract + "</p>";
+        }
+        else {
+            var abstract = "<p><em>Abstract not Supplied</em></p>"
+        }
+          $("div #abstract"+id).html(abstract);
+          $("div #abstract"+id).toggle();
+        },
+        error: function(request, status, error){
+          alert(request + " | " +  status + " | " +  error);
+        }
+      });
+    }
+    else{
+      $("div #abstract"+id).toggle();
+    }
+  }
+
 $.fn.push = function(selector) {
     Array.prototype.push.apply(this, $.makeArray($(selector)));
     return this;

@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^network-graph/', views.network_graph, name='network_graph'),
     url(r'^ajax/?$', views.ajax),
     url(r'^ajax/citation/(?P<pub_id>\d+)/$', views.ajax_citation),
+    url(r'^ajax/abstract/(?P<pub_id>\d+)/$', views.ajax_abstract),
     url(r'^ajax/moreinfo/(?P<pub_id>\d+)/$', views.ajax_more_info),
     url(r'^ajax/data/prefetch_authors/$', views.ajax_prefetch_authors),
     url(r'^ajax/data/all_authors/$', views.ajax_all_authors),
