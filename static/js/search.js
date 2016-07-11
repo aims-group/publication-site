@@ -21,9 +21,29 @@ $( document ).ready(function() {
                     authorstring += (', ' + author);
                 }
             });
-            var citation = $('<span/>')
-            .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
-            .append($('<a/>').text(data.url).attr('href', data.url));
+            if (data.type == 'Journal'){
+                var citation = $('<span/>')
+                    .append($('<span/>').text(authorstring + ', ' + data.date + ': ' + data.title + '. '))
+                    .append('<span class="citation-italic">' + data.journal_name + '</span>, ');
+                if (data.volume_number){
+                    citation.append('<span class="citation-bold">'+ data.volume_number + '</span>, ');
+                }
+                if(data.start_page && data.end_page){
+                    citation.append('<span>' + data.start_page + '-' + data.end_page + ', ' + '</span>');
+                }
+                else if (data.start_page) {
+                    citation.append('<span>' + data.start_page + ', ' +'</span>');
+                }
+                console.log(data.doi);
+                if(data.doi !== 'doi:' && data.doi !== ''){
+                    citation.append('<span>' + data.doi + '.' +'</span>');
+                }
+            }
+            else {
+                var citation = $('<span/>')
+                .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
+                .append($('<a/>').text(data.url).attr('href', data.url));
+            }
           $("div #citation"+id).html(citation);
           $("div #citation"+id).toggle();
         },

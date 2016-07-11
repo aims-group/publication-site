@@ -83,8 +83,8 @@ class Project(django_models.Model):
 class JournalOptions(django_models.Model):
     journal_name = django_models.TextField()
 
-    def __str__(self):
-        return self.journal_name
+    def __unicode__(self):
+        return '%s' % (self.journal_name)
 
 
 class Funding(django_models.Model):
@@ -195,8 +195,8 @@ class Journal(django_models.Model):
     start_page = django_models.TextField(blank=True)
     end_page = django_models.TextField(blank=True)
 
-    def __str__(self):
-        return self.journal_name
+    def __unicode__(self):
+        return '%s' % (self.journal_name)
 
 
 class Magazine(django_models.Model):

@@ -580,7 +580,16 @@ def ajax(request):
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
     authors = [author.name for author in pub.authors.all()]
-    json = {'title': pub.title, 'date': str(pub.publication_date), 'url': pub.url, 'authors': authors}
+    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+    if pub_type == 'Journal':
+        journal = pub.journal_set.all()[0]
+        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                'year': pub.publication_date.year}
+    else:
+        json = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'type': pub_type}
     return JsonResponse(json)
 
 
