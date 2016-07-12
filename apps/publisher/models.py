@@ -1,6 +1,5 @@
 from django.db import models as django_models
 from django.contrib.auth.models import User
-import pdb
 AUTHOR_TITLE_CHOICE = (
     (0, 'Dr'),
     (1, 'Hon'),

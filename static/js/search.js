@@ -23,7 +23,7 @@ $( document ).ready(function() {
             });
             if (data.type == 'Journal'){
                 var citation = $('<span/>')
-                    .append($('<span/>').text(authorstring + ', ' + data.date + ': ' + data.title + '. '))
+                    .append($('<span/>').text(authorstring + ', ' + data.year + ': ' + data.title + '. '))
                     .append('<span class="citation-italic">' + data.journal_name + '</span>, ');
                 if (data.volume_number){
                     citation.append('<span class="citation-bold">'+ data.volume_number + '</span>, ');
@@ -34,15 +34,38 @@ $( document ).ready(function() {
                 else if (data.start_page) {
                     citation.append('<span>' + data.start_page + ', ' +'</span>');
                 }
-                console.log(data.doi);
                 if(data.doi !== 'doi:' && data.doi !== ''){
                     citation.append('<span>' + data.doi + '.' +'</span>');
                 }
             }
+            else if (data.type == 'Book'){
+                var citation = $('<span/>')
+                    .append($('<span/>').text(authorstring + ', ' + data.year + ': ' ))
+                if(data.chapter_title){
+                    citation.append(data.chapter_title + '. ');
+                }
+                if(data.book_name){
+                    citation.append('<span class="citation-italic">'+ data.book_name + '</span>, ');
+                }
+                if(data.editor){
+                    citation.append(data.editor + ', ');
+                }
+                if(data.publisher){
+                    citation.append(data.publisher + ', ');
+                }
+                if(data.start_page && data.end_page){
+                    citation.append('<span>' + data.start_page + '-' + data.end_page + '.' + '</span>');
+                }
+                else if (data.start_page) {
+                    citation.append('<span>' + data.start_page + ', ' +'</span>');
+                }
+            }
             else {
                 var citation = $('<span/>')
-                .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
-                .append($('<a/>').text(data.url).attr('href', data.url));
+                .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.year + '. '))
+                if (data.url){
+                    citation.append($('<a/>').text(data.url).attr('href', data.url));
+                }
             }
           $("div #citation"+id).html(citation);
           $("div #citation"+id).toggle();

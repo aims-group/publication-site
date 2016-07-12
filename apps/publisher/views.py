@@ -587,6 +587,12 @@ def ajax_citation(request, pub_id):
                 'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
                 'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
                 'year': pub.publication_date.year}
+    elif pub_type == 'Book':
+        book = pub.book_set.all()[0]
+        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
     else:
         json = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
                 'doi': pub.doi, 'type': pub_type}
