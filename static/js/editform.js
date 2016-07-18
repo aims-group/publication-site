@@ -63,11 +63,17 @@ function doisearch() {
                     if(data.publisher) $('#id_publisher').val(data.publisher);
                 }
                 else if($('#id_journal-name')){
-                    if(data.journal_name) $('#id_name').val(data.journal_name);
+                    if(data.journal_name) $('#id_journal_name').val(data.journal_index+1);
                     if(data.volume_number) $('#id_volume_number').val(data.volume_number);
                     if(data.article_number) $('#id_article_number').val(data.article_number);
                     if(data.start_page) $('#id_start_page').val(data.start_page);
                     if(data.end_page) $('#id_end_page').val(data.end_page);
+                    if(data.guessed_journal){
+                        var warn = $('<div/>')
+                        .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                        .addClass('alert alert-warning');
+                        $('#journal-warning').append(warn);
+                    }
                 }
                 else if($('#id_mag-name')){
                     if(data.mag_name) $('#id_magazine-name').val(data.magazine_name);

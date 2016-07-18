@@ -56,6 +56,7 @@ function doisearch(showFormClicked) {
             success: function(data){
             console.log(data);
                 if(data.success){
+                    $('#journal-warning').empty();
                     $('.warning-message').removeClass('alert alert-warning').text('');
                     $('#id_pub-doi').val(data.doi);
                     $('#id_pub-title').val(data.title);
@@ -70,11 +71,19 @@ function doisearch(showFormClicked) {
                     $('#id_conf-start_page').val(data.start_page);
                     $('#id_conf-end_page').val(data.end_page);
                     $('#id_conf-publisher').val(data.publisher);
-                    $('#id_journal-name').val(data.journal_name);
+                    $('#id_journal-journal_name').val(data.journal_index+1);
                     $('#id_journal-volume_number').val(data.volume_number);
                     $('#id_journal-article_number').val(data.article_number);
                     $('#id_journal-start_page').val(data.start_page);
                     $('#id_journal-end_page').val(data.end_page);
+
+                    if(data.guessed_journal){
+                      var warn = $('<div/>')
+                      .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                      .addClass('alert alert-warning');
+                      $('#journal-warning').append(warn);
+                    }
+
                     var authorCount = $('#id_form-TOTAL_FORMS').val();
                     while(data.authors_list.length > authorCount){
                         cloneMore(emptyform, num);

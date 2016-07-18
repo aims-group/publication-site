@@ -3,3 +3,6 @@ django-recaptcha==1.0.5
 django-registration==2.0.4
 django-widget-tweaks==1.4.1
 requests==2.9.1
+python-Levenshtein==0.12.0
+git+ssh://git@github.com/seatgeek/fuzzywuzzy.git@0.11.0#egg=fuzzywuzzy
+

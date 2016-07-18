@@ -7,6 +7,8 @@ from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, Jour
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
+from scripts.journals import journal_names
+from fuzzywuzzy import process
 from models import *
 import requests
 import datetime
@@ -489,6 +491,17 @@ def finddoi(request):
             url = ''
         if 'container-title' in initial.keys():
             container_title = initial['container-title']
+            if container_title in journal_names:
+                journal_index = journal_names.index(container_title)
+                guessed_journal = False
+            else:
+                guess = process.extractOne(container_title, journal_names)
+                if guess is None:
+                    journal_index = 0
+                else:
+                    journal_name = guess[0]
+                    journal_index = journal_names.index(journal_name)
+                guessed_journal = True
         else:
             container_title = ''
         if 'page' in initial.keys():
@@ -557,7 +570,8 @@ def finddoi(request):
 
         data = {'success': True, 'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
                 'publication_date': publication_date, 'volume_number': volume, 'issue': issue, 'authors_list': authors_list}
-        data.update(dict.fromkeys(['book_name', 'conference_name', 'journal_name', 'magazine_name'], container_title))
+        data.update(dict.fromkeys(['book_name', 'conference_name', 'magazine_name'], container_title))
+        data.update({'journal_index': journal_index, 'guessed_journal': guessed_journal})
         return JsonResponse(data)
     else:
         data = {'success': False, 'message': 'Unable to pre-fill form with the given DOI'}
