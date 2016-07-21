@@ -11,7 +11,7 @@ $(function() {
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     prefetch: {
         url: '../ajax/data/prefetch_authors/',
-        }
+        },
     });
     init_typeahead();
 });

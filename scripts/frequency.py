@@ -15,5 +15,9 @@ frequency_data = [
      'frequencies': [
 
      ]},
+    {'project_name': 'AIMS',
+     'frequencies': [
+
+     ]},
 
 ]

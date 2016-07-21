@@ -26,4 +26,11 @@ hr {
     margin-left: 2px;
 }
 
+.citation-bold {
+    font-weight: bold;
+}
+
+.citation-italic {
+    font-style: italic;
+}
 

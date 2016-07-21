@@ -151,4 +151,8 @@ variable_data = [
      'variables': [
 
      ]},
+    {'project_name': 'AIMS',
+     'variables': [
+
+     ]},
 ]

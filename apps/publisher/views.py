@@ -7,11 +7,12 @@ from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, Jour
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
+from scripts.journals import journal_names
+from fuzzywuzzy import process
 from models import *
 import requests
 import datetime
 import collections
-
 
 
 # Helper functions
@@ -33,7 +34,6 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
         avail.save()
     ensemble = request.POST.getlist('ensemble')
     models = request.POST.getlist('model')
-    print models
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
     # Delete any experiments that were unchecked
     for model_id in models:
@@ -85,7 +85,7 @@ def init_forms(author_form, request=None, instance=None):
 
 
 def get_all_options():
-    all_options = {}
+    all_options = collections.OrderedDict()
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
@@ -99,7 +99,7 @@ def get_all_options():
 
 def search(request):
     pubs = {}
-    data = {}
+    data = collections.OrderedDict()
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
@@ -116,7 +116,7 @@ def search(request):
             option = request.GET.get("option", "1pctCO2")
             pubs["option"] = option
             publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
-            for exp in Experiment.objects.all():
+            for exp in Experiment.objects.all().order_by('experiment'):
                 if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
                     continue
                 exps = {}
@@ -130,7 +130,7 @@ def search(request):
             option = request.GET.get("option", "3-hourly")
             pubs["option"] = option
             publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
-            for frq in Frequency.objects.all():
+            for frq in Frequency.objects.all().order_by('frequency'):
                 if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
                     continue
                 frqs = {}
@@ -144,7 +144,7 @@ def search(request):
             option = request.GET.get("option", "Abrupt change")
             pubs["option"] = option
             publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
-            for kyw in Keyword.objects.all():
+            for kyw in Keyword.objects.all().order_by('keyword'):
                 if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
                     continue
                 kyws = {}
@@ -158,7 +158,7 @@ def search(request):
             option = request.GET.get("option", "ACCESS1.0")
             pubs["option"] = option
             publications = Publication.objects.filter(model=Model.objects.filter(model=option))
-            for mod in Model.objects.all():
+            for mod in Model.objects.all().order_by('model'):
                 if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
                     continue
                 mods = {}
@@ -211,7 +211,7 @@ def search(request):
             option = request.GET.get("option", "air pressure")
             pubs["option"] = request.GET.get("option", "air pressure")
             publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
-            for var in Variable.objects.all():
+            for var in Variable.objects.all().order_by('variable'):
                 if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
                     continue
                 vars = {}
@@ -226,13 +226,13 @@ def search(request):
             option = request.GET.get("option", str(now.year))
             pubs["option"] = option
             publications = Publication.objects.filter(publication_date__year=option)
-            for pub_years in AvailableYears.objects.all():
+            for pub_years in AvailableYears.objects.all().order_by('-year'):
                 years = {}
                 years['type'] = 'year'
                 years['options'] = str(pub_years.year)
                 years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
                 data[str(pub_years.year)] = years
-            pubs["pages"] = collections.OrderedDict(sorted(data.items(), reverse=True))
+            pubs["pages"] = data
         pubs["publications"] = publications
     return render(request, 'site/search.html', pubs)
 
@@ -382,6 +382,7 @@ def new(request):
                 'model_form': ModelForm(queryset=project.models),
                 'var_form': VariableForm(queryset=project.variables),
             })
+        meta_form.sort(key=lambda x: x['name'])
         all_forms.update({'meta_form': meta_form})
         return render(request, 'site/new_publication.html', all_forms)
 
@@ -491,6 +492,17 @@ def finddoi(request):
             url = ''
         if 'container-title' in initial.keys():
             container_title = initial['container-title']
+            if container_title in journal_names:
+                journal_index = journal_names.index(container_title)
+                guessed_journal = False
+            else:
+                guess = process.extractOne(container_title, journal_names)
+                if guess is None:
+                    journal_index = 0
+                else:
+                    journal_name = guess[0]
+                    journal_index = journal_names.index(journal_name)
+                guessed_journal = True
         else:
             container_title = ''
         if 'page' in initial.keys():
@@ -559,7 +571,8 @@ def finddoi(request):
 
         data = {'success': True, 'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
                 'publication_date': publication_date, 'volume_number': volume, 'issue': issue, 'authors_list': authors_list}
-        data.update(dict.fromkeys(['book_name', 'conference_name', 'journal_name', 'magazine_name'], container_title))
+        data.update(dict.fromkeys(['book_name', 'conference_name', 'magazine_name'], container_title))
+        data.update({'journal_index': journal_index, 'guessed_journal': guessed_journal})
         return JsonResponse(data)
     else:
         data = {'success': False, 'message': 'Unable to pre-fill form with the given DOI'}
@@ -582,8 +595,28 @@ def ajax(request):
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
     authors = [author.name for author in pub.authors.all()]
-    json = {'title': pub.title, 'date': str(pub.publication_date), 'url': pub.url, 'authors': authors}
+    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+    if pub_type == 'Journal':
+        journal = pub.journal_set.all()[0]
+        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                'year': pub.publication_date.year}
+    elif pub_type == 'Book':
+        book = pub.book_set.all()[0]
+        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
+    else:
+        json = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'type': pub_type}
     return JsonResponse(json)
+
+
+def ajax_abstract(request, pub_id):
+    pub = Publication.objects.get(id=pub_id)
+    return JsonResponse({'abstract': pub.abstract})
 
 
 def ajax_more_info(request, pub_id):
@@ -602,7 +635,7 @@ def ajax_more_info(request, pub_id):
 
 
 def ajax_prefetch_authors(request):
-    authors = Author.objects.all().values_list('name', 'institution').distinct()[:400]  # limit to 400 entries
+    authors = Author.objects.all().values_list('name', 'institution').distinct()  # limit to 400 entries
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
 

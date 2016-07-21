@@ -42,7 +42,9 @@ experiment_data = [
      ]},
     {'project_name': 'CMIP6',
      'experiments': [
-
+     ]},
+    {'project_name': 'AIMS',
+     'experiments': [
      ]},
 
 ]

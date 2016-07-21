@@ -17,6 +17,7 @@ def get_project(project_name):
         project.save()
     return project
 
+
 class Command(BaseCommand):
     help = "Loads the database with dataset information such as controlled vocabulary."
 

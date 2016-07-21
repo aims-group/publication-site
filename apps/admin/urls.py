@@ -25,6 +25,3 @@ urlpatterns = [
     url(r'^accounts/register/$', RegistrationViewUniqueEmail.as_view()),
     url(r'^accounts/', include('registration.backends.simple.urls')),
 ]
-
-
-

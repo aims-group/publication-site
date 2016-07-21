@@ -21,9 +21,52 @@ $( document ).ready(function() {
                     authorstring += (', ' + author);
                 }
             });
-            var citation = $('<span/>')
-            .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.date + '. '))
-            .append($('<a/>').text(data.url).attr('href', data.url));
+            if (data.type == 'Journal'){
+                var citation = $('<span/>')
+                    .append($('<span/>').text(authorstring + ', ' + data.year + ': ' + data.title + '. '))
+                    .append('<span class="citation-italic">' + data.journal_name + '</span>, ');
+                if (data.volume_number){
+                    citation.append('<span class="citation-bold">'+ data.volume_number + '</span>, ');
+                }
+                if(data.start_page && data.end_page){
+                    citation.append('<span>' + data.start_page + '-' + data.end_page + ', ' + '</span>');
+                }
+                else if (data.start_page) {
+                    citation.append('<span>' + data.start_page + ', ' +'</span>');
+                }
+                if(data.doi !== 'doi:' && data.doi !== ''){
+                    citation.append('<span>' + data.doi + '.' +'</span>');
+                }
+            }
+            else if (data.type == 'Book'){
+                var citation = $('<span/>')
+                    .append($('<span/>').text(authorstring + ', ' + data.year + ': ' ))
+                if(data.chapter_title){
+                    citation.append(data.chapter_title + '. ');
+                }
+                if(data.book_name){
+                    citation.append('<span class="citation-italic">'+ data.book_name + '</span>, ');
+                }
+                if(data.editor){
+                    citation.append(data.editor + ', ');
+                }
+                if(data.publisher){
+                    citation.append(data.publisher + ', ');
+                }
+                if(data.start_page && data.end_page){
+                    citation.append('<span>' + data.start_page + '-' + data.end_page + '.' + '</span>');
+                }
+                else if (data.start_page) {
+                    citation.append('<span>' + data.start_page + ', ' +'</span>');
+                }
+            }
+            else {
+                var citation = $('<span/>')
+                .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.year + '. '))
+                if (data.url){
+                    citation.append($('<a/>').text(data.url).attr('href', data.url));
+                }
+            }
           $("div #citation"+id).html(citation);
           $("div #citation"+id).toggle();
         },
@@ -48,12 +91,36 @@ $( document ).ready(function() {
           output = data.key;
           output = output.replace(/,/g, '<br/>');
           metadata = output.split("|");
+          var exp = "";
+          var model = "";
+          var variable = "";
+          var keyword = "";
+          var arr = metadata[0].split("<br/>");
+          for (var i = 0, len = arr.length; i < len; i++){
+            var link = arr[i].replace(' ', '%20')
+            exp += "<a href=\"/search?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          }
+          arr = metadata[1].split("<br/>");
+          for (var i = 0, len = arr.length; i < len; i++){
+            var link = arr[i].replace(' ', '%20')
+            model += "<a href=\"/search?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          }
+          arr = metadata[2].split("<br/>");
+          for (var i = 0, len = arr.length; i < len; i++){
+            var link = arr[i].replace(' ', '%20')
+            variable += "<a href=\"/search?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          }
+          arr = metadata[3].split("<br/>");
+          for (var i = 0, len = arr.length; i < len; i++){
+            var link = arr[i].replace(' ', '%20')
+            keyword += "<a href=\"/search?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          }
           data =  "<table class=\"table\">" +
-                  "<th>Experiments</th><th>models</th><th>Variables</th><th>Keywords</th><tr>" +
-                  "<td>" + metadata[0] + "</td>" +
-                  "<td>" + metadata[1] + "</td>" +
-                  "<td>" + metadata[2] + "</td>" +
-                  "<td>" + metadata[3] + "</td>" +
+                  "<th>Experiments</th><th>Models</th><th>Variables</th><th>Keywords</th><tr>" +
+                  "<td>" + exp + "</td>" +
+                  "<td>" + model + "</td>" +
+                  "<td>" + variable + "</td>" +
+                  "<td>" + keyword + "</td>" +
                   "</tr></table>";
           $("div #more_info"+id).html(data);
           $("div #more_info"+id).toggle();
@@ -65,6 +132,34 @@ $( document ).ready(function() {
     }
     else{
       $("div #more_info"+id).toggle();
+    }
+  }
+
+  function show_abstract(id){
+    if ($("div #abstract"+id).html() == "empty"){
+      url = "/ajax/abstract/" + id + "/";
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: {},
+        dataType: 'json',
+        success: function(data){
+        if(data.abstract) {
+            var abstract = "<p><em>Abstract:</em> " + data.abstract + "</p>";
+        }
+        else {
+            var abstract = "<p><em>Abstract not Supplied</em></p>"
+        }
+          $("div #abstract"+id).html(abstract);
+          $("div #abstract"+id).toggle();
+        },
+        error: function(request, status, error){
+          alert(request + " | " +  status + " | " +  error);
+        }
+      });
+    }
+    else{
+      $("div #abstract"+id).toggle();
     }
   }
 

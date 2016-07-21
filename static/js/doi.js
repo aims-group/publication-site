@@ -56,6 +56,7 @@ function doisearch(showFormClicked) {
             success: function(data){
             console.log(data);
                 if(data.success){
+                    $('#journal-warning').empty();
                     $('.warning-message').removeClass('alert alert-warning').text('');
                     $('#id_pub-doi').val(data.doi);
                     $('#id_pub-title').val(data.title);
@@ -70,11 +71,19 @@ function doisearch(showFormClicked) {
                     $('#id_conf-start_page').val(data.start_page);
                     $('#id_conf-end_page').val(data.end_page);
                     $('#id_conf-publisher').val(data.publisher);
-                    $('#id_journal-name').val(data.journal_name);
+                    $('#id_journal-journal_name').val(data.journal_index+1);
                     $('#id_journal-volume_number').val(data.volume_number);
                     $('#id_journal-article_number').val(data.article_number);
                     $('#id_journal-start_page').val(data.start_page);
                     $('#id_journal-end_page').val(data.end_page);
+
+                    if(data.guessed_journal){
+                      var warn = $('<div/>')
+                      .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                      .addClass('alert alert-warning');
+                      $('#journal-warning').append(warn);
+                    }
+
                     var authorCount = $('#id_form-TOTAL_FORMS').val();
                     while(data.authors_list.length > authorCount){
                         cloneMore(emptyform, num);
@@ -127,7 +136,9 @@ function submitPublication() {
     });
 }
 
-function setUpForm(active = 0, metaActive = 0) {
+function setUpForm() {
+    var active = arguments[0] === undefined ? 0 : arguments[0];
+    var metaActive = arguments[1] === undefined ? 0 : arguments[1];
     $('#publication-optional-inputs').accordion({
       collapsible: true, active: false
     });
@@ -147,6 +158,14 @@ function setUpForm(active = 0, metaActive = 0) {
         $(newelem).attr('name', 'ensemble');
         $(newelem).attr('type', 'number');
         $(element).after(newelem);
+    });
+    console.log('here');
+    $.each($('.meta-form-list ul'), function(index, element) {
+        if($(element).html() === "")
+        {
+            //Check each meta form to see if it is empty. if so, hide it
+            $(element).parent().hide();
+        }
     });
 }
 

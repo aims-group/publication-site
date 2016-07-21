@@ -1,6 +1,5 @@
 from django.db import models as django_models
 from django.contrib.auth.models import User
-import pdb
 AUTHOR_TITLE_CHOICE = (
     (0, 'Dr'),
     (1, 'Hon'),
@@ -83,8 +82,8 @@ class Project(django_models.Model):
 class JournalOptions(django_models.Model):
     journal_name = django_models.TextField()
 
-    def __str__(self):
-        return self.journal_name
+    def __unicode__(self):
+        return '%s' % (self.journal_name)
 
 
 class Funding(django_models.Model):
@@ -152,7 +151,6 @@ class Publication(django_models.Model):
             return ''
 
 
-
 class PubModels(django_models.Model):
     publication = django_models.ForeignKey(Publication)
     model = django_models.ForeignKey(Model)
@@ -196,8 +194,8 @@ class Journal(django_models.Model):
     start_page = django_models.TextField(blank=True)
     end_page = django_models.TextField(blank=True)
 
-    def __str__(self):
-        return self.journal_name
+    def __unicode__(self):
+        return '%s' % (self.journal_name)
 
 
 class Magazine(django_models.Model):

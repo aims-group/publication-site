@@ -25,6 +25,7 @@
     <div class="panel panel-default">
         <div class="panel-heading"><span class="md-font">Publication Details</span></div>
         <div class="panel-body">
+            <div id="journal-warning"></div>
             {% for field in media_form %}
                 {% if field.field.required %}
                     <div class="required">

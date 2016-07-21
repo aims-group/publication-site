@@ -75,4 +75,8 @@ model_data = [
      'models': [
 
      ]},
+    {'project_name': 'AIMS',
+     'models': [
+
+     ]},
 ]
