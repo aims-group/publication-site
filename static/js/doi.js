@@ -159,6 +159,14 @@ function setUpForm() {
         $(newelem).attr('type', 'number');
         $(element).after(newelem);
     });
+    console.log('here');
+    $.each($('.meta-form-list ul'), function(index, element) {
+        if($(element).html() === "")
+        {
+            //Check each meta form to see if it is empty. if so, hide it
+            $(element).parent().hide();
+        }
+    });
 }
 
 function showForm(){

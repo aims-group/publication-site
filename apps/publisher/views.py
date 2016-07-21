@@ -382,6 +382,7 @@ def new(request):
                 'model_form': ModelForm(queryset=project.models),
                 'var_form': VariableForm(queryset=project.variables),
             })
+        meta_form.sort(key=lambda x: x['name'])
         all_forms.update({'meta_form': meta_form})
         return render(request, 'site/new_publication.html', all_forms)
 
