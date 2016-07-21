@@ -29,7 +29,9 @@
                     <li><a href="/search?type=year">Year</a></li>
                 </ul>
               </li>
-                <li><a href="/admin">Admin</a></li>
+                {% if user.is_superuser %}
+                    <li><a href="/admin">Admin</a></li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
