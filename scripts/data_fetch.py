@@ -274,7 +274,13 @@ def main():
         publication_model.execute("SELECT attribute.display_name FROM publication, publication_has_attribute, attribute WHERE attribute.attribute_key = 'model' and publication.publication_id = publication_has_attribute.publication_id and publication_has_attribute.attribute_id= attribute.attribute_id and publication.publication_id = " + str(current_id))
         for pub_model in publication_model.fetchall():
             if Model.objects.filter(model=pub_model[0]):
-                new_publication.model.add(Model.objects.filter(model=pub_model[0])[0])
+                #new_publication.model.add(Model.objects.filter(model=pub_model[0])[0])
+                new_pubmodel = PubModels()
+                new_pubmodel.publication = new_publication
+                new_pubmodel.model = Model.objects.filter(model=pub_model[0])[0]
+                new_pubmodel.ensemble = 1
+                new_pubmodel.save()
+
                 # print Model.objects.filter(model=pub_model[0])[0]
             else:
                 print pub_model[0] + " -- FAIL -- MODEL"
