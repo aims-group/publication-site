@@ -1,0 +1,23 @@
+{% if publications %}
+    {% for publication in publications %}
+        <div class="publication">
+        <div class="row">
+            <div class="dates col-md-2">{{ publication.publication_date|date:"Y" }} </div>
+            <div class="authors col-md-2">{{ publication.get_authors }} </div>
+            <div class="titles col-md-8">
+                {{ publication.title }}<br/>
+                    (<a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">Citation</a>)
+                    (<a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">More Info</a>)
+                    (<a onclick="show_abstract({{ publication.id }})" href="javascript:void(0)">Abstract</a>)
+                    <div id="citation{{ publication.id }}" style="display:none">empty</div>
+                    <div id="more_info{{ publication.id }}"style="display:none">empty</div>
+                    <div id="abstract{{ publication.id }}" style="display:none">empty</div>
+            </div>
+        </div>
+        <hr>
+            </div>
+    {% endfor %}
+    {% if scroll_link %}
+        <a class="jscroll-next" href="{{scroll_link}}"></a>
+    {% endif %}
+{% endif %}

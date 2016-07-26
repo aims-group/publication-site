@@ -98,11 +98,17 @@ def get_all_options():
 
 
 def search(request):
+    publications_to_load = 100  # number of publications to load at a time
     pubs = {}
     data = collections.OrderedDict()
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
+    try:
+        scroll_count = int(request.GET.get("scroll_count", "0"))
+    except ValueError as e:
+        print e
+        scroll_count = 0
 
     if request.method == 'GET':
         pubs["search"] = True
@@ -233,7 +239,23 @@ def search(request):
                 years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
                 data[str(pub_years.year)] = years
             pubs["pages"] = data
-        pubs["publications"] = publications
+
+        if scroll_count:
+            prev_articles = publications_to_load*scroll_count
+            new_articles = publications_to_load*(scroll_count+1)
+            if page_filter == 'all':
+                pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
+            else:
+                pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option, scroll_count + 1)
+            pubs["publications"] = publications[prev_articles:new_articles]
+            return render(request, 'snippets/load_publications.html', pubs)
+
+        else:
+            if page_filter == 'all':
+                pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
+            else:
+                pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option)
+            pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
 

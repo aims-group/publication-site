@@ -36,6 +36,9 @@
             <hr>
                 </div>
         {% endfor %}
+        {% if scroll_link %}
+            <a class="jscroll-next" href="{{scroll_link}}"></a>
+        {% endif %}
     {% else %}
         <p>No publications found.</p>
     {% endif %}
@@ -59,7 +62,7 @@
 </div>
 
 <div class="test"></div>
-
+<script type="text/javascript" src="/static/js/jscroll.min.js"></script>
 <script type="text/javascript" src="/static/js/search.js"></script>
 
 {% endblock %}

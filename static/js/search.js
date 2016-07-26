@@ -2,6 +2,9 @@ $( document ).ready(function() {
     year_sort_toggle = false;
     author_sort_toggle = false;
     title_sort_toggle = false;
+    $(".publication-container").jscroll({
+        nextSelector: 'a.jscroll-next:last'
+    });
 });
   function show_citation(id){
     if ($("div #citation"+id).html() == "empty"){
