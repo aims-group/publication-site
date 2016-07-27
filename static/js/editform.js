@@ -1,17 +1,14 @@
 $(document).ready(function(){
     $('#loading').hide();
-    $.each($('#id_model li label'), function(index, element) {
-        newelem = $('<input/>');
-        $(newelem).attr('id', 'ensemble_'+index);
-        $(newelem).attr('name', 'ensemble');
-        if(ensemble.length > 0 && ensemble[0][0] === index+1) {
-            $(newelem).val(ensemble[0][1]);
-            ensemble.shift(); //treat the array as a queue. [0] is always the next checked element
-        }
-        $(element).after(newelem);
-    });
     $('#publication-optional-inputs').accordion({
       collapsible: true
+    });
+    $.each($('.meta-form-list ul'), function(index, element) {
+        if($(element).html() === "")
+        {
+            //Check each meta form to see if it is empty. if so, hide it
+            $(element).parent().hide();
+        }
     });
     if($("#id_status option:selected").text() !== "Published"){
         $( "#id_doi" ).parent().removeClass('required');

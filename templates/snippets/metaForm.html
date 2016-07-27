@@ -17,15 +17,7 @@
                 <div class="meta-form-list col-md-4 well">{{ form.exp_form }}</div>
                 <div class="meta-form-list col-md-4 well">{{ form.freq_form }}</div>
                 <div class="meta-form-list col-md-4 well">{{ form.keyword_form }}</div>
-                <div class="meta-form-list col-md-6 well">
-                    <div id="model-ensemble-labels">
-                        <label id="model-label" for="{{form.model_form.id_for_label}}">Model:</label>
-                        <label id="ensemble-label">Ensemble Size:</label>
-                    </div>
-                    {% for field in form.model_form %}
-                        {{ field }}
-                    {% endfor %}
-                </div>
+                <div class="meta-form-list col-md-6 well">{{ form.model_form }}</div>
                 <div class="meta-form-list col-md-6 well">{{ form.var_form }}</div>
             </div>
             {% endfor %}

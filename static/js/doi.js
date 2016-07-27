@@ -2,7 +2,7 @@ $(document).ready(function(){
     $('#loading').hide();
     var CMIP5 = 1;
     var CMIP6 = 2;
-    setUpForm(0, CMIP6);
+    setUpForm(0, CMIP5);
     // When CMIP6 comes around, change the variable above to default to CMIP6 for new publications
 });
 
@@ -155,14 +155,6 @@ function setUpForm() {
     for(i=0; i < count; i++) {
         $('#id_form-' + i + '-DELETE').closest('td').remove();
     }
-    $.each($('#id_model li label'), function(index, element) {
-        newelem = $('<input/>');
-        $(newelem).attr('id', 'ensemble_'+index);
-        $(newelem).attr('name', 'ensemble');
-        $(newelem).attr('type', 'number');
-        $(element).after(newelem);
-    });
-    console.log('here');
     $.each($('.meta-form-list ul'), function(index, element) {
         if($(element).html() === "")
         {
