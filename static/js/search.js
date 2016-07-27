@@ -2,8 +2,24 @@ $( document ).ready(function() {
     year_sort_toggle = false;
     author_sort_toggle = false;
     title_sort_toggle = false;
+    last_sort = '';
     $(".publication-container").jscroll({
-        nextSelector: 'a.jscroll-next:last'
+        nextSelector: 'a.jscroll-next:last',
+        callback: function(){
+            $('.jscroll-added div').first().unwrap();
+            if (last_sort === 'year'){
+                year_sort_toggle = !year_sort_toggle;
+                year_sort();
+            }
+            else if (last_sort === 'author'){
+                author_sort_toggle = !author_sort_toggle;
+                author_sort();
+            }
+            else if (last_sort === 'title'){
+                title_sort_toggle = !title_sort_toggle;
+                title_sort();
+            }
+        },
     });
 });
   function show_citation(id){
@@ -177,14 +193,23 @@ $.fn.push = function(selector) {
     return this;
     //jquery .add does not preserve order so we make jquery use an array push
 };
-
-$('#year-heading').click(function(event){
+$('#year-heading').click(function(){
+    year_sort();
+});
+$('#author-heading').click(function(){
+    author_sort();
+});
+$('#title-heading').click(function(){
+    title_sort();
+});
+function year_sort(){
     //Note: chrome does not do a stable sort, whereas firefox and safari do.
     var array = []
     $('.publication').each(function(ind){
         var obj = {year: parseInt($(this).find('.dates').text()), elem: $(this).detach()};
         array.push(obj);
     });
+    var bottom = $('div.jscroll-next-parent').detach();
     if (!year_sort_toggle){
         array.sort(function(a, b){
             return a.year - b.year;
@@ -207,16 +232,19 @@ $('#year-heading').click(function(event){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container');
-});
+    $(jq).appendTo('.publication-container .jscroll-inner');
+    $(bottom).appendTo('.publication-container .jscroll-inner');
+    last_sort = 'year';
+};
 
-$('#author-heading').click(function(event){
+function author_sort(){
     //Note: chrome does not do a stable sort, whereas firefox and safari do.
     var array = []
     $('.publication').each(function(ind){
         var obj = {author: $(this).find('.authors').text(), elem: $(this).detach()};
         array.push(obj);
     });
+    var bottom = $('div.jscroll-next-parent').detach();
     if (!author_sort_toggle){
         array.sort(function(a, b){
             return a.author.localeCompare(b.author);
@@ -239,16 +267,19 @@ $('#author-heading').click(function(event){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container');
-});
+    $(jq).appendTo('.publication-container .jscroll-inner');
+    $(bottom).appendTo('.publication-container .jscroll-inner');
+    last_sort = 'author';
+};
 
-$('#title-heading').click(function(event){
+function title_sort(){
     //Note: chrome does not do a stable sort, whereas firefox and safari do.
     var array = []
     $('.publication').each(function(ind){
-        var obj = {title: $(this).find('.titles').text(), elem: $(this).detach()};
+        var obj = {title: $(this).find('.titles').text().trim(), elem: $(this).detach()};
         array.push(obj);
     });
+    var bottom = $('div.jscroll-next-parent').detach();
     if (!title_sort_toggle){
         array.sort(function(a, b){
             return a.title.localeCompare(b.title);
@@ -271,5 +302,7 @@ $('#title-heading').click(function(event){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container');
-});
+    $(jq).appendTo('.publication-container .jscroll-inner');
+    $(bottom).appendTo('.publication-container .jscroll-inner');
+    last_sort = 'title';
+};
