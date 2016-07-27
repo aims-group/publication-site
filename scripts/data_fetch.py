@@ -32,9 +32,6 @@ def main():
         new_publication.submitter = User.objects.filter(id=1)[0]
         # END SUBMITTER #
 
-        # PROJECT #
-        new_publication.projects.add(Project.objects.filter(project='CMIP5'))
-        # END PROJECT #
         # TITLE #
         publication_title = db.cursor()
         publication_title.execute("SELECT a.attribute_value FROM attribute AS a JOIN publication_has_attribute AS pha WHERE pha.attribute_id = a.attribute_id AND a.attribute_key = 'title' AND publication_id = " + str(current_id))
@@ -106,6 +103,10 @@ def main():
         # SAVE #
         new_publication.save()
         # END SAVE #
+
+        # PROJECT #
+        new_publication.projects.add(Project.objects.filter(project='CMIP5'))
+        # END PROJECT #
 
         # FUNDING #
         publication_funding = db.cursor()
