@@ -25,7 +25,7 @@ $( document ).ready(function() {
                 }
             });
             if (data.type == 'Journal'){
-                var citation = $('<span/>')
+                var citation = $('<p/>')
                     .append($('<span/>').text(authorstring + ', ' + data.year + ': ' + data.title + '. '))
                     .append('<span class="citation-italic">' + data.journal_name + '</span>, ');
                 if (data.volume_number){
@@ -92,39 +92,45 @@ $( document ).ready(function() {
         dataType: 'json',
         success: function(data){
           output = data.key;
-          output = output.replace(/,/g, '<br/>');
-          metadata = output.split("|");
-          var exp = "";
-          var model = "";
-          var variable = "";
-          var keyword = "";
-          var arr = metadata[0].split("<br/>");
-          for (var i = 0, len = arr.length; i < len; i++){
-            var link = arr[i].replace(' ', '%20')
-            exp += "<a href=\"/search?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          var data = ""
+          if (output === '|||'){
+            data = "<p><em>Additional information not provided</em></p>"
           }
-          arr = metadata[1].split("<br/>");
-          for (var i = 0, len = arr.length; i < len; i++){
-            var link = arr[i].replace(' ', '%20')
-            model += "<a href=\"/search?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
+          else{
+              output = output.replace(/,/g, '<br/>');
+              metadata = output.split("|");
+              var exp = "";
+              var model = "";
+              var variable = "";
+              var keyword = "";
+              var arr = metadata[0].split("<br/>");
+              for (var i = 0, len = arr.length; i < len; i++){
+                var link = arr[i].replace(' ', '%20')
+                exp += "<a href=\"/search?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              }
+              arr = metadata[1].split("<br/>");
+              for (var i = 0, len = arr.length; i < len; i++){
+                var link = arr[i].replace(' ', '%20')
+                model += "<a href=\"/search?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              }
+              arr = metadata[2].split("<br/>");
+              for (var i = 0, len = arr.length; i < len; i++){
+                var link = arr[i].replace(' ', '%20')
+                variable += "<a href=\"/search?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              }
+              arr = metadata[3].split("<br/>");
+              for (var i = 0, len = arr.length; i < len; i++){
+                var link = arr[i].replace(' ', '%20')
+                keyword += "<a href=\"/search?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              }
+              data =  "<table class=\"table\">" +
+                      "<th>Experiments</th><th>Models</th><th>Variables</th><th>Keywords</th><tr>" +
+                      "<td>" + exp + "</td>" +
+                      "<td>" + model + "</td>" +
+                      "<td>" + variable + "</td>" +
+                      "<td>" + keyword + "</td>" +
+                      "</tr></table>";
           }
-          arr = metadata[2].split("<br/>");
-          for (var i = 0, len = arr.length; i < len; i++){
-            var link = arr[i].replace(' ', '%20')
-            variable += "<a href=\"/search?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
-          }
-          arr = metadata[3].split("<br/>");
-          for (var i = 0, len = arr.length; i < len; i++){
-            var link = arr[i].replace(' ', '%20')
-            keyword += "<a href=\"/search?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
-          }
-          data =  "<table class=\"table\">" +
-                  "<th>Experiments</th><th>Models</th><th>Variables</th><th>Keywords</th><tr>" +
-                  "<td>" + exp + "</td>" +
-                  "<td>" + model + "</td>" +
-                  "<td>" + variable + "</td>" +
-                  "<td>" + keyword + "</td>" +
-                  "</tr></table>";
           $("div #more_info"+id).html(data);
           $("div #more_info"+id).toggle();
         },
