@@ -32,6 +32,9 @@ def main():
         new_publication.submitter = User.objects.filter(id=1)[0]
         # END SUBMITTER #
 
+        # PROJECT #
+        new_publication.projects.add(Project.objects.filter(project='CMIP5'))
+        # END PROJECT #
         # TITLE #
         publication_title = db.cursor()
         publication_title.execute("SELECT a.attribute_value FROM attribute AS a JOIN publication_has_attribute AS pha WHERE pha.attribute_id = a.attribute_id AND a.attribute_key = 'title' AND publication_id = " + str(current_id))
@@ -156,6 +159,7 @@ def main():
             journal_ep.close()
             # Save
             new_journal.save()
+
         elif pub_type == 'A' or pub_type == 'P':
             new_conference = Conference()
             # publication_id
@@ -215,6 +219,7 @@ def main():
                 new_conference.publisher = con_pub[0].decode("latin1").encode("UTF8")
             conference_pub.close()
             new_conference.save()
+
         elif pub_type == 'T':
             new_technical_report = TechnicalReport()
             # publication_id
