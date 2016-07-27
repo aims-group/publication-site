@@ -105,7 +105,7 @@ def main():
         # END SAVE #
 
         # PROJECT #
-        new_publication.projects.add(Project.objects.filter(project='CMIP5'))
+        new_publication.projects.add(Project.objects.filter(id=1)[0])
         # END PROJECT #
 
         # FUNDING #
