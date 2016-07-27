@@ -104,6 +104,10 @@ def main():
         new_publication.save()
         # END SAVE #
 
+        # PROJECT #
+        new_publication.projects.add(Project.objects.filter(id=1)[0])
+        # END PROJECT #
+
         # FUNDING #
         publication_funding = db.cursor()
         publication_funding.execute("SELECT * from publication where publication_id = " + str(current_id))
@@ -156,6 +160,7 @@ def main():
             journal_ep.close()
             # Save
             new_journal.save()
+
         elif pub_type == 'A' or pub_type == 'P':
             new_conference = Conference()
             # publication_id
@@ -215,6 +220,7 @@ def main():
                 new_conference.publisher = con_pub[0].decode("latin1").encode("UTF8")
             conference_pub.close()
             new_conference.save()
+
         elif pub_type == 'T':
             new_technical_report = TechnicalReport()
             # publication_id
