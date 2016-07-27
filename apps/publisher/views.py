@@ -90,6 +90,7 @@ def get_all_options():
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
+    all_options['project'] = "Project"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
     all_options['variable'] = "Variable"
@@ -239,6 +240,18 @@ def search(request):
                 years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
                 data[str(pub_years.year)] = years
             pubs["pages"] = data
+
+        elif page_filter == 'project':
+            option = request.GET.get("option", "CMIP5")
+            publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
+            data = {}
+            for project in Project.objects.all():
+                project_data = {}
+                project_data['type'] = 'project'
+                project_data['options'] = str(project)
+                project_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=project)).count()
+                data[(str(project))] = project_data
+            pubs['pages'] = data
 
         if scroll_count:
             prev_articles = publications_to_load*scroll_count
