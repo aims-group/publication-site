@@ -38,14 +38,12 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     # Delete any experiments that were unchecked
     for model_id in models:
         model = Model.objects.get(id=model_id)
-        ens = ensemble[model.id - 1]  # database index vs lists, so off by one
         pubmodel = PubModels.objects.filter(publication=publication.id, model=model_id)
-        if ens and ens.isdigit():  # Enforce that experiments must have an ensemble
-            if pubmodel:
-                pubmodel[0].ensemble = int(ens)
-                pubmodel[0].save()
-            else:
-                PubModels.objects.create(publication=publication, model=model, ensemble=ens)
+        if pubmodel:
+            pubmodel[0].ensemble = 1
+            pubmodel[0].save()
+        else:
+            PubModels.objects.create(publication=publication, model=model, ensemble=1)
     if edit:
         author_form_set.save(commit=False)
     for authorform in author_form_set:
@@ -246,6 +244,8 @@ def search(request):
             publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
             data = {}
             for project in Project.objects.all():
+                if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
+                    continue
                 project_data = {}
                 project_data['type'] = 'project'
                 project_data['options'] = str(project)
