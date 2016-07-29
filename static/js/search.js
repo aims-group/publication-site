@@ -3,6 +3,10 @@ $( document ).ready(function() {
     author_sort_toggle = false;
     title_sort_toggle = false;
     last_sort = '';
+    $('#search-toggle').click(function(){
+        $('#search-container').slideToggle('fast');
+    });
+
     $(".publication-container").jscroll({
         nextSelector: 'a.jscroll-next:last',
         callback: function(){
@@ -21,6 +25,7 @@ $( document ).ready(function() {
             }
         },
     });
+
 });
   function show_citation(id){
     if ($("div #citation"+id).html() == "empty"){

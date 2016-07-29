@@ -3,7 +3,35 @@
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/search.css">
-<h1>{{ type.title }}: {{ option }}</h1><hr>
+<div class="" id="search-row">
+    <h1>{{ type.title }}: {{ option }}</h1>
+    <button id="search-toggle" class="btn btn-sm btn-info" style=""><i class="glyphicon glyphicon-search"></i></button>
+</div>
+<div id="search-container" style="{{hide_search|default:''}}" class="row">
+    <div id="search-wrapper">
+        <form action="/search" method="GET">
+            <input type="hidden" name="type" value="search">
+            <div class="form-group col-xs-2 col-md-2">
+                <label for="year-search" class="control-label text-center">Year</label>
+                <input type="text" value="{{search_year|default:''}}" class="form-control" id="year-search" name="year">
+            </div>
+            <div class="form-group col-xs-4 col-md-4">
+                <label for="author-search" class="control-label text-center">Author</label>
+                <input type="text" value="{{search_author|default:''}}" class="form-control" id="author-search" name="author">
+            </div>
+            <div class="form-group col-xs-4 col-md-4">
+                <label for="title-search" class="control-label text-center">Title</label>
+                <input type="text" value="{{search_title|default:''}}" class="form-control" id="title-search" name="title">
+            </div>
+            <div class="form-group col-xs-2 col-md-2">
+                <label for="go-search" class="control-label text-center">&nbsp;</label>
+                <button type="submit" class="form-control btn btn-primary" id="go-search">Go</button>
+            </div>
+        </form>
+    </div>
+</div>
+<hr>
+
 
 <div class="publication-container col-sm-9">
 

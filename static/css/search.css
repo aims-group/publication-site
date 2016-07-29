@@ -34,3 +34,16 @@ hr {
     font-style: italic;
 }
 
+.search-wrapper{
+    overflow: hidden;
+}
+
+#search-row h1{
+    display: inline-block;
+    margin-bottom: 0px;
+}
+
+#search-row button{
+    margin-bottom: 17px;
+}
+

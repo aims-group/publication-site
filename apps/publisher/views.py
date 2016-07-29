@@ -7,6 +7,7 @@ from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, Jour
 from forms import PresentationForm, TechnicalReportForm, OtherForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
+from django.db.models import Q
 from scripts.journals import journal_names
 from fuzzywuzzy import process
 from models import *
@@ -103,6 +104,7 @@ def search(request):
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
+    pubs["hide_search"] = "display:none;"
     try:
         scroll_count = int(request.GET.get("scroll_count", "0"))
     except ValueError as e:
@@ -112,6 +114,7 @@ def search(request):
     if request.method == 'GET':
         pubs["search"] = True
         page_filter = request.GET.get("type", "all")
+        print page_filter
 
         if page_filter == 'all':
             publications = Publication.objects.all()
@@ -253,22 +256,52 @@ def search(request):
                 data[(str(project))] = project_data
             pubs['pages'] = data
 
-        if scroll_count:
-            prev_articles = publications_to_load*scroll_count
-            new_articles = publications_to_load*(scroll_count+1)
-            if page_filter == 'all':
-                pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
-            else:
-                pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
-            pubs["publications"] = publications[prev_articles:new_articles]
-            return render(request, 'snippets/load_publications.html', pubs)
+        elif page_filter == 'search':
+            year = request.GET.get('year', '')
+            author = request.GET.get('author', '')
+            title = request.GET.get('title', '')
+            try:
+                year = int(year)
+            except ValueError:
+                year = ''
 
-        else:
-            if page_filter == 'all':
-                pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
+            if not year:
+                publications = Publication.objects.all()
             else:
-                pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
-            pubs["publications"] = publications[:publications_to_load]
+                publications = Publication.objects.filter(publication_date__year=year)
+
+            if not author:
+                pass
+            else:
+                publications = publications.filter(authors__name__icontains=author)
+
+            if not title:
+                pass
+            else:
+                publications = publications.filter(title__icontains=title)
+            pubs['publications'] = publications
+            pubs['hide_search'] = False
+            pubs["search_year"] = year
+            pubs["search_author"] = author
+            pubs["search_title"] = title
+
+        if page_filter != 'search':
+            if scroll_count:
+                prev_articles = publications_to_load*scroll_count
+                new_articles = publications_to_load*(scroll_count+1)
+                if page_filter == 'all':
+                    pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
+                else:
+                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
+                pubs["publications"] = publications[prev_articles:new_articles]
+                return render(request, 'snippets/load_publications.html', pubs)
+
+            else:
+                if page_filter == 'all':
+                    pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
+                else:
+                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
+                pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
 
