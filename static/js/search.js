@@ -27,6 +27,40 @@ $( document ).ready(function() {
     });
 
 });
+
+$('#facet-links-container input.radio-sort').change(function(){
+    if(this.value == 'alphabetical'){
+        var array = []
+        $('#facet-links-container table tr').each(function(ind){
+            var obj = {name: $(this).find('td:nth-child(1)').text(), elem: $(this).detach()};
+            array.push(obj);
+        });
+        array.sort(function(a, b){
+            return a.name.localeCompare(b.name);
+        });
+        var jq = $();
+        array.forEach(function(obj){
+             jq = $(jq).push(obj.elem);
+        });
+        $(jq).appendTo('#facet-links-container table');
+    }
+    else{ // value == 'count'
+        var array = []
+        $('#facet-links-container table tr').each(function(ind){
+            var obj = {count: parseInt($(this).find('td:nth-child(2)').text()), elem: $(this).detach()};
+            array.push(obj);
+        });
+        array.sort(function(a, b){
+            return b.count - a.count;
+        });
+        var jq = $();
+        array.forEach(function(obj){
+             jq = $(jq).push(obj.elem);
+        });
+        $(jq).appendTo('#facet-links-container table');
+    }
+});
+
   function show_citation(id){
     if ($("div #citation"+id).html() == "empty"){
       url = "/ajax/citation/" + id

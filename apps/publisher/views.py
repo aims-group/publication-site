@@ -114,7 +114,6 @@ def search(request):
     if request.method == 'GET':
         pubs["search"] = True
         page_filter = request.GET.get("type", "all")
-        print page_filter
 
         if page_filter == 'all':
             publications = Publication.objects.all()

@@ -72,8 +72,14 @@
     {% endif %}
 </div>
 
-<div class="col-sm-3 well">
-    <h5> Publication Count: {{ total }}</h5>
+<div id="facet-links-container" class="col-sm-3 well">
+    <h5 class="text-center"> Publication Count: {{ total }}</h5>
+    {% if type != 'search' and type != 'all'  %}
+        <p class="text-center">
+            <input class="radio-sort" type="radio" name="sort_by" value="alphabetical" checked> Name
+            <input class="radio-sort" type="radio" name="sort_by" value=""> Count
+        </p>
+    {% endif%}
     {% if type == "all" %}
         <ul>
             {% for k, v in pages.items %}
@@ -89,7 +95,6 @@
     {% endif %}
 </div>
 
-<div class="test"></div>
 <script type="text/javascript" src="/static/js/jscroll.min.js"></script>
 <script type="text/javascript" src="/static/js/search.js"></script>
 
