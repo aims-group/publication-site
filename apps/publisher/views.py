@@ -662,7 +662,7 @@ def ajax(request):
 
 def ajax_citation(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
-    authors = [author.name for author in pub.authors.all()]
+    authors = [author.name for author in pub.authors.all().order_by('id')]
     pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
     if pub_type == 'Journal':
         journal = pub.journal_set.all()[0]
