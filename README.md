@@ -16,12 +16,6 @@ new CMDIP6 Publication reporting site
     python manage.py loaddata
     python manage.py runserver
 
-To prevent unnecessary server load, the network graph reads from a static json file.
-Create and update the json file by running the following command:
-
-    python manage.py createjson
-
-It is recommended that this command be set up to run nightly (via a cron job for example).
 
 For development use the following line to start a simple smtp server:
 
@@ -33,7 +27,3 @@ Inside of the local_setting.py you will want to set the following values as well
     EMAIL_PORT = 1025
 
 Production versions should set the full suite of smtp options according to the mail server being used.
-
-Performance Note:
-    Page load speed can be improved by optimizing the get_authors property in models.py
-    (It currently is about a second slower than calling .first() on the 'all' page)
