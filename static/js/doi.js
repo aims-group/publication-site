@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $('#loading').hide();
+    var JOURNAL = 2;
     var CMIP5 = 1;
     var CMIP6 = 2;
-    setUpForm(0, CMIP5);
+    setUpForm(JOURNAL, CMIP5);
     // When CMIP6 comes around, change the variable above to default to CMIP6 for new publications
 });
 
