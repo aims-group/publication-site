@@ -74,7 +74,9 @@
 
 <div id="facet-links-container" class="col-sm-3 well">
     <h5 class="text-center"> Publication Count: {{ total }}</h5>
-    {% if type != 'search' and type != 'all'  %}
+    {% if type == 'search' %}
+        <h5 class="text-center"> Returned Publications: {{ search_count }}</h5>
+    {% elif type != 'all' %}
         <p class="text-center">
             <input class="radio-sort" type="radio" name="sort_by" value="alphabetical" checked> Name
             <input class="radio-sort" type="radio" name="sort_by" value=""> Count

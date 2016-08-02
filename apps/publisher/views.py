@@ -244,8 +244,7 @@ def search(request):
         elif page_filter == 'project':
             option = request.GET.get("option", "CMIP5")
             publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
-            data = {}
-            for project in Project.objects.all():
+            for project in Project.objects.all().order_by('project'):
                 if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
                     continue
                 project_data = {}
@@ -278,6 +277,7 @@ def search(request):
                 pass
             else:
                 publications = publications.filter(title__icontains=title)
+            pubs['search_count'] = publications.count()
             pubs['publications'] = publications
             pubs['hide_search'] = False
             pubs["search_year"] = year
