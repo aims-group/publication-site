@@ -86,14 +86,20 @@ $('#facet-links-container input.radio-sort').change(function(){
                 if (data.volume_number){
                     citation.append('<span class="citation-bold">'+ data.volume_number + '</span>, ');
                 }
-                if(data.start_page && data.end_page){
+                if (data.start_page && data.end_page){
                     citation.append('<span>' + data.start_page + '-' + data.end_page + ', ' + '</span>');
                 }
                 else if (data.start_page) {
                     citation.append('<span>' + data.start_page + ', ' +'</span>');
                 }
-                if(data.doi !== 'doi:' && data.doi !== ''){
-                    citation.append('<span>' + data.doi + '.' +'</span>');
+                if (data.doi.indexOf('doi:') === 0){
+                    data.doi = data.doi.slice(4,data.doi.length).trim();
+                }
+                if (data.doi.indexOf('doi.org/') > -1){
+                    data.doi = data.doi.split('doi.org/')[1]
+                }
+                if (data.doi !== ''){
+                    citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '.' +'</a>');
                 }
             }
             else if (data.type == 'Book'){
