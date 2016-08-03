@@ -78,15 +78,26 @@ class PublicationForm(forms.ModelForm):
         self.fields['abstract'].required = False
 
     def clean_doi(self):
-        doi = self.cleaned_data['doi']
-        pub = Publication.objects.filter(doi=doi)
-        if pub.exists() and pub.first().id != int(self.pub_id):
+        doi = self.cleaned_data['doi'].lower()  # Lowercase all input
+        if doi.startswith('doi:'):
+            doi = doi[4:].strip()  # Remove user entered prefix we don't want and excess whitespace
+        else:
+            doi = doi.strip()  # If there isn't a prefix, just remove whitespace
+        pub = Publication.objects.filter(doi__icontains=doi)  # do a case insensitive search for a matching DOI. Use contains since some have 'doi: 10.'
+        if pub.exists() and pub.first().id != int(self.pub_id):  # Check that the doi is new, or that we are editing
             raise ValidationError("Doi already exists")
         return doi
 
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        pub = Publication.objects.filter(title__iexact=title)  # do a case insensitive search for a matching DOI
+        if pub.exists() and pub.first().id != int(self.pub_id):  # Check that the doi is new, or that we are editing
+            raise ValidationError("Title already exists")
+        return title
+
     def clean(self):
         data = super(PublicationForm, self).clean()
-        if data.get('status') != 0 and 'doi' in self.errors:
+        if data.get('status') != 0 and 'doi' in self.errors:  # Only require a doi for published articles
             del self.errors['doi']
         return data
 
