@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/search.css">
+    </head>
+    <body>
+        {% for pub in publication_list %}
+            {% spaceless %}
+            <p>
+            {% for author in pub.authors %}
+                {% if forloop.first %}
+                    <span>{{author}}</span>
+                {% else %}
+                    <span>, {{author}}</span>
+                {% endif %}
+            {% endfor %}
+            {% if pub.type == 'Journal' %}
+                    {{authorstring}}, {{pub.year}}: {{pub.title}}.
+                    <span class="citation-italic"> {{pub.journal_name}}</span>
+                    {% if pub.volume_number %}
+                        <span class="citation-bold">, {{pub.volume_number}}</span>
+                    {% endif %}
+                    {% if pub.start_page and pub.end_page %}
+                        <span>, {{pub.start_page}}-{{pub.end_page}}</span>
+                    {% elif pub.start_page %}
+                        <span>, {{pub.start_page}}</span>
+                    {% elif pub.end_page %}
+                        <span>, {{pub.end_page}}</span>
+                    {% endif %}
+                    {% if pub.doi and pub.doi != 'doi:'%}
+                        <span>, {{pub.doi}}</span>
+                    {% endif %}
+                    <span>.</span>
+            {% elif pub.type == 'Book' %}
+                {{authorstring}}, {{pub.year}}: {{pub.title}}.
+                <span class="citation-italic"> {{pub.journal_name}}</span>
+                {% if pub.volume_number %}
+                    <span class="citation-bold">, {{pub.volume_number}}</span>
+                {% endif %}
+                {% if pub.start_page and pub.end_page %}
+                    <span>, {{pub.start_page}}-{{pub.end_page}}</span>
+                {% elif pub.start_page %}
+                    <span>, {{pub.start_page}}</span>
+                {% elif pub.end_page %}
+                    <span>, {{pub.end_page}}</span>
+                {% endif %}
+                {% if pub.doi %}
+                    <span>, {{pub.doi}}</span>
+                {% endif %}
+                <span>.</span>
+            {% else %}
+                {{authorstring}}, {{pub.year}}: {{pub.title}}.
+                {% if pub.doi %}
+                    <span> {{pub.doi}}.</span>
+                {% elif pub.url %}
+                    <span> {{pub.url}}.</span>
+                {% endif %}
+            {% endif %}
+            </p>
+            {% endspaceless %}
+        {% endfor %}
+    </body>
+</html>

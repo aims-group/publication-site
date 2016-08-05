@@ -99,7 +99,7 @@ $('#facet-links-container input.radio-sort').change(function(){
                     data.doi = data.doi.split('doi.org/')[1]
                 }
                 if (data.doi !== ''){
-                    citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '.' +'</a>');
+                    citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">doi:' + data.doi + '.' +'</a>');
                 }
             }
             else if (data.type == 'Book'){
@@ -128,7 +128,18 @@ $('#facet-links-container input.radio-sort').change(function(){
                 var citation = $('<span/>')
                 .append($('<span/>').text(authorstring + ': ' + data.title + '. ' + data.year + '. '))
                 if (data.url){
-                    citation.append($('<a/>').text(data.url).attr('href', data.url));
+                    citation.append($('<a/>').text(data.url).attr('href', data.url).attr('target', '_blank'));
+                }
+                if (!data.url && data.doi){
+                    if (data.doi.indexOf('doi:') === 0){
+                    data.doi = data.doi.slice(4,data.doi.length).trim();
+                    }
+                    if (data.doi.indexOf('doi.org/') > -1){
+                        data.doi = data.doi.split('doi.org/')[1]
+                    }
+                    if (data.doi !== ''){
+                        citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + ('http://dx.doi.org/'+data.doi) + '.' +'</a>');
+                    }
                 }
             }
           $("div #citation"+id).html(citation);

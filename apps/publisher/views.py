@@ -114,6 +114,7 @@ def search(request):
     if request.method == 'GET':
         pubs["search"] = True
         page_filter = request.GET.get("type", "all")
+        display = request.GET.get('display', '')  # expect display == 'citations' or nothing
 
         if page_filter == 'all':
             publications = Publication.objects.all()
@@ -283,6 +284,37 @@ def search(request):
             pubs["search_year"] = year
             pubs["search_author"] = author
             pubs["search_title"] = title
+        if display == 'citations':
+            publication_list = []
+            for pub in publications:
+                authors = [author.name for author in pub.authors.all().order_by('id')]
+                pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+                if pub_type == 'Journal':
+                    if pub.doi in ['doi:', 'doi: ']:
+                        pub.doi = ''
+                    if pub.doi and pub.doi.find('doi.org') != -1:
+                        pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
+                    elif pub.doi and not pub.doi.startswith('doi:'):
+                        pub.doi = 'doi:' + pub.doi
+                    journal = pub.journal_set.all()[0]
+                    obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                           'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                           'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                           'year': pub.publication_date.year}
+                elif pub_type == 'Book':
+                    book = pub.book_set.all()[0]
+                    obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                           'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                           'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                           'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
+                else:
+                    obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                           'doi': pub.doi, 'type': pub_type}
+                publication_list.append(obj)
+                data = {
+                    'publication_list': publication_list
+                }
+            return render(request, 'site/print_citations.html', data)
 
         if page_filter != 'search':
             if scroll_count:
@@ -712,3 +744,4 @@ def ajax_all_authors(request):
     authors = Author.objects.all().values_list('name', 'institution').distinct()
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
+

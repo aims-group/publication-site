@@ -39,11 +39,13 @@ hr {
 }
 
 #search-row h1{
-    display: inline-block;
-    margin-bottom: 0px;
+    margin-top: 15px;
 }
 
-#search-row button{
-    margin-bottom: 17px;
+#search-container {
+    margin-top: 10px;
+}
+#search-wrapper form .form-group {
+    margin-bottom: 10px;
 }
 

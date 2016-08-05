@@ -3,9 +3,19 @@
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/search.css">
-<div class="" id="search-row">
-    <h1>{{ type.title }}: {{ option }}</h1>
+<div id="search-controls">
     <button id="search-toggle" class="btn btn-sm btn-info" style=""><i class="glyphicon glyphicon-search"></i></button>
+    {% if type == 'search'%}
+    <a id="show-citations"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
+       target="_blank">Show Citations</a>
+    {% else %}
+    <a id="show-citations"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&option={{option}}&display=citations"
+       target="_blank">Show Citations</a>
+    {% endif %}
 </div>
 <div id="search-container" style="{{hide_search|default:''}}" class="row">
     <div id="search-wrapper">
@@ -30,11 +40,16 @@
         </form>
     </div>
 </div>
+<div class="" id="search-row">
+    <h1>{{ type.title }}: {{ option }}</h1>
+</div>
+
 <hr>
 
+<div id="citation-container" class="col-sm-9" style="display:none">
+</div>
 
 <div class="publication-container col-sm-9">
-
 
     <div class="row">
         <div class="col-md-2"><h4 id="year-heading" class="sortable">Year</h4></div>
