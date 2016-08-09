@@ -508,7 +508,7 @@ def new(request):
         elif pub_type == 'Presentation':
             pub_type = 5
             media_form = PresentationForm(request.POST, prefix='pres')
-        elif pub_type == 'Technical_Report':
+        elif pub_type == 'Technical Report':
             pub_type = 6
             media_form = TechnicalReportForm(request.POST, prefix='tech')
         else:

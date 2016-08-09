@@ -235,7 +235,7 @@ class TechnicalReport(django_models.Model):
     issuer = django_models.TextField(blank=True)
 
     def __str__(self):
-        return self.title
+        return self.report_number
 
 
 class Other(django_models.Model):
