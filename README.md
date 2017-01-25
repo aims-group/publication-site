@@ -1,5 +1,5 @@
-# cmip6-publication-site
-new CMDIP6 Publication reporting site
+# publication-site
+new Publication reporting site
 
     virtualenv2 env
     source env/bin/activate
