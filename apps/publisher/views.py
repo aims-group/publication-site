@@ -112,227 +112,263 @@ def search(request):
         scroll_count = 0
 
     if request.method == 'GET':
-        pubs["search"] = True
-        page_filter = request.GET.get("type", "all")
-        display = request.GET.get('display', '')  # expect display == 'citations' or nothing
+        if pubs["type"] in ["all", "CMIP", "ESGF", "experiment", "frequency", "keyword", "model", "project", "status", "type", "variable", "year"]: #TODO: update this with new searches from nav
+            pubs["search"] = True
+            page_filter = request.GET.get("type", "all")
+            display = request.GET.get('display', '')  # expect display == 'citations' or nothing
 
-        if page_filter == 'all':
-            publications = Publication.objects.all()
-            pubs["pages"] = get_all_options()
-
-        elif page_filter == 'experiment':
-            option = request.GET.get("option", "1pctCO2")
-            pubs["option"] = option
-            publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
-            for exp in Experiment.objects.all().order_by('experiment'):
-                if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
-                    continue
-                exps = {}
-                exps['type'] = 'experiment'
-                exps['options'] = str(exp.experiment)
-                exps['count'] = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
-                data[str(exp.experiment)] = exps
-            pubs["pages"] = data
-
-        elif page_filter == 'frequency':
-            option = request.GET.get("option", "3-hourly")
-            pubs["option"] = option
-            publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
-            for frq in Frequency.objects.all().order_by('frequency'):
-                if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
-                    continue
-                frqs = {}
-                frqs['type'] = 'frequency'
-                frqs['options'] = str(frq.frequency)
-                frqs['count'] = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
-                data[str(frq.frequency)] = frqs
-            pubs["pages"] = data
-
-        elif page_filter == 'keyword':
-            option = request.GET.get("option", "Abrupt change")
-            pubs["option"] = option
-            publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
-            for kyw in Keyword.objects.all().order_by('keyword'):
-                if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
-                    continue
-                kyws = {}
-                kyws['type'] = 'keyword'
-                kyws['options'] = str(kyw.keyword)
-                kyws['count'] = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
-                data[str(kyw.keyword)] = kyws
-            pubs["pages"] = data
-
-        elif page_filter == 'model':
-            option = request.GET.get("option", "ACCESS1.0")
-            pubs["option"] = option
-            publications = Publication.objects.filter(model=Model.objects.filter(model=option))
-            for mod in Model.objects.all().order_by('model'):
-                if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
-                    continue
-                mods = {}
-                mods['type'] = 'model'
-                mods['options'] = str(mod.model)
-                mods['count'] = Publication.objects.filter(model=Model.objects.filter(model=mod)).count()
-                data[str(mod.model)] = mods
-            pubs["pages"] = data
-
-        elif page_filter == 'status':
-            option = request.GET.get("option", "Published")
-            pubs["option"] = option
-            lookup = 0
-            for k, v in PUBLICATION_STATUS_CHOICE:
-                if str(v) == str(option):
-                    lookup = k
-                    break
-            publications = Publication.objects.filter(status=lookup)
-            for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
-                if Publication.objects.filter(status=stat).count() == 0:
-                    continue
-                stats = {}
-                stats['type'] = 'status'
-                stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
-                stats['count'] = Publication.objects.filter(status=stat).count()
-                data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
-            pubs["pages"] = data
-
-        elif page_filter == 'type':
-            option = request.GET.get("option", "Journal")
-            pubs["option"] = option
-            lookup = 2
-            for k, v in PUBLICATION_TYPE_CHOICE:
-                if str(v) == option:
-                    lookup = k
-                    break
-            publications = Publication.objects.filter(publication_type=lookup)
-            for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
-                if Publication.objects.filter(publication_type=pt).count() == 0:
-                    continue
-                pubtype = {}
-                pubtype['type'] = 'type'
-                typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
-                pubtype['options'] = typename
-                pubtype['count'] = Publication.objects.filter(publication_type=pt).count()
-                data[typename] = pubtype
-            pubs["pages"] = data
-
-        elif page_filter == 'variable':
-            option = request.GET.get("option", "air pressure")
-            pubs["option"] = request.GET.get("option", "air pressure")
-            publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
-            for var in Variable.objects.all().order_by('variable'):
-                if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
-                    continue
-                vars = {}
-                vars['type'] = 'variable'
-                vars['options'] = str(var.variable)
-                vars['count'] = Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count()
-                data[str(var.variable)] = vars
-            pubs["pages"] = data
-
-        elif page_filter == 'year':
-            now = datetime.datetime.now()
-            option = request.GET.get("option", str(now.year))
-            pubs["option"] = option
-            publications = Publication.objects.filter(publication_date__year=option)
-            for pub_years in AvailableYears.objects.all().order_by('-year'):
-                years = {}
-                years['type'] = 'year'
-                years['options'] = str(pub_years.year)
-                years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
-                data[str(pub_years.year)] = years
-            pubs["pages"] = data
-
-        elif page_filter == 'project':
-            option = request.GET.get("option", "CMIP5")
-            publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
-            for project in Project.objects.all().order_by('project'):
-                if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
-                    continue
-                project_data = {}
-                project_data['type'] = 'project'
-                project_data['options'] = str(project)
-                project_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=project)).count()
-                data[(str(project))] = project_data
-            pubs['pages'] = data
-
-        elif page_filter == 'search':
-            year = request.GET.get('year', '')
-            author = request.GET.get('author', '')
-            title = request.GET.get('title', '')
-            try:
-                year = int(year)
-            except ValueError:
-                year = ''
-
-            if not year:
+            if page_filter == 'all':
                 publications = Publication.objects.all()
-            else:
-                publications = Publication.objects.filter(publication_date__year=year)
+                pubs["pages"] = get_all_options()
 
-            if not author:
-                pass
-            else:
-                publications = publications.filter(authors__name__icontains=author)
-
-            if not title:
-                pass
-            else:
-                publications = publications.filter(title__icontains=title)
-            pubs['search_count'] = publications.count()
-            pubs['publications'] = publications
-            pubs['hide_search'] = False
-            pubs["search_year"] = year
-            pubs["search_author"] = author
-            pubs["search_title"] = title
-        if display == 'citations':
-            publication_list = []
-            for pub in publications:
-                authors = [author.name for author in pub.authors.all().order_by('id')]
-                pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
-                if pub_type == 'Journal':
-                    if pub.doi in ['doi:', 'doi: ']:
-                        pub.doi = ''
-                    if pub.doi and pub.doi.find('doi.org') != -1:
-                        pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
-                    elif pub.doi and not pub.doi.startswith('doi:'):
-                        pub.doi = 'doi:' + pub.doi
-                    journal = pub.journal_set.all()[0]
-                    obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
-                           'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
-                           'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
-                           'year': pub.publication_date.year}
-                elif pub_type == 'Book':
-                    book = pub.book_set.all()[0]
-                    obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
-                           'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
-                           'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
-                           'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
+            elif page_filter == "CMIP":
+                option = request.GET.get("option", "CMIP5")
+                pubs["option"] = option
+                total_cmip_pubs = 0
+                #todo: verify that no other logic needs to be here for dealing with CMIP oddities
+                #Todo: there is a lot of double filtering going on. these can be replaced by using "publication_set" generally
+                all_cmips = Project.objects.filter(project__contains="CMIP")
+                if option == "all":
+                    publications = Publication.objects.filter(projects__project__contains="CMIP")
                 else:
-                    obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
-                           'doi': pub.doi, 'type': pub_type}
-                publication_list.append(obj)
-                data = {
-                    'publication_list': publication_list
-                }
-            return render(request, 'site/print_citations.html', data)
+                    publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
+                for cmip in all_cmips.order_by('-project'):
+                    if cmip.publication_set.count() == 0:
+                        continue
+                    project_data = {}
+                    project_data['type'] = 'CMIP'
+                    project_data['options'] = str(cmip).upper() #name of cmip being filtered
+                    project_data['count'] = cmip.publication_set.count()
+                    total_cmip_pubs += project_data['count']
+                    data[(str(cmip))] = project_data
+                data['all'] = {'type': 'CMIP', 'options': 'all', 'count': total_cmip_pubs}
+                pubs['pages'] = data
+            elif page_filter == 'experiment':
+                option = request.GET.get("option", "1pctCO2")
+                pubs["option"] = option
+                publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
+                for exp in Experiment.objects.all().order_by('experiment'):
+                    if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
+                        continue
+                    exps = {}
+                    exps['type'] = 'experiment'
+                    exps['options'] = str(exp.experiment)
+                    exps['count'] = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
+                    data[str(exp.experiment)] = exps
+                pubs["pages"] = data
 
-        if page_filter != 'search':
-            if scroll_count:
-                prev_articles = publications_to_load*scroll_count
-                new_articles = publications_to_load*(scroll_count+1)
-                if page_filter == 'all':
-                    pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
-                else:
-                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
-                pubs["publications"] = publications[prev_articles:new_articles]
-                return render(request, 'snippets/load_publications.html', pubs)
+            elif page_filter == 'frequency':
+                option = request.GET.get("option", "3-hourly")
+                pubs["option"] = option
+                publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
+                for frq in Frequency.objects.all().order_by('frequency'):
+                    if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
+                        continue
+                    frqs = {}
+                    frqs['type'] = 'frequency'
+                    frqs['options'] = str(frq.frequency)
+                    frqs['count'] = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
+                    data[str(frq.frequency)] = frqs
+                pubs["pages"] = data
 
-            else:
-                if page_filter == 'all':
-                    pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
+            elif page_filter == 'keyword':
+                option = request.GET.get("option", "Abrupt change")
+                pubs["option"] = option
+                publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
+                for kyw in Keyword.objects.all().order_by('keyword'):
+                    if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
+                        continue
+                    kyws = {}
+                    kyws['type'] = 'keyword'
+                    kyws['options'] = str(kyw.keyword)
+                    kyws['count'] = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
+                    data[str(kyw.keyword)] = kyws
+                pubs["pages"] = data
+
+            elif page_filter == 'model':
+                option = request.GET.get("option", "ACCESS1.0")
+                pubs["option"] = option
+                publications = Publication.objects.filter(model=Model.objects.filter(model=option))
+                for mod in Model.objects.all().order_by('model'):
+                    if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
+                        continue
+                    mods = {}
+                    mods['type'] = 'model'
+                    mods['options'] = str(mod.model)
+                    mods['count'] = Publication.objects.filter(model=Model.objects.filter(model=mod)).count()
+                    data[str(mod.model)] = mods
+                pubs["pages"] = data
+
+            elif page_filter == 'status':
+                option = request.GET.get("option", "Published")
+                pubs["option"] = option
+                lookup = 0
+                for k, v in PUBLICATION_STATUS_CHOICE:
+                    if str(v) == str(option):
+                        lookup = k
+                        break
+                publications = Publication.objects.filter(status=lookup)
+                for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
+                    if Publication.objects.filter(status=stat).count() == 0:
+                        continue
+                    stats = {}
+                    stats['type'] = 'status'
+                    stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
+                    stats['count'] = Publication.objects.filter(status=stat).count()
+                    data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
+                pubs["pages"] = data
+
+            elif page_filter == 'type':
+                option = request.GET.get("option", "Journal")
+                pubs["option"] = option
+                lookup = 2
+                for k, v in PUBLICATION_TYPE_CHOICE:
+                    if str(v) == option:
+                        lookup = k
+                        break
+                publications = Publication.objects.filter(publication_type=lookup)
+                for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
+                    if Publication.objects.filter(publication_type=pt).count() == 0:
+                        continue
+                    pubtype = {}
+                    pubtype['type'] = 'type'
+                    typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
+                    pubtype['options'] = typename
+                    pubtype['count'] = Publication.objects.filter(publication_type=pt).count()
+                    data[typename] = pubtype
+                pubs["pages"] = data
+
+            elif page_filter == 'variable':
+                option = request.GET.get("option", "air pressure")
+                pubs["option"] = request.GET.get("option", "air pressure")
+                publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
+                for var in Variable.objects.all().order_by('variable'):
+                    if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
+                        continue
+                    vars = {}
+                    vars['type'] = 'variable'
+                    vars['options'] = str(var.variable)
+                    vars['count'] = Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count()
+                    data[str(var.variable)] = vars
+                pubs["pages"] = data
+
+            elif page_filter == 'year':
+                now = datetime.datetime.now()
+                option = request.GET.get("option", str(now.year))
+                pubs["option"] = option
+                publications = Publication.objects.filter(publication_date__year=option)
+                for pub_years in AvailableYears.objects.all().order_by('-year'):
+                    years = {}
+                    years['type'] = 'year'
+                    years['options'] = str(pub_years.year)
+                    years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
+                    data[str(pub_years.year)] = years
+                pubs["pages"] = data
+
+            elif page_filter == 'project':
+                option = request.GET.get("option", "CMIP5")
+                publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
+                for project in Project.objects.all().order_by('project'):
+                    if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
+                        continue
+                    project_data = {}
+                    project_data['type'] = 'project'
+                    project_data['options'] = str(project)
+                    project_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=project)).count()
+                    data[(str(project))] = project_data
+                pubs['pages'] = data
+
+            elif page_filter == 'program':
+                option = request.GET.get("option", "AIMS")
+                publications = Publication.objects.filter(programs=Program.objects.filter(program=option))
+                for program in Program.objects.all().order_by('program'):
+                    if Publication.objects.filter(programs=program.objects.filter(program=program)).count() == 0:
+                        continue
+                    program_data = {}
+                    program_data['type'] = 'program'
+                    program_data['options'] = str(program)
+                    program_data['count'] = Publication.objects.filter(programs=program.objects.filter(program=program)).count()
+                    data[(str(program))] = program_data
+                pubs['pages'] = data
+
+            elif page_filter == 'search':
+                year = request.GET.get('year', '')
+                author = request.GET.get('author', '')
+                title = request.GET.get('title', '')
+                try:
+                    year = int(year)
+                except ValueError:
+                    year = ''
+
+                if not year:
+                    publications = Publication.objects.all()
                 else:
-                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
-                pubs["publications"] = publications[:publications_to_load]
+                    publications = Publication.objects.filter(publication_date__year=year)
+
+                if not author:
+                    pass
+                else:
+                    publications = publications.filter(authors__name__icontains=author)
+
+                if not title:
+                    pass
+                else:
+                    publications = publications.filter(title__icontains=title)
+                pubs['search_count'] = publications.count()
+                pubs['publications'] = publications
+                pubs['hide_search'] = False
+                pubs["search_year"] = year
+                pubs["search_author"] = author
+                pubs["search_title"] = title
+            if display == 'citations':
+                publication_list = []
+                for pub in publications:
+                    authors = [author.name for author in pub.authors.all().order_by('id')]
+                    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+                    if pub_type == 'Journal':
+                        if pub.doi in ['doi:', 'doi: ']:
+                            pub.doi = ''
+                        if pub.doi and pub.doi.find('doi.org') != -1:
+                            pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
+                        elif pub.doi and not pub.doi.startswith('doi:'):
+                            pub.doi = 'doi:' + pub.doi
+                        journal = pub.journal_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                            'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                            'year': pub.publication_date.year}
+                    elif pub_type == 'Book':
+                        book = pub.book_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                            'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                            'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
+                    else:
+                        obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'type': pub_type}
+                    publication_list.append(obj)
+                    data = {
+                        'publication_list': publication_list
+                    }
+                return render(request, 'site/print_citations.html', data)
+
+            if page_filter != 'search':
+                if scroll_count:
+                    prev_articles = publications_to_load*scroll_count
+                    new_articles = publications_to_load*(scroll_count+1)
+                    if page_filter == 'all':
+                        pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
+                    else:
+                        pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
+                    pubs["publications"] = publications[prev_articles:new_articles]
+                    return render(request, 'snippets/load_publications.html', pubs)
+
+                else:
+                    if page_filter == 'all':
+                        pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
+                    else:
+                        pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
+                    pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
 
@@ -605,6 +641,8 @@ def finddoi(request):
                 guessed_journal = True
         else:
             container_title = ''
+            journal_index = 0
+            guessed_journal = False
         if 'page' in initial.keys():
             try:
                 startpage, endpage = str(initial['page']).split('-')

@@ -41,7 +41,11 @@
     </div>
 </div>
 <div class="" id="search-row">
-    <h1>{{ type.title }}: {{ option }}</h1>
+    {% if type == "ESGF" or "CMIP" in type %}
+        <h1>{{ type.upper }}: {{ option }}</h1>
+    {% else %}
+        <h1>{{ type.title }}: {{ option }}</h1>
+    {%endif%}
 </div>
 
 <hr>
@@ -106,7 +110,7 @@
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}

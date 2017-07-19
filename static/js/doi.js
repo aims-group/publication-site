@@ -3,6 +3,7 @@ $(document).ready(function(){
     var JOURNAL = 2;
     var CMIP5 = 1;
     var CMIP6 = 2;
+    //These variables indicate which tab should be set as the "active" tab on page load
     setUpForm(JOURNAL, CMIP5);
     // When CMIP6 comes around, change the variable above to default to CMIP6 for new publications
 });
@@ -141,6 +142,7 @@ function submitPublication() {
 }
 
 function setUpForm() {
+    //Grab the active tab numbers from arguments or default to 0
     var active = arguments[0] === undefined ? 0 : arguments[0];
     var metaActive = arguments[1] === undefined ? 0 : arguments[1];
     $('#publication-optional-inputs').accordion({
