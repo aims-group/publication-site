@@ -1,25 +1,25 @@
 <div id="meta-tabs" class="panel panel-default">
-        <div class="panel-heading">
-            <ul class="nav nav-tabs">
-                <input id="meta_type" type="hidden" name="meta_type" value="{{meta_type|default:''}}">
-                {% for form in meta_form %}
-                {% if forloop.first %}
-                    <li class="active" role="presentation"><a href="#meta-tabs-1">{{form.name}}</a></li>
-                {% else %}
-                    <li role="presentation"><a href="#meta-tabs-{{forloop.counter}}">{{form.name}}</a></li>
-                {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="panel-body">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+            <input id="meta_type" type="hidden" name="meta_type" value="{{meta_type|default:''}}">
             {% for form in meta_form %}
-            <div id="meta-tabs-{{forloop.counter}}">
-                <div class="meta-form-list col-md-4 well">{{ form.exp_form }}</div>
-                <div class="meta-form-list col-md-4 well">{{ form.freq_form }}</div>
-                <div class="meta-form-list col-md-4 well">{{ form.keyword_form }}</div>
-                <div class="meta-form-list col-md-6 well">{{ form.model_form }}</div>
-                <div class="meta-form-list col-md-6 well">{{ form.var_form }}</div>
-            </div>
+            {% if forloop.first %}
+                <li class="active" role="presentation"><a href="#meta-tabs-1">{{form.name}}</a></li>
+            {% else %}
+                <li role="presentation"><a href="#meta-tabs-{{forloop.counter}}">{{form.name}}</a></li>
+            {% endif %}
             {% endfor %}
-        </div>
+        </ul>
     </div>
+    <div class="panel-body">
+        {% for form in meta_form %}
+        <div id="meta-tabs-{{forloop.counter}}">
+            <div class="meta-form-list col-md-4 well">{{ form.exp_form }}</div>
+            <div class="meta-form-list col-md-4 well">{{ form.freq_form }}</div>
+            <div class="meta-form-list col-md-4 well">{{ form.keyword_form }}</div>
+            <div class="meta-form-list col-md-6 well">{{ form.model_form }}</div>
+            <div class="meta-form-list col-md-6 well">{{ form.var_form }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

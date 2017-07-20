@@ -435,6 +435,7 @@ def edit(request, pubid):
             other.publication_id = publication
             other.save()
             return redirect('review')
+
         meta_form = []
         for project in pub_instance.projects.all():
             meta_form.append({
@@ -450,7 +451,8 @@ def edit(request, pubid):
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
-                       'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type
+                       'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
+                        "selected_projects": selected_projects
                        })
 
     else:
@@ -476,7 +478,12 @@ def edit(request, pubid):
                 media_form = TechnicalReportForm(instance=TechnicalReport.objects.get(publication_id=publication))
             elif publication.publication_type == 7:  # other
                 media_form = OtherForm(instance=Other.objects.get(publication_id=publication))
+            else:
+                print "Unknown publication type found"
+
             meta_form = []
+            all_projects = [ str(proj) for proj in Project.objects.all() ]
+            selected_projects = [str(proj) for proj in publication.projects.all()]
             for project in publication.projects.all():
                 meta_form.append({
                     'name': str(project),
@@ -493,7 +500,8 @@ def edit(request, pubid):
                                  PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                           'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type,
+                          'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
+                          "selected_projects": selected_projects
                            })
         else:
             entries = Publication.objects.filter(submitter=userid)

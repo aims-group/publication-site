@@ -34,4 +34,16 @@
     display: none;
 }
 
+#project-form > div.panel-body{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#project-form > div.panel-body > label{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 3px 10px
+}
+
 
