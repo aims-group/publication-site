@@ -122,7 +122,7 @@ def search(request):
                 pubs["pages"] = get_all_options()
 
             elif page_filter == "CMIP":
-                option = request.GET.get("option", "CMIP5")
+                option = request.GET.get("option", "all")
                 pubs["option"] = option
                 total_cmip_pubs = 0
                 #todo: verify that no other logic needs to be here for dealing with CMIP oddities
