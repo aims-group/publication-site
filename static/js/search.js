@@ -266,7 +266,7 @@ function show_bibtex(id){
         });
 
         if (data.type == 'Journal'){
-            bibtex = "@Article{       " + data.authors[0] + ",\n" +
+            bibtex = "@article{       " + data.authors[0] + ",\n" +
                         "  title        = {{" + data.title + "}},\n" +
                         "  author       = {" + authorstring + "}";
 

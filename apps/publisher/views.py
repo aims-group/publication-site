@@ -23,16 +23,28 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     publication.submitter = request.user
     publication.publication_type = pub_type
     publication.save()
-    publication.projects.add(Project.objects.filter(project=request.POST.get('meta_type', ''))[0])
+    # publication.projects.add(Project.objects.filter(project=request.POST.get('meta_type', ''))[0])
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
+    projects = request.POST.getlist('project')
+    print projects
+    print publication.projects.all()
+    for proj in publication.projects.all(): #iterate over projects previously selected 
+        if(proj.project in projects): #project is still selected
+            print "found {} in {}".format(proj.project, projects)
+            projects.remove(proj.project) # so remove project from list since it is already in the db
+        else: #Project has been deselected. remove from database
+            publication.projects.remove(proj)
+    for proj in projects: #iterate over remaining projects that were selected
+        publication.projects.add(Project.objects.get(project=proj)) #these are all newly selected, so add them to db
     publication.save()  # might not be needed
     year = publication.get_year
     if not AvailableYears.objects.filter(year=year):
         avail = AvailableYears(year=year)
         avail.save()
+
     ensemble = request.POST.getlist('ensemble')
     models = request.POST.getlist('model')
     PubModels.objects.filter(publication=publication.id).exclude(model__in=models).delete()
@@ -89,11 +101,14 @@ def init_forms(author_form, request=None, instance=None):
 
 def get_all_options():
     all_options = collections.OrderedDict()
+    all_options['CMIP'] = "CMIP"
+    all_options['ESGF'] = "ESGF"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
     all_options['project'] = "Project"
+    all_options['program'] = "Program"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
     all_options['variable'] = "Variable"
