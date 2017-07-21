@@ -1,8 +1,9 @@
 $( document ).ready(function() {
-    year_sort_toggle = false;
+    year_sort_toggle = true;
     author_sort_toggle = false;
     title_sort_toggle = false;
-    last_sort = '';
+    last_sort = 'year';
+    $('#year-heading').addClass('descending');
     $('#search-toggle').click(function(){
         $('#search-container').slideToggle('fast');
     });
@@ -243,6 +244,81 @@ $('#facet-links-container input.radio-sort').change(function(){
       $("div #abstract"+id).toggle();
     }
   }
+
+function show_bibtex(id){
+    if ($("div #bibtex"+id).html() == "empty"){
+      url = "/ajax/citation/" + id
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: {},
+        dataType: 'json',
+        success: function(data){
+        var authorstring = '';
+        var bibtex = '';
+        $.each(data.authors, function(index, author){
+            if(index == 0){
+                authorstring += author;
+            }
+            else{
+                authorstring += (', ' + author);
+            }
+        });
+
+        if (data.type == 'Journal'){
+            bibtex = "@Article{       " + data.authors[0] + ",\n" +
+                        "  title        = {{" + data.title + "}},\n" +
+                        "  author       = {" + authorstring + "}";
+
+            if(data.url){
+                bibtex += ',\n  url          = {' + '<a target="_blank" href="' + data.url + '">' + data.url + '</a>}';
+            }
+            if(data.journal_name){
+                bibtex += ",\n  journal      = {" + data.journal_name + "}";
+            }
+            if(data.volume_number){
+                bibtex += ",\n  volume       = {" + data.volume_number + "}";
+            }
+            if(data.article_number){
+                bibtex += ",\n  number       = {" + data.article_number + "}";
+            }
+            if(data.start_page && data.end_page){
+                bibtex += ",\n  pages        = {" + data.start_page + "-" + data.end_page + "}";
+            }
+            if(data.year){
+                bibtex += ",\n  year         = {" + data.year + "}";
+            }
+            if(data.month){
+                bibtex += ",\n  month        = {" + data.month + "}";
+            }
+            if (data.doi.indexOf('doi:') === 0){
+                data.doi = data.doi.slice(4,data.doi.length).trim();
+            }
+            if (data.doi.indexOf('doi.org/') > -1){
+                data.doi = data.doi.split('doi.org/')[1]
+            }
+            if(data.doi){
+                bibtex += ',\n  doi          = {' + '<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '</a>}';
+            }
+        }
+            else if (data.type == 'Book'){
+                bibtex = "BibTex not yet available for this publication type";
+            }
+            else {
+                bibtex = "BibTex not yet available for this publication type";
+            }
+          $("div #bibtex"+id).html($('<pre/>').append(bibtex));
+          $("div #bibtex"+id).toggle();
+        },
+        error: function(request, status, error){
+          alert(request + " | " +  status + " | " +  error);
+        }
+      });
+    }
+    else{
+       $("div #bibtex"+id).toggle();
+    }
+}
 
 $.fn.push = function(selector) {
     Array.prototype.push.apply(this, $.makeArray($(selector)));

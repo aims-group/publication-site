@@ -1,0 +1,16 @@
+<div id="project-form" class="panel panel-default">
+    <div class="panel-heading">
+        <span class="md-font">Projects and Programs</span>
+    </div>
+    <div class="panel-body">
+        {% for project in all_projects %}
+        <label for="{{project}}">{{project|upper}}
+            {% if project in selected_projects %}
+            <input type="checkbox" id="{{project}}" name="{{project}}" value="{{project}}" checked="TRUE">
+            {% else %}
+            <input type="checkbox" id="{{project}}" name="{{project}}" value="{{project}}">
+            {% endif %}
+        </label>
+        {%endfor%}
+    </div>
+</div>

@@ -76,11 +76,15 @@ def init_forms(author_form, request=None, instance=None):
     keyword_form = KeywordForm(request)
     model_form = ModelForm(request)
     var_form = VariableForm(request)
+    all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
+    selected_projects = []
+
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
             'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form}
+            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form,
+            'selected_projects': selected_projects, 'all_projects': all_projects}
 
 
 def get_all_options():
@@ -118,7 +122,7 @@ def search(request):
             display = request.GET.get('display', '')  # expect display == 'citations' or nothing
 
             if page_filter == 'all':
-                publications = Publication.objects.all()
+                publications = Publication.objects.all().order_by("-publication_date")
                 pubs["pages"] = get_all_options()
 
             elif page_filter == "CMIP":
@@ -129,9 +133,9 @@ def search(request):
                 #Todo: there is a lot of double filtering going on. these can be replaced by using "publication_set" generally
                 all_cmips = Project.objects.filter(project__contains="CMIP")
                 if option == "all":
-                    publications = Publication.objects.filter(projects__project__contains="CMIP")
+                    publications = Publication.objects.filter(projects__project__contains="CMIP").order_by("-publication_date")
                 else:
-                    publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
+                    publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
                 for cmip in all_cmips.order_by('-project'):
                     if cmip.publication_set.count() == 0:
                         continue
@@ -146,7 +150,7 @@ def search(request):
             elif page_filter == 'experiment':
                 option = request.GET.get("option", "1pctCO2")
                 pubs["option"] = option
-                publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option))
+                publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
                 for exp in Experiment.objects.all().order_by('experiment'):
                     if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
                         continue
@@ -160,7 +164,7 @@ def search(request):
             elif page_filter == 'frequency':
                 option = request.GET.get("option", "3-hourly")
                 pubs["option"] = option
-                publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option))
+                publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
                 for frq in Frequency.objects.all().order_by('frequency'):
                     if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
                         continue
@@ -174,7 +178,7 @@ def search(request):
             elif page_filter == 'keyword':
                 option = request.GET.get("option", "Abrupt change")
                 pubs["option"] = option
-                publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option))
+                publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
                 for kyw in Keyword.objects.all().order_by('keyword'):
                     if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
                         continue
@@ -188,7 +192,7 @@ def search(request):
             elif page_filter == 'model':
                 option = request.GET.get("option", "ACCESS1.0")
                 pubs["option"] = option
-                publications = Publication.objects.filter(model=Model.objects.filter(model=option))
+                publications = Publication.objects.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
                 for mod in Model.objects.all().order_by('model'):
                     if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
                         continue
@@ -207,7 +211,7 @@ def search(request):
                     if str(v) == str(option):
                         lookup = k
                         break
-                publications = Publication.objects.filter(status=lookup)
+                publications = Publication.objects.filter(status=lookup).order_by("-publication_date")
                 for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
                     if Publication.objects.filter(status=stat).count() == 0:
                         continue
@@ -226,7 +230,7 @@ def search(request):
                     if str(v) == option:
                         lookup = k
                         break
-                publications = Publication.objects.filter(publication_type=lookup)
+                publications = Publication.objects.filter(publication_type=lookup).order_by("-publication_date")
                 for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
                     if Publication.objects.filter(publication_type=pt).count() == 0:
                         continue
@@ -241,7 +245,7 @@ def search(request):
             elif page_filter == 'variable':
                 option = request.GET.get("option", "air pressure")
                 pubs["option"] = request.GET.get("option", "air pressure")
-                publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option))
+                publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
                 for var in Variable.objects.all().order_by('variable'):
                     if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
                         continue
@@ -256,7 +260,7 @@ def search(request):
                 now = datetime.datetime.now()
                 option = request.GET.get("option", str(now.year))
                 pubs["option"] = option
-                publications = Publication.objects.filter(publication_date__year=option)
+                publications = Publication.objects.filter(publication_date__year=option).order_by("-publication_date")
                 for pub_years in AvailableYears.objects.all().order_by('-year'):
                     years = {}
                     years['type'] = 'year'
@@ -267,7 +271,7 @@ def search(request):
 
             elif page_filter == 'project':
                 option = request.GET.get("option", "CMIP5")
-                publications = Publication.objects.filter(projects=Project.objects.filter(project=option))
+                publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
                 for project in Project.objects.all().order_by('project'):
                     if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
                         continue
@@ -280,7 +284,7 @@ def search(request):
 
             elif page_filter == 'program':
                 option = request.GET.get("option", "AIMS")
-                publications = Publication.objects.filter(programs=Program.objects.filter(program=option))
+                publications = Publication.objects.filter(programs=Program.objects.filter(program=option)).order_by("-publication_date")
                 for program in Program.objects.all().order_by('program'):
                     if Publication.objects.filter(programs=program.objects.filter(program=program)).count() == 0:
                         continue
@@ -482,7 +486,7 @@ def edit(request, pubid):
                 print "Unknown publication type found"
 
             meta_form = []
-            all_projects = [ str(proj) for proj in Project.objects.all() ]
+            all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
             selected_projects = [str(proj) for proj in publication.projects.all()]
             for project in publication.projects.all():
                 meta_form.append({
@@ -746,8 +750,8 @@ def ajax_citation(request, pub_id):
         journal = pub.journal_set.all()[0]
         json = {'title': pub.title, 'url': pub.url, 'authors': authors,
                 'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
-                'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
-                'year': pub.publication_date.year}
+                "article_number":journal.article_number, 'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                'year': pub.publication_date.year, 'month': pub.publication_date.month}
     elif pub_type == 'Book':
         book = pub.book_set.all()[0]
         json = {'title': pub.title, 'url': pub.url, 'authors': authors,
