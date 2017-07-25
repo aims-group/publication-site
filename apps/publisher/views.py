@@ -99,7 +99,6 @@ def init_forms(author_form, request=None, instance=None):
 def get_all_options():
     all_options = collections.OrderedDict()
     all_options['CMIP'] = "CMIP"
-    all_options['ESGF'] = "ESGF"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
@@ -128,7 +127,7 @@ def search(request):
         scroll_count = 0
 
     if request.method == 'GET':
-        if pubs["type"] in ["all", "CMIP", "ESGF", "experiment", "frequency", "keyword", "model", "project", "status", "type", "variable", "year"]: #TODO: update this with new searches from nav
+        if pubs["type"] in ["all", "CMIP", "ESGF", "experiment", "frequency", "keyword", "model", "project", "program",  "status", "type", "variable", "year"]:
             pubs["search"] = True
             page_filter = request.GET.get("type", "all")
             display = request.GET.get('display', '')  # expect display == 'citations' or nothing
@@ -296,14 +295,14 @@ def search(request):
 
             elif page_filter == 'program':
                 option = request.GET.get("option", "AIMS")
-                publications = Publication.objects.filter(programs=Program.objects.filter(program=option)).order_by("-publication_date")
-                for program in Program.objects.all().order_by('program'):
-                    if Publication.objects.filter(programs=program.objects.filter(program=program)).count() == 0:
+                publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
+                for program in Project.objects.all().order_by('project'):
+                    if Publication.objects.filter(projects=Project.objects.filter(project=program)).count() == 0 or "CMIP" in str(program):
                         continue
                     program_data = {}
                     program_data['type'] = 'program'
                     program_data['options'] = str(program)
-                    program_data['count'] = Publication.objects.filter(programs=program.objects.filter(program=program)).count()
+                    program_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=program)).count()
                     data[(str(program))] = program_data
                 pubs['pages'] = data
 
@@ -769,7 +768,13 @@ def ajax_citation(request, pub_id):
         json = {'title': pub.title, 'url': pub.url, 'authors': authors,
                 'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
                 'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
-                'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year}
+                'editor': book.editor, 'publisher': book.publisher, 'city_of_publication': book.city_of_publication, 'year': pub.publication_date.year}
+    elif pub_type == 'Technical Report':
+        report = pub.technicalreport_set.all()[0]
+        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
+                'issuer': report.issuer, 'year': pub.publication_date.year}
+                
     else:
         json = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
                 'doi': pub.doi, 'type': pub_type}

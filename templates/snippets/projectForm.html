@@ -6,9 +6,9 @@
         {% for project in all_projects %}
         <label for="{{project}}">{{project|upper}}
             {% if project in selected_projects %}
-            <input type="checkbox" id="{{project}}" name="project" value="{{project}}" checked="TRUE">
+            <input type="checkbox" id="{{project}}-checkbox" class="project-checkbox" name="project" value="{{project}}" checked="TRUE">
             {% else %}
-            <input type="checkbox" id="{{project}}" name="project" value="{{project}}">
+            <input type="checkbox" id="{{project}}-checkbox" class="project-checkbox" name="project" value="{{project}}">
             {% endif %}
         </label>
         {%endfor%}

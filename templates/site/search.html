@@ -42,7 +42,13 @@
 </div>
 <div class="" id="search-row">
     {% if type == "ESGF" or "CMIP" in type %}
-        <h1>{{ type.upper }}: {{ option }}</h1>
+        <h1>{{ type.upper }}: 
+            {%if option == "all" %}
+                {{ option|title}}
+            {%else%}
+                {{ option }}
+            {%endif%}
+        </h1>
     {% else %}
         <h1>{{ type.title }}: {{ option }}</h1>
     {%endif%}
