@@ -37,6 +37,18 @@ $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
     isDoiRequired();
 });
 
+$( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(e) {
+    var is_checked = $(e.target).is(":checked");
+    if(is_checked){
+        //show tab
+    }
+    else{
+        //hide tab (and change active tab if needed)
+        $("#meta-tabs div ul li") //too many selected
+    }
+    
+});
+
 function isDoiRequired(){
     if($("#id_pub-status option:selected").text() === "Published"){
         $( "#id_pub-doi" ).parent().addClass('required');
