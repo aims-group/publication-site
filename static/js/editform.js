@@ -13,6 +13,7 @@ $(document).ready(function(){
     if($("#id_status option:selected").text() !== "Published"){
         $( "#id_doi" ).parent().removeClass('required');
     }
+    $( "#meta-tabs" ).tabs();
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -28,6 +29,18 @@ $( "#id_status" ).change(function() {
     else{
         $( "#id_doi" ).parent().removeClass('required');
     }
+});
+
+$( '#meta-tabs' ).on( "tabscreate", function( event, ui ) {
+    $('#meta-tabs .active').removeClass('active');
+    $(ui.tab).addClass('active');
+    $('#meta_type').val($(ui.tab).text());
+});
+
+$( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
+        $(ui.oldTab).removeClass('active');
+        $(ui.newTab).addClass('active');
+        $('#meta_type').val($(ui.newTab).text());
 });
 
 function doisearch() {
