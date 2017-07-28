@@ -282,12 +282,6 @@ function show_bibtex(id){
                     if(data.start_page && data.end_page){
                         bibtex += ",\n  pages        = {" + data.start_page + "-" + data.end_page + "}";
                     }
-                    if(data.year){
-                        bibtex += ",\n  year         = {" + data.year + "}";
-                    }
-                    if(data.month){
-                        bibtex += ",\n  month        = {" + data.month + "}";
-                    }
                 }
                 else if (data.type == 'Book'){
                     bibtex = "@book{" + data.authors[0].split(',')[0] + ",\n" +
@@ -356,7 +350,12 @@ function show_bibtex(id){
                     }
                 }
                 else {
-                    bibtex = "BibTex not yet available for this publication type";
+                    bibtex = "@MISC{" + data.authors[0].split(',')[0] + ",\n" +
+                            "  author       = {" + authorstring + "},\n" +
+                            "  title        = {" + data.title + "}";
+                    if(data.year){
+                        bibtex += ",\n  year         = {" + data.year + "}";
+                    }
                 }
                 if (data.doi.indexOf('doi:') === 0){
                         data.doi = data.doi.slice(4,data.doi.length).trim();
