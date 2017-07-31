@@ -139,6 +139,14 @@ function submitPublication() {
         ensemble[index] = $(element).val()
     });
     $('#meta-tabs .panel-body div[style="display: none;"]').remove(); //remove unused form elements before serializing
+    $('.project-checkbox:not(:checked)').each(function(index, element){
+        var name = element.value; //Grab the name of the unchecked box
+        var tab = $("#".concat(name, "-tab")); //find the meta form tab it refers to
+        var link = $("#".concat(name, "-tab a")).attr("href"); //grab the link from the tab itself
+        $(link).remove(); //Remove the element the link points to. 
+        //This prevents meta data from being sent for unrelated projects. 
+        //i.e. If CMIP5 is not selected as a project, we don't want to send meta data about it 
+    });
     $.ajax({
         type: 'POST',
         url: '/new',
@@ -186,3 +194,11 @@ function showForm(){
     $('.optional-inputs').accordion( "refresh" );
 }
 
+
+function updateTabs(){
+    $.each($('#project-form .panel-body label input'), function(index, element){
+        if($(element).prop( "checked" )){
+            $("#".concat(element.value, "-tab")); // find the tab with id #name-tab
+        }
+    });
+}
