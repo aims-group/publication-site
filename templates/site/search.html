@@ -10,11 +10,19 @@
        class="btn btn-sm btn-info"
        href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
        target="_blank">Show Citations</a>
+       <a id="show-bibtex"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
+       target="_blank">Show BibTex</a>
     {% else %}
     <a id="show-citations"
        class="btn btn-sm btn-info"
        href="/search?type={{type}}&option={{option}}&display=citations"
        target="_blank">Show Citations</a>
+       <a id="show-bibtex"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&option={{option}}&display=bibtex"
+       target="_blank">Show BibTex</a>
     {% endif %}
 </div>
 <div id="search-container" style="{{hide_search|default:''}}" class="row">

@@ -6,17 +6,35 @@
         <link rel="stylesheet" href="/static/css/search.css">
     </head>
     <body>
-        {% for pub in publication_list %}
-            {% spaceless %}
-            <p>
-            {% for author in pub.authors %}
-                {% if forloop.first %}
-                    <span>{{author}}</span>
-                {% else %}
-                    <span>, {{author}}</span>
-                {% endif %}
-            {% endfor %}
-            {% if pub.type == 'Journal' %}
+        {% if type == 'citation'%}
+            {% for pub in publication_list %}
+                {% spaceless %}
+                <p>
+                {% for author in pub.authors %}
+                    {% if forloop.first %}
+                        <span>{{author}}</span>
+                    {% else %}
+                        <span>, {{author}}</span>
+                    {% endif %}
+                {% endfor %}
+                {% if pub.type == 'Journal' %}
+                        {{authorstring}}, {{pub.year}}: {{pub.title}}.
+                        <span class="citation-italic"> {{pub.journal_name}}</span>
+                        {% if pub.volume_number %}
+                            <span class="citation-bold">, {{pub.volume_number}}</span>
+                        {% endif %}
+                        {% if pub.start_page and pub.end_page %}
+                            <span>, {{pub.start_page}}-{{pub.end_page}}</span>
+                        {% elif pub.start_page %}
+                            <span>, {{pub.start_page}}</span>
+                        {% elif pub.end_page %}
+                            <span>, {{pub.end_page}}</span>
+                        {% endif %}
+                        {% if pub.doi and pub.doi != 'doi:'%}
+                            <span>, {{pub.doi}}</span>
+                        {% endif %}
+                        <span>.</span>
+                {% elif pub.type == 'Book' %}
                     {{authorstring}}, {{pub.year}}: {{pub.title}}.
                     <span class="citation-italic"> {{pub.journal_name}}</span>
                     {% if pub.volume_number %}
@@ -29,37 +47,49 @@
                     {% elif pub.end_page %}
                         <span>, {{pub.end_page}}</span>
                     {% endif %}
-                    {% if pub.doi and pub.doi != 'doi:'%}
+                    {% if pub.doi %}
                         <span>, {{pub.doi}}</span>
                     {% endif %}
                     <span>.</span>
-            {% elif pub.type == 'Book' %}
-                {{authorstring}}, {{pub.year}}: {{pub.title}}.
-                <span class="citation-italic"> {{pub.journal_name}}</span>
-                {% if pub.volume_number %}
-                    <span class="citation-bold">, {{pub.volume_number}}</span>
+                {% else %}
+                    {{authorstring}}, {{pub.year}}: {{pub.title}}.
+                    {% if pub.doi %}
+                        <span> {{pub.doi}}.</span>
+                    {% elif pub.url %}
+                        <span> {{pub.url}}.</span>
+                    {% endif %}
                 {% endif %}
-                {% if pub.start_page and pub.end_page %}
-                    <span>, {{pub.start_page}}-{{pub.end_page}}</span>
-                {% elif pub.start_page %}
-                    <span>, {{pub.start_page}}</span>
-                {% elif pub.end_page %}
-                    <span>, {{pub.end_page}}</span>
+                </p>
+                {% endspaceless %}
+            {% endfor %}
+        {% else %} {# if bibtex #}
+            {% for pub in publication_list %}
+                {% spaceless %}
+                <p>
+                {% if pub.type == 'Journal' %}
+                    <div>@article{<span>{{pub.author_key}}</span></div>
+                    <span>&nbsp title        = { <span>{{pub.title}}</span></div>
+                    <span>&nbsp author       = { </span>
+                    {% for author in pub.authors %}
+                        {% if forloop.first %}
+                            {{author}}
+                        {% elif forloop.last %}
+                            and {{author}}</div>
+                        {% else %}
+                             and {{author}}
+                        {% endif %}
+                    {% endfor %}
+                    {% if pub.url %}
+                        <div>&nbsp url       = { </div><div>{{pub.url}}</div>
+                    {% endif %}
+                {% elif pub.type == 'Book' %}
+                    <div>Book would go here</div>
+                {% else %}
+                    <div>Other stuff here</div>
                 {% endif %}
-                {% if pub.doi %}
-                    <span>, {{pub.doi}}</span>
-                {% endif %}
-                <span>.</span>
-            {% else %}
-                {{authorstring}}, {{pub.year}}: {{pub.title}}.
-                {% if pub.doi %}
-                    <span> {{pub.doi}}.</span>
-                {% elif pub.url %}
-                    <span> {{pub.url}}.</span>
-                {% endif %}
-            {% endif %}
-            </p>
-            {% endspaceless %}
-        {% endfor %}
+                </p>
+                {% endspaceless %}
+            {% endfor %}
+        {% endif %}
     </body>
 </html>
