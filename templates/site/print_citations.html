@@ -4,6 +4,11 @@
         <meta charset="utf-8">
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="/static/css/search.css">
+        <style>
+            .bib div:last-child .comma{
+                display: none;
+            }
+        </style>
     </head>
     <body>
         {% if type == 'citation'%}
@@ -65,31 +70,171 @@
         {% else %} {# if bibtex #}
             {% for pub in publication_list %}
                 {% spaceless %}
-                <p>
                 {% if pub.type == 'Journal' %}
+                    <div class="bib">
                     <div>@article{<span>{{pub.author_key}}</span></div>
-                    <span>&nbsp title        = { <span>{{pub.title}}</span></div>
-                    <span>&nbsp author       = { </span>
+                    <div>&nbsp title        = {<span>{{pub.title}}</span>}<span class="comma">,</span></div>
+                    <div>&nbsp author       = {<span>
                     {% for author in pub.authors %}
                         {% if forloop.first %}
                             {{author}}
                         {% elif forloop.last %}
-                            and {{author}}</div>
+                            and {{author}}
                         {% else %}
                              and {{author}}
                         {% endif %}
                     {% endfor %}
+                    </span>}<span class="comma">,</span></div>
                     {% if pub.url %}
-                        <div>&nbsp url       = { </div><div>{{pub.url}}</div>
+                        <div>&nbsp url       = {<span>{{pub.url}}</span>}<span class="comma">,</span></div>
                     {% endif %}
+                    {% if pub.journal_name %}
+                        <div>&nbsp journal   = {<span>{{pub.journal_name}}</span>}<span class="comma">,</span></div>
+                    {% endif %}
+                    {% if pub.volume_number %}
+                        <div>&nbsp volume       = {<span>{{pub.volume_number}}</span>}<span class="comma">,</span></div>
+                    {% endif %}
+                    {% if pub.article_number %}
+                        <div>&nbsp number       = {<span>{{pub.article_number}}</span>}<span class="comma">,</span></div>
+                    {% endif %}
+                    {% if pub.start_page and pub.end_page %}
+                        <div>&nbsp pages       = {<span>{{pub.start_page}}-{{pub.end_page}}</span>}<span class="comma">,</span></div>
+                    {% elif pub.start_page %}
+                        <div>&nbsp pages       = {<span>{{pub.start_page}}</span>}<span class="comma">,</span></div>
+                    {% elif pub.end_page %}
+                        <div>&nbsp pages       = {<span>{{pub.end_page}}</span>}<span class="comma">,</span></div>
+                    {% endif %}
+                    </div>
+
                 {% elif pub.type == 'Book' %}
-                    <div>Book would go here</div>
+                    <div>@book{<span>{{pub.author_key}}</span></div>
+                    <div>&nbsp title        = {<span>{{pub.title}}</span>},</div>
+                    <div>&nbsp author       = {<span>
+                    {% for author in pub.authors %}
+                        {% if forloop.first %}
+                            {{author}}
+                        {% elif forloop.last %}
+                            and {{author}}
+                        {% else %}
+                             and {{author}}
+                        {% endif %}
+                    {% endfor %}
+                    </span>}
+                    {% if pub.url %}
+                        ,</div><div>&nbsp url       = {<span>{{pub.url}}</span>}
+                    {% endif %}
+                    {% if pub.book_name %}
+                        ,</div><div>&nbsp url       = {<span>{{pub.book_name}}</span>}
+                    {% endif %}
+                    {% if pub.chapter_title %}
+                        ,</div><div>&nbsp url       = {<span>{{pub.chapter_title}}</span>}
+                    {% endif %}
+                    {% if pub.editor %}
+                        ,</div><div>&nbsp url       = {<span>{{pub.editor}}</span>}
+                    {% endif %}
+                    {% if pub.start_page and pub.end_page%}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.start_page}}-{{pub.end_page}}}</span>}
+                    {% elif pub.start_page %}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.start_page}}</span>}
+                    {% elif pub.start_page %}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.end_page}}</span>}
+                    {% endif %}
+                    {% if pub.year %}
+                        ,</div><div>&nbsp year       = {<span>{{pub.year}}</span>}
+                    {% endif %}
+                    {% if pub.month %}
+                        ,</div><div>&nbsp month       = {<span>{{pub.month}}</span>}
+                    {% endif %}
+                    {% if pub.publisher %}
+                        ,</div><div>&nbsp publisher       = {<span>{{pub.publisher}}</span>}
+                    {% endif %}
+                    {% if pub.city_of_publication %}
+                        ,</div><div>&nbsp address       = {<span>{{pub.city_of_publication}}</span>}
+                    {% endif %}
+
+                {% elif pub.type == 'Technical Report' %}
+                    <div>@techreport{<span>{{pub.author_key}}</span></div>
+                    <div>&nbsp title        = {<span>{{pub.title}}</span>},</div>
+                    <div>&nbsp author       = {<span>
+                    {% for author in pub.authors %}
+                        {% if forloop.first %}
+                            {{author}}
+                        {% elif forloop.last %}
+                            and {{author}}
+                        {% else %}
+                             and {{author}}
+                        {% endif %}
+                    {% endfor %}
+                    </span>}
+                    {% if pub.number %}
+                        ,</div><div>&nbsp number       = {<span>{{pub.number}}</span>}
+                    {% endif %}
+                    {% if pub.editor %}
+                        ,</div><div>&nbsp editor       = {<span>{{pub.editor}}</span>}
+                    {% endif %}
+                    {% if pub.year %}
+                        ,</div><div>&nbsp year       = {<span>{{pub.year}}</span>}
+                    {% endif %}
+                    {% if pub.month %}
+                        ,</div><div>&nbsp month       = {<span>{{pub.month}}</span>}
+                    {% endif %}
+                {% elif pub.type == 'Conference' %}
+                    <div>@conference{<span>{{pub.author_key}}</span></div>
+                    <div>&nbsp title        = {<span>{{pub.title}}</span>},</div>
+                    <div>&nbsp author       = {<span>
+                    {% for author in pub.authors %}
+                        {% if forloop.first %}
+                            {{author}}
+                        {% elif forloop.last %}
+                            and {{author}}
+                        {% else %}
+                             and {{author}}
+                        {% endif %}
+                    {% endfor %}
+                    </span>}
+                    {% if pub.editor %}
+                        ,</div><div>&nbsp editor       = {<span>{{pub.editor}}</span>}
+                    {% endif %}
+                    {% if pub.location %}
+                        ,</div><div>&nbsp location       = {<span>{{pub.location}}</span>}
+                    {% endif %}
+                    {% if pub.start_page and pub.end_page%}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.start_page}}-{{pub.end_page}}}</span>}
+                    {% elif pub.start_page %}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.start_page}}</span>}
+                    {% elif pub.start_page %}
+                        ,</div><div>&nbsp pages       = {<span>{{pub.end_page}}</span>}
+                    {% endif %}
+                    {% if pub.year %}
+                        ,</div><div>&nbsp year       = {<span>{{pub.year}}</span>}
+                    {% endif %}
+                    {% if pub.month %}
+                        ,</div><div>&nbsp month       = {<span>{{pub.month}}</span>}
+                    {% endif %}
+                    {% if pub.city_of_publication %}
+                        ,</div><div>&nbsp address       = {<span>{{pub.city_of_publication}}</span>}
+                    {% endif %}
                 {% else %}
-                    <div>Other stuff here</div>
+                    <div>@misc{<span>{{pub.author_key}}</span></div>
+                    <div>&nbsp title        = {<span>{{pub.title}}</span>},</div>
+                    <div>&nbsp author       = {<span>
+                    {% for author in pub.authors %}
+                        {% if forloop.first %}
+                            {{author}}
+                        {% elif forloop.last %}
+                            and {{author}}</span>}
+                        {% else %}
+                             and {{author}}
+                        {% endif %}
+                    {% endfor %}
+                    {% if pub.year %}
+                        ,</div><div>&nbsp year       = {<span>{{pub.year}}</span>}
+                    {% endif %}
                 {% endif %}
-                </p>
                 {% endspaceless %}
             {% endfor %}
         {% endif %}
     </body>
 </html>
+
+<style

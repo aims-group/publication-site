@@ -333,7 +333,7 @@ function show_bibtex(id){
                     }
                 }
                 else if (data.type == 'Conference'){
-                    bibtex = "@techreport{" + data.authors[0].split(',')[0] + ",\n" +
+                    bibtex = "@conference{" + data.authors[0].split(',')[0] + ",\n" +
                             "  author       = {" + authorstring + "},\n" +
                             "  title        = {" + data.title + "}"; 
                     if(data.number){
@@ -350,7 +350,7 @@ function show_bibtex(id){
                     }
                 }
                 else {
-                    bibtex = "@MISC{" + data.authors[0].split(',')[0] + ",\n" +
+                    bibtex = "@misc{" + data.authors[0].split(',')[0] + ",\n" +
                             "  author       = {" + authorstring + "},\n" +
                             "  title        = {" + data.title + "}";
                     if(data.year){
