@@ -1,7 +1,7 @@
 # publication-site
-new Publication reporting site
+A Django skelaton site for tracking publications, posters, presentations...
 
-    virtualenv2 env
+    virtualenv env
     source env/bin/activate
     pip install -r requirements.txt
     python manage.py makemigrations
