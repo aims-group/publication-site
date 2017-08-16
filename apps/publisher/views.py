@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm
+from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
@@ -406,6 +406,9 @@ def search(request):
                 pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
+def advanced_search(request):
+    advanced_search_form = AdvancedSearchForm()
+    return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
 
 @login_required()
 def review(request):

@@ -329,3 +329,31 @@ class VariableForm(forms.ModelForm):
         model = Variable
         fields = '__all__'
         exclude = ['variable']
+
+class AdvancedSearchForm(forms.Form):
+    doi = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    author = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    date_start = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    date_end = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    project = forms.ModelMultipleChoiceField(
+        queryset=Project.objects.filter(project__contains="CMIP").order_by("project"),
+        widget=forms.CheckboxSelectMultiple())
+    program = forms.ModelMultipleChoiceField(
+        queryset=Project.objects.exclude(project__contains="CMIP").order_by("project"),
+        widget=forms.CheckboxSelectMultiple())
+    experiment = forms.ModelMultipleChoiceField(
+        queryset=Experiment.objects.all().order_by("experiment"),
+        widget=forms.CheckboxSelectMultiple())
+    frequency = forms.ModelMultipleChoiceField(
+        queryset=Frequency.objects.all().order_by("frequency"),
+        widget=forms.CheckboxSelectMultiple())
+    keyword = forms.ModelMultipleChoiceField(
+        queryset=Keyword.objects.all().order_by("keyword"),
+        widget=forms.CheckboxSelectMultiple())
+    model = forms.ModelMultipleChoiceField(
+        queryset=Model.objects.all().order_by("model"),
+        widget=forms.CheckboxSelectMultiple())
+    variable= forms.ModelMultipleChoiceField(
+        queryset=Variable.objects.all().order_by("variable"),
+        widget=forms.CheckboxSelectMultiple())
