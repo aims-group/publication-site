@@ -412,7 +412,7 @@ def advanced_search(request):
         return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
     elif request.method == 'POST':
         pubs = Publication.objects.all()
-        return render(request, 'site/advanced_search.html', {'pubs': pubs})
+        return render(request, 'site/advanced_search_results.html', {'publications': pubs})
     else:
         return HttpResponse(status=405)
 

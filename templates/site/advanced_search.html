@@ -3,7 +3,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/advanced_search.css">
-<form action="/your-name/" method="post">
+<form action="/advanced_search" method="post">
     {% csrf_token %}
     <div class="panel panel-default">
         <div class="panel-heading md-font">
@@ -36,7 +36,7 @@
                 <div class="panel-body">
                     {% for field in form.program %}
                     <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
-                        <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
+                        <input type="checkbox" id="{{field.id_for_label}}" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
                     </label>
                     {% endfor %}
                 </div>
@@ -50,7 +50,7 @@
                 <div class="panel-body">
                     {% for field in form.project %}
                     <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
-                        <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
+                        <input type="checkbox" id="{{field.id_for_label}}" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
                     </label>
                     {% endfor %}
                 </div>
@@ -70,6 +70,7 @@
             <div class="meta-form-list col-md-6 well"><label>Variable: </label>{{ form.variable }}</div>
         </div>
     </div>
+    <button class="btn btn-primary text-center" type="submit">Search</button>
 </form>
 <script type="text/javascript" src="/static/js/advanced_search.js"></script>
 {% endblock %}
