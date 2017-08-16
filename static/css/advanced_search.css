@@ -1,17 +1,26 @@
 .meta-form-list {
-height: 600px;
-overflow-y: scroll;
-overflow-x: hidden;
+  height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .inline-checkboxes > div.panel-body{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    flex-wrap: wrap;
   }
   
 .inline-checkboxes > div.panel-body > label{
     border: 1px solid lightgray;
     border-radius: 5px;
     padding: 3px 10px
-  }
+}
+
+.md-font {
+  font-size: 12pt;
+}
+
+label{
+  margin-bottom: 0;
+}

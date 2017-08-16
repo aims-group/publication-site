@@ -5,59 +5,66 @@
 <link rel="stylesheet" href="/static/css/advanced_search.css">
 <form action="/your-name/" method="post">
     {% csrf_token %}
-    <div class="form-inline">
-        <div class="form-group">
+    <div class="container">
+        <div class="form-group col-md-2">
             {{form.doi.label_tag}}{{form.doi}}
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-2">
             {{form.title.label_tag}}{{form.title}}
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-2">
             {{form.author.label_tag}}{{form.author}}
         </div>
-        <div class="form-group col">
+        <div class="form-group col-md-2">
             {{form.date_start.label_tag}}{{form.date_start}}
         </div>
-        <div class="form-group col">
+        <div class="form-group col-md-2">
             {{form.date_end.label_tag}}{{form.date_end}}
         </div>
     </div>
-    <div id="program_list" class="panel panel-default inline-checkboxes">
-            <div class="panel-heading">
-                <span class="md-font">Programs</span>
+    <div class="container">
+        <div class="col-md-6">
+            <div id="program_list" class="panel panel-default inline-checkboxes">
+                    <div class="panel-heading">
+                        <span class="md-font">Programs</span>
+                    </div>
+                <div class="panel-body">
+                    {% for field in form.program %}
+                    <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
+                        <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
-        <div class="panel-body">
-            {% for field in form.program %}
-            <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
-                <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
-            </label>
-            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <div id="project_list" class="panel panel-default inline-checkboxes">
+                    <div class="panel-heading">
+                        <span class="md-font">Projects</span>
+                    </div>
+                <div class="panel-body">
+                    {% for field in form.project %}
+                    <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
+                        <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    <div id="project_list" class="panel panel-default inline-checkboxes">
-            <div class="panel-heading">
-                <span class="md-font">Projects</span>
-            </div>
-        <div class="panel-body">
-            {% for field in form.project %}
-            <label for="{{field.id_for_label}}">{{field.choice_label|upper}}
-                <input type="checkbox" id="{{field.id_for_label}}-checkbox" class="project-checkbox" name="{{field.id_for_label}}}" value="{{field.choice_value}}">
-            </label>
-            {% endfor %}
+    
+    <div id="meta-panel" class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <span class="md-font">Meta Tags</span><span class="pull-right form-inline"><label>Filter: <input type="text" id="meta-filter" class="form-control"></label></span>
         </div>
-    </div>
-    <div class="form-group">
         <div class="panel-body">
-            <div class="wrapper">
-                <div class="meta-form-list col-md-4 well">{{ form.experiment }}</div>
-                <div class="meta-form-list col-md-4 well">{{ form.frequency }}</div>
-                <div class="meta-form-list col-md-4 well">{{ form.keyword }}</div>
-            </div>
-            <div class="wrapper">
-                <div class="meta-form-list col-md-6 well">{{ form.model }}</div>
-                <div class="meta-form-list col-md-6 well">{{ form.variable }}</div>
-            </div>
+            <div class="meta-form-list col-md-4 well form-group">{{ form.experiment }}</div>
+            <div class="meta-form-list col-md-4 well">{{ form.frequency }}</div>
+            <div class="meta-form-list col-md-4 well">{{ form.keyword }}</div>
+            <div class="meta-form-list col-md-6 well">{{ form.model }}</div>
+            <div class="meta-form-list col-md-6 well">{{ form.variable }}</div>
         </div>
     </div>
 </form>
+<script type="text/javascript" src="/static/js/advanced_search.js"></script>
 {% endblock %}

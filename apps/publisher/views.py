@@ -407,8 +407,14 @@ def search(request):
     return render(request, 'site/search.html', pubs)
 
 def advanced_search(request):
-    advanced_search_form = AdvancedSearchForm()
-    return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
+    if request.method == 'GET':
+        advanced_search_form = AdvancedSearchForm()
+        return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
+    elif request.method == 'POST':
+        pubs = Publication.objects.all()
+        return render(request, 'site/advanced_search.html', {'pubs': pubs})
+    else:
+        return HttpResponse(status=405)
 
 @login_required()
 def review(request):
