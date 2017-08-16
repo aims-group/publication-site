@@ -34,6 +34,10 @@
     display: none;
 }
 
+label{
+    margin-bottom: 0;
+}
+
 #project-form > div.panel-body{
   display: flex;
   flex-direction: row;
