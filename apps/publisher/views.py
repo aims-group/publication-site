@@ -412,6 +412,13 @@ def advanced_search(request):
         return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
     elif request.method == 'POST':
         pubs = Publication.objects.all()
+        print request.POST
+        if request.POST['doi']:
+            pubs = pubs.filter(doi__icontains=request.POST['doi'])
+        if request.POST['author']:
+            pubs = pubs.filter(author__icontains=request.POST['author'])
+        for pub in pubs:
+            print pub.id
         return render(request, 'site/advanced_search_results.html', {'publications': pubs})
     else:
         return HttpResponse(status=405)

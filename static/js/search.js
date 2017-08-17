@@ -400,7 +400,10 @@ function year_sort(){
         var obj = {year: parseInt($(this).find('.dates').text()), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!year_sort_toggle){
         array.sort(function(a, b){
             return a.year - b.year;
@@ -423,8 +426,13 @@ function year_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'year';
 };
 
@@ -435,7 +443,10 @@ function author_sort(){
         var obj = {author: $(this).find('.authors').text(), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!author_sort_toggle){
         array.sort(function(a, b){
             return a.author.localeCompare(b.author);
@@ -458,8 +469,13 @@ function author_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'author';
 };
 
@@ -470,7 +486,10 @@ function title_sort(){
         var obj = {title: $(this).find('.titles').text().trim(), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!title_sort_toggle){
         array.sort(function(a, b){
             return a.title.localeCompare(b.title);
@@ -493,7 +512,12 @@ function title_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'title';
 };
