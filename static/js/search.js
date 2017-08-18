@@ -8,24 +8,29 @@ $( document ).ready(function() {
         $('#search-container').slideToggle('fast');
     });
 
-    $(".publication-container").jscroll({
-        nextSelector: 'a.jscroll-next:last',
-        callback: function(){
-            $('.jscroll-added div').first().unwrap();
-            if (last_sort === 'year'){
-                year_sort_toggle = !year_sort_toggle;
-                year_sort();
-            }
-            else if (last_sort === 'author'){
-                author_sort_toggle = !author_sort_toggle;
-                author_sort();
-            }
-            else if (last_sort === 'title'){
-                title_sort_toggle = !title_sort_toggle;
-                title_sort();
-            }
-        },
-    });
+    try{
+        $(".publication-container").jscroll({
+            nextSelector: 'a.jscroll-next:last',
+            callback: function(){
+                $('.jscroll-added div').first().unwrap();
+                if (last_sort === 'year'){
+                    year_sort_toggle = !year_sort_toggle;
+                    year_sort();
+                }
+                else if (last_sort === 'author'){
+                    author_sort_toggle = !author_sort_toggle;
+                    author_sort();
+                }
+                else if (last_sort === 'title'){
+                    title_sort_toggle = !title_sort_toggle;
+                    title_sort();
+                }
+            },
+        });
+    }
+    catch(e){
+        //jscroll might not be loaded. just move on if it is not present
+    }
 });
 
 $('#facet-links-container input.radio-sort').change(function(){
