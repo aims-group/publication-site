@@ -267,7 +267,10 @@ class ExperimentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(ExperimentForm, self).__init__(*args, **kwargs)
-        self.fields['experiment'].queryset = queryset.order_by(Lower('experiment'))
+        if queryset:
+            self.fields['experiment'].queryset = queryset.order_by(Lower('experiment'))
+        else:
+            self.fields['experiment'].queryset = queryset
 
     class Meta:
         model = Experiment
@@ -281,7 +284,10 @@ class FrequencyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(FrequencyForm, self).__init__(*args, **kwargs)
-        self.fields['frequency'].queryset = queryset.order_by(Lower('frequency'))
+        if queryset:
+            self.fields['frequency'].queryset = queryset.order_by(Lower('frequency'))
+        else:
+            self.fields['frequency'].queryset = queryset
 
     class Meta:
         model = Frequency
@@ -296,7 +302,10 @@ class KeywordForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(KeywordForm, self).__init__(*args, **kwargs)
-        self.fields['keyword'].queryset = queryset.order_by(Lower('keyword'))
+        if queryset:
+            self.fields['keyword'].queryset = queryset.order_by(Lower('keyword'))
+        else:
+            self.fields['keyword'].queryset = queryset
 
     class Meta:
         model = Keyword
@@ -310,7 +319,10 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(ModelForm, self).__init__(*args, **kwargs)
-        self.fields['model'].queryset = queryset.order_by(Lower('model'))
+        if queryset:
+            self.fields['model'].queryset = queryset.order_by(Lower('model'))
+        else:
+            self.fields['model'].queryset = queryset
 
     class Meta:
         model = Model
@@ -324,7 +336,10 @@ class VariableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(VariableForm, self).__init__(*args, **kwargs)
-        self.fields['variable'].queryset = queryset.order_by(Lower('variable'))
+        if queryset:
+            self.fields['variable'].queryset = queryset.order_by(Lower('variable'))
+        else:
+            self.fields['variable'].queryset = queryset
 
     class Meta:
         model = Variable
