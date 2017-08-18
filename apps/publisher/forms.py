@@ -5,6 +5,7 @@ from registration.backends.simple.views import RegistrationView
 from django.contrib.auth.models import User
 from captcha.fields import ReCaptchaField
 from django.core.exceptions import ValidationError
+from django.db.models.functions import Lower
 
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
@@ -266,7 +267,7 @@ class ExperimentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(ExperimentForm, self).__init__(*args, **kwargs)
-        self.fields['experiment'].queryset = queryset
+        self.fields['experiment'].queryset = queryset.order_by(Lower('experiment'))
 
     class Meta:
         model = Experiment
@@ -280,7 +281,7 @@ class FrequencyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(FrequencyForm, self).__init__(*args, **kwargs)
-        self.fields['frequency'].queryset = queryset
+        self.fields['frequency'].queryset = queryset.order_by(Lower('frequency'))
 
     class Meta:
         model = Frequency
@@ -295,7 +296,7 @@ class KeywordForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(KeywordForm, self).__init__(*args, **kwargs)
-        self.fields['keyword'].queryset = queryset
+        self.fields['keyword'].queryset = queryset.order_by(Lower('keyword'))
 
     class Meta:
         model = Keyword
@@ -309,7 +310,7 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(ModelForm, self).__init__(*args, **kwargs)
-        self.fields['model'].queryset = queryset
+        self.fields['model'].queryset = queryset.order_by(Lower('model'))
 
     class Meta:
         model = Model
@@ -323,7 +324,7 @@ class VariableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(VariableForm, self).__init__(*args, **kwargs)
-        self.fields['variable'].queryset = queryset
+        self.fields['variable'].queryset = queryset.order_by(Lower('variable'))
 
     class Meta:
         model = Variable
@@ -331,29 +332,29 @@ class VariableForm(forms.ModelForm):
         exclude = ['variable']
 
 class AdvancedSearchForm(forms.Form):
-    doi = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    author = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    date_start = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    date_end = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    doi = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
+    author = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
+    date_start = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
+    date_end = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
     project = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.filter(project__contains="CMIP").order_by("project"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Project.objects.filter(project__contains="CMIP").order_by(Lower("project")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     program = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.exclude(project__contains="CMIP").order_by("project"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Project.objects.exclude(project__contains="CMIP").order_by(Lower("project")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     experiment = forms.ModelMultipleChoiceField(
-        queryset=Experiment.objects.all().order_by("experiment"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Experiment.objects.all().order_by(Lower("experiment")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     frequency = forms.ModelMultipleChoiceField(
-        queryset=Frequency.objects.all().order_by("frequency"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Frequency.objects.all().order_by(Lower("frequency")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     keyword = forms.ModelMultipleChoiceField(
-        queryset=Keyword.objects.all().order_by("keyword"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Keyword.objects.all().order_by(Lower("keyword")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     model = forms.ModelMultipleChoiceField(
-        queryset=Model.objects.all().order_by("model"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Model.objects.all().order_by(Lower("model")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     variable= forms.ModelMultipleChoiceField(
-        queryset=Variable.objects.all().order_by("variable"),
-        widget=forms.CheckboxSelectMultiple())
+        queryset=Variable.objects.all().order_by(Lower("variable")),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
