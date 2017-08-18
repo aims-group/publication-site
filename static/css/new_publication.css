@@ -51,4 +51,20 @@ label{
     padding: 3px 10px
 }
 
-
+@media screen and (min-height: 1050px) and (min-width: 992px) {
+    .meta-form-list {
+      height: 250px;
+    }
+  }
+  
+  @media screen and (min-height: 1150px) and (min-width: 992px) {
+    .meta-form-list {
+      height: 300px;
+    }
+  }
+  
+  @media screen and (min-height: 1250px) and (min-width: 992px) {
+    .meta-form-list {
+      height: 350px;
+    }
+  }

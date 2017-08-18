@@ -1,5 +1,5 @@
 .meta-form-list {
-  height: 500px;
+  height: 200px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -27,4 +27,22 @@ label{
 
 form{
   margin-bottom: 5em;
+}
+
+@media screen and (min-height: 1050px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 240px;
+  }
+}
+
+@media screen and (min-height: 1150px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 290px;
+  }
+}
+
+@media screen and (min-height: 1250px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 340px;
+  }
 }

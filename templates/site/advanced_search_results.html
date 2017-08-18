@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %} Search Results {% endblock %}
-
+{% block extra_headers %}
+    <link rel="stylesheet" href="/static/css/search.css">
+    <link rel="stylesheet" href="/static/css/advanced_search.css">
+{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="/static/css/search.css">
-<link rel="stylesheet" href="/static/css/advanced_search.css">
+
 <div id="search-row">
-    <h1>Results:</h1>
+        <input type="button" value="Refine Search" class="btn btn-info" onclick="window.history.back()" /> 
+    <h1>{{publications.count}} Results:</h1>
 </div>
 <hr>
 <div id="citation-container" class="col-sm-9" style="display:none">
