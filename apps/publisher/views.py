@@ -14,6 +14,7 @@ from models import *
 import requests
 import datetime
 import collections
+import operator
 
 
 # Helper functions
@@ -411,15 +412,60 @@ def advanced_search(request):
         advanced_search_form = AdvancedSearchForm()
         return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
     elif request.method == 'POST':
-        pubs = Publication.objects.all()
-        print request.POST
-        if request.POST['doi']:
-            pubs = pubs.filter(doi__icontains=request.POST['doi'])
-        if request.POST['author']:
-            pubs = pubs.filter(author__icontains=request.POST['author'])
-        for pub in pubs:
-            print pub.id
-        return render(request, 'site/advanced_search_results.html', {'publications': pubs})
+        form = AdvancedSearchForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'site/advanced_search.html', {'form': form})
+        else:
+            pubs = Publication.objects.all()
+            if 'doi' in form.cleaned_data.keys() and form.cleaned_data['doi']:
+                pubs = pubs.filter(doi__icontains=form.cleaned_data['doi'])
+
+            if 'title' in form.cleaned_data.keys() and form.cleaned_data['title']:
+                pubs = pubs.filter(title__icontains=form.cleaned_data['title'])
+
+            if 'author' in form.cleaned_data.keys() and form.cleaned_data['author']:
+                pubs = pubs.filter(authors__name__icontains=form.cleaned_data['author'])
+
+            if 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_start'] and form.cleaned_data['date_end']:
+                pubs = pubs.filter(publication_date__range=[form.cleaned_data['date_start'], form.cleaned_data['date_end']])
+
+            elif 'date_start' in form.cleaned_data.keys() and form.cleaned_data['date_start']:
+                pubs = pubs.filter(publication_date__gte=form.cleaned_data['date_start'])
+
+            elif 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_end']:
+                pubs = pubs.filter(publication_date__lte=form.cleaned_data['date_end'])
+
+            if 'program' in form.cleaned_data.keys() and form.cleaned_data['program']:
+                for prog in form.cleaned_data['program']:
+                    pubs = pubs.filter(projects=prog)
+
+            if 'project' in form.cleaned_data.keys() and form.cleaned_data['project']:
+                for proj in form.cleaned_data['project']:
+                    pubs = pubs.filter(projects=proj)
+
+            if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
+                for exp in form.cleaned_data['experiment']:
+                    pubs = pubs.filter(experiments=exp)
+
+            if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
+                for freq in form.cleaned_data['frequency']:
+                    pubs = pubs.filter(frequency=freq)
+
+            if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
+                for keyw in form.cleaned_data['keyword']:
+                    pubs = pubs.filter(keywords=keyw)
+
+            if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
+                for model in form.cleaned_data['model']:
+                    pubs = pubs.filter(model=model)
+
+            if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
+                for var in form.cleaned_data['variable']:
+                    pubs = pubs.filter(variables=var)
+            print form.cleaned_data.keys()
+            if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
+                return JsonResponse({'count': pubs.count()})
+            return render(request, 'site/advanced_search_results.html', {'publications': pubs})
     else:
         return HttpResponse(status=405)
 
