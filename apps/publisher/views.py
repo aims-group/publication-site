@@ -375,7 +375,7 @@ def search(request):
                             'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
                     elif pub_type == 'Technical Report':
                         report = pub.technicalreport_set.all()[0]
-                        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
                                 'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
                                 'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
                     else:
@@ -462,11 +462,44 @@ def advanced_search(request):
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
                 for var in form.cleaned_data['variable']:
                     pubs = pubs.filter(variables=var)
-            print form.cleaned_data.keys()
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
-            
-            return render(request, 'site/advanced_search_results.html', {'publications': pubs.order_by("-publication_date")})
+            if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
+                publication_list = []
+                for pub in pubs.order_by("-publication_date"):
+                    authors = [author.name for author in pub.authors.all().order_by('id')]
+                    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+                    if pub_type == 'Journal':
+                        if pub.doi in ['doi:', 'doi: ']:
+                            pub.doi = ''
+                        if pub.doi and pub.doi.find('doi.org') != -1:
+                            pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
+                        elif pub.doi and not pub.doi.startswith('doi:'):
+                            pub.doi = 'doi:' + pub.doi
+                        journal = pub.journal_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                            'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                            'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+                    elif pub_type == 'Book':
+                        book = pub.book_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                            'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                            'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+                    elif pub_type == 'Technical Report':
+                        report = pub.technicalreport_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                                'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
+                                'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
+                    else:
+                        obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'type': pub_type, 'author_key': authors[0].split(',')[0]}
+                    publication_list.append(obj)
+                return render(request, 'site/print_citations.html', {'publication_list': publication_list,
+                                                                            'type': request.POST['display']})
+            return render(request, 'site/advanced_search_results.html', {'publications': pubs.order_by("-publication_date"),
+                                                                        'form': form})
     else:
         return HttpResponse(status=405)
 

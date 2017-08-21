@@ -18,6 +18,9 @@ $(document).ready(function(){
         changeMonth: true,
         changeYear: true
     });
+    if($('#result-count').length != 0){
+        updateSearchCount();
+    }
 });
 
 $("form").on("change", '.search-input', function(event){
