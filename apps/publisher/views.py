@@ -465,7 +465,8 @@ def advanced_search(request):
             print form.cleaned_data.keys()
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
-            return render(request, 'site/advanced_search_results.html', {'publications': pubs})
+            
+            return render(request, 'site/advanced_search_results.html', {'publications': pubs.order_by("-publication_date")})
     else:
         return HttpResponse(status=405)
 
