@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm
+from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
@@ -14,6 +14,7 @@ from models import *
 import requests
 import datetime
 import collections
+import operator
 
 
 # Helper functions
@@ -374,7 +375,7 @@ def search(request):
                             'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
                     elif pub_type == 'Technical Report':
                         report = pub.technicalreport_set.all()[0]
-                        json = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
                                 'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
                                 'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
                     else:
@@ -406,6 +407,101 @@ def search(request):
                 pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
+def advanced_search(request):
+    if request.method == 'GET':
+        advanced_search_form = AdvancedSearchForm()
+        return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
+    elif request.method == 'POST':
+        form = AdvancedSearchForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'site/advanced_search.html', {'form': form})
+        else:
+            pubs = Publication.objects.all()
+            if 'doi' in form.cleaned_data.keys() and form.cleaned_data['doi']:
+                pubs = pubs.filter(doi__icontains=form.cleaned_data['doi'])
+
+            if 'title' in form.cleaned_data.keys() and form.cleaned_data['title']:
+                pubs = pubs.filter(title__icontains=form.cleaned_data['title'])
+
+            if 'author' in form.cleaned_data.keys() and form.cleaned_data['author']:
+                pubs = pubs.filter(authors__name__icontains=form.cleaned_data['author'])
+
+            if 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_start'] and form.cleaned_data['date_end']:
+                pubs = pubs.filter(publication_date__range=[form.cleaned_data['date_start'], form.cleaned_data['date_end']])
+
+            elif 'date_start' in form.cleaned_data.keys() and form.cleaned_data['date_start']:
+                pubs = pubs.filter(publication_date__gte=form.cleaned_data['date_start'])
+
+            elif 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_end']:
+                pubs = pubs.filter(publication_date__lte=form.cleaned_data['date_end'])
+
+            if 'program' in form.cleaned_data.keys() and form.cleaned_data['program']:
+                for prog in form.cleaned_data['program']:
+                    pubs = pubs.filter(projects=prog)
+
+            if 'project' in form.cleaned_data.keys() and form.cleaned_data['project']:
+                for proj in form.cleaned_data['project']:
+                    pubs = pubs.filter(projects=proj)
+
+            if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
+                for exp in form.cleaned_data['experiment']:
+                    pubs = pubs.filter(experiments__experiment=exp)
+
+            if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
+                for freq in form.cleaned_data['frequency']:
+                    pubs = pubs.filter(frequency__frequency=freq)
+
+            if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
+                for keyw in form.cleaned_data['keyword']:
+                    pubs = pubs.filter(keywords__keyword=keyw)
+
+            if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
+                for model in form.cleaned_data['model']:
+                    pubs = pubs.filter(model__model=model)
+
+            if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
+                for var in form.cleaned_data['variable']:
+                    pubs = pubs.filter(variables=var)
+            if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
+                return JsonResponse({'count': pubs.count()})
+            if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
+                publication_list = []
+                for pub in pubs.order_by("-publication_date"):
+                    authors = [author.name for author in pub.authors.all().order_by('id')]
+                    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+                    if pub_type == 'Journal':
+                        if pub.doi in ['doi:', 'doi: ']:
+                            pub.doi = ''
+                        if pub.doi and pub.doi.find('doi.org') != -1:
+                            pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
+                        elif pub.doi and not pub.doi.startswith('doi:'):
+                            pub.doi = 'doi:' + pub.doi
+                        journal = pub.journal_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                            'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                            'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+                    elif pub_type == 'Book':
+                        book = pub.book_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                            'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                            'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+                    elif pub_type == 'Technical Report':
+                        report = pub.technicalreport_set.all()[0]
+                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                                'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
+                                'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
+                    else:
+                        obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                            'doi': pub.doi, 'type': pub_type, 'author_key': authors[0].split(',')[0]}
+                    publication_list.append(obj)
+                return render(request, 'site/print_citations.html', {'publication_list': publication_list,
+                                                                            'type': request.POST['display']})
+            return render(request, 'site/advanced_search_results.html', {'publications': pubs.order_by("-publication_date"),
+                                                                        'form': form})
+    else:
+        return HttpResponse(status=405)
 
 @login_required()
 def review(request):

@@ -1,0 +1,48 @@
+.meta-form-list {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.inline-checkboxes > div.panel-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+.inline-checkboxes > div.panel-body > label{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 3px 10px
+}
+
+.md-font {
+  font-size: 12pt;
+}
+
+label{
+  margin-bottom: 0;
+}
+
+form{
+  margin-bottom: 5em;
+}
+
+@media screen and (min-height: 1050px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 240px;
+  }
+}
+
+@media screen and (min-height: 1150px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 290px;
+  }
+}
+
+@media screen and (min-height: 1250px) and (min-width: 992px) {
+  .meta-form-list {
+    height: 340px;
+  }
+}

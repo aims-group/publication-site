@@ -43,6 +43,16 @@ $( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
         $('#meta_type').val($(ui.newTab).text());
 });
 
+var meta = $('.meta-form-list ul li');
+$("#meta-filter").keyup(function() {
+    console.log("hello");
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    meta.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
+
 function doisearch() {
     $('#loading').show();
     var doi = $("#doi-field").val();

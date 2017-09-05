@@ -49,6 +49,16 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(e) {
     
 });
 
+var meta = $('.meta-form-list ul li');
+$("#meta-filter").keyup(function() {
+    console.log("hello");
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    meta.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
+
 function isDoiRequired(){
     if($("#id_pub-status option:selected").text() === "Published"){
         $( "#id_pub-doi" ).parent().addClass('required');
