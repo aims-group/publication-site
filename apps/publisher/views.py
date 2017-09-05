@@ -445,19 +445,19 @@ def advanced_search(request):
 
             if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
                 for exp in form.cleaned_data['experiment']:
-                    pubs = pubs.filter(experiments=exp)
+                    pubs = pubs.filter(experiments__experiment=exp)
 
             if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
                 for freq in form.cleaned_data['frequency']:
-                    pubs = pubs.filter(frequency=freq)
+                    pubs = pubs.filter(frequency__frequency=freq)
 
             if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
                 for keyw in form.cleaned_data['keyword']:
-                    pubs = pubs.filter(keywords=keyw)
+                    pubs = pubs.filter(keywords__keyword=keyw)
 
             if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
                 for model in form.cleaned_data['model']:
-                    pubs = pubs.filter(model=model)
+                    pubs = pubs.filter(model__model=model)
 
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
                 for var in form.cleaned_data['variable']:

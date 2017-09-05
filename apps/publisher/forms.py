@@ -358,18 +358,18 @@ class AdvancedSearchForm(forms.Form):
     program = forms.ModelMultipleChoiceField(
         queryset=Project.objects.exclude(project__contains="CMIP").order_by(Lower("project")),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    experiment = forms.ModelMultipleChoiceField(
-        queryset=Experiment.objects.all().order_by(Lower("experiment")),
+    experiment = forms.MultipleChoiceField(
+        choices=[(x,x) for x in Experiment.objects.all().order_by(Lower("experiment")).values_list('experiment', flat=True).distinct()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    frequency = forms.ModelMultipleChoiceField(
-        queryset=Frequency.objects.all().order_by(Lower("frequency")),
+    frequency = forms.MultipleChoiceField(
+        choices=[(x,x) for x in Frequency.objects.all().order_by(Lower("frequency")).values_list('frequency', flat=True).distinct()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    keyword = forms.ModelMultipleChoiceField(
-        queryset=Keyword.objects.all().order_by(Lower("keyword")),
+    keyword = forms.MultipleChoiceField(
+        choices=[(x,x) for x in Keyword.objects.all().order_by(Lower("keyword")).values_list("keyword", flat=True).distinct()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    model = forms.ModelMultipleChoiceField(
-        queryset=Model.objects.all().order_by(Lower("model")),
+    model = forms.MultipleChoiceField(
+        choices=[(x,x) for x in Model.objects.all().order_by(Lower("model")).values_list("model", flat=True).distinct()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    variable= forms.ModelMultipleChoiceField(
-        queryset=Variable.objects.all().order_by(Lower("variable")),
+    variable= forms.MultipleChoiceField(
+        choices=[(x,x) for x in Variable.objects.all().order_by(Lower("variable")).values_list("variable", flat=True).distinct()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
