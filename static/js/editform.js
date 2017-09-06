@@ -45,7 +45,6 @@ $( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
 
 var meta = $('.meta-form-list ul li');
 $("#meta-filter").keyup(function() {
-    console.log("hello");
     var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
     meta.show().filter(function() {
         var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
@@ -61,7 +60,6 @@ function doisearch() {
         method: 'GET',
         data: {'doi': doi},
         success: function(data){
-        console.log(data);
             if(data.success){
                 $('.warning-message').removeClass('alert alert-warning').text('');
                 if(data.doi) $('#id_doi').val(data.doi);

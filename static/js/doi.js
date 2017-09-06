@@ -37,21 +37,8 @@ $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
     isDoiRequired();
 });
 
-$( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(e) {
-    var is_checked = $(e.target).is(":checked");
-    if(is_checked){
-        //show tab
-    }
-    else{
-        //hide tab (and change active tab if needed)
-        $("#meta-tabs div ul li") //too many selected
-    }
-    
-});
-
 var meta = $('.meta-form-list ul li');
 $("#meta-filter").keyup(function() {
-    console.log("hello");
     var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
     meta.show().filter(function() {
         var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
@@ -81,7 +68,6 @@ function doisearch(showFormClicked) {
             method: 'GET',
             data: {'doi': doi},
             success: function(data){
-            console.log(data);
                 if(data.success){
                     $('#journal-warning').empty();
                     $('.warning-message').removeClass('alert alert-warning').text('');
