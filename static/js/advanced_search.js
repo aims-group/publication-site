@@ -39,7 +39,7 @@ function updateSearchCount(){
             $('#result-count').text(result.count);
         },
     }).fail(function($xhr) {
-        console.log('Failed to get count of search results');
+        //Failed to get search count due to server error
     });
 }
 
