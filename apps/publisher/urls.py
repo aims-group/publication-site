@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^review/', views.review, name='review'),
     url(r'^edit/(\d+)', views.edit, name='edit'),
     url(r'^delete/(\d+)', views.delete, name='delete'),
+    url(r'^(?P<name>[a-zA-Z0-9]+)/$', views.view, name='view'),
     # url(r'^statistics/', views.statistics, name='statistics'),
     url(r'^network-graph/', views.network_graph, name='network_graph'),
     url(r'^ajax/?$', views.ajax),

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} search {% endblock %}
+{% block title %} Publication Hub {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/search.css">
@@ -49,17 +49,7 @@
     </div>
 </div>
 <div class="" id="search-row">
-    {% if type == "ESGF" or "CMIP" in type %}
-        <h1>{{ type.upper }}: 
-            {%if option == "all" %}
-                {{ option|title}}
-            {%else%}
-                {{ option }}
-            {%endif%}
-        </h1>
-    {% else %}
-        <h1>{{ type.title }}: {{ option }}</h1>
-    {%endif%}
+    <h1>{{ type.title }}: {{ option }}</h1>
 </div>
 
 <hr>
@@ -68,13 +58,11 @@
 </div>
 
 <div class="publication-container col-sm-9">
-
     <div class="row">
         <div class="col-md-2"><h4 id="year-heading" class="sortable">Year</h4></div>
         <div class="col-md-2"><h4 id="author-heading" class="sortable">Author</h4></div>
         <div class="col-md-8"><h4 id="title-heading" class="sortable">Title</h4></div>
     </div>
-
     {% if publications %}
         {% for publication in publications %}
             <div class="publication">
@@ -92,6 +80,8 @@
                         <div id="abstract{{ publication.id }}" style="display:none">empty</div>
                         <div id="bibtex{{ publication.id }}" style="display:none">empty</div>
                 </div>
+
+
             </div>
             <hr>
                 </div>
@@ -117,13 +107,13 @@
     {% if type == "all" %}
         <ul>
             {% for k, v in pages.items %}
-                <li><a href="search?type={{ k }}"> {{ v }}</a></li>
+                <li><a href="?type={{ k }}"> {{ v }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="{{type}}?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}

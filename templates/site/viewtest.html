@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} search {% endblock %}
+{% block title %} {{test}} {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/search.css">
@@ -73,6 +73,7 @@
         <div class="col-md-2"><h4 id="year-heading" class="sortable">Year</h4></div>
         <div class="col-md-2"><h4 id="author-heading" class="sortable">Author</h4></div>
         <div class="col-md-8"><h4 id="title-heading" class="sortable">Title</h4></div>
+
     </div>
 
     {% if publications %}
@@ -92,6 +93,8 @@
                         <div id="abstract{{ publication.id }}" style="display:none">empty</div>
                         <div id="bibtex{{ publication.id }}" style="display:none">empty</div>
                 </div>
+
+
             </div>
             <hr>
                 </div>
