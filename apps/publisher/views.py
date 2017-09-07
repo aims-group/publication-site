@@ -404,15 +404,16 @@ def search(request):
                 pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/search.html', pubs)
 
-def view(request, name):
+def view(request, project_name="all"):
     if request.method != 'GET':
         return HttpResponse(status=405) # Method other than get not allowed
     projects = [str(x).lower() for x in Project.objects.all()]
-    if not name.lower() in projects:
+    if project_name != "all" and not project_name.lower() in projects:
         return HttpResponse(status=404) #invalid project name
     publications_to_load = 100  # number of publications to load at a time
     pubs = {}
     data = collections.OrderedDict()
+    pubs["category"] = project_name
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
@@ -426,14 +427,15 @@ def view(request, name):
     pubs["search"] = True
     page_filter = request.GET.get("type", "all")
     display = request.GET.get('display', '')  # expect display == 'citations' or nothing
-
-    if page_filter == 'all':
+    if project_name == "all":
+        publications = Publication.objects.all().order_by("-publication_date")
+    else:
         try:
-            publications = Project.objects.get(project__iexact=name).publication_set.order_by("-publication_date")
+            publications = Project.objects.get(project__iexact=project_name).publication_set.order_by("-publication_date")    
         except Project.DoesNotExist as e:
             print e
             return HttpResponse(status=404)
-
+    if page_filter == 'all':
         pubs["pages"] = get_all_options()
 
     elif page_filter == 'experiment':
