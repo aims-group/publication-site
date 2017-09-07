@@ -441,56 +441,56 @@ def view(request, project_name="all"):
     elif page_filter == 'experiment':
         option = request.GET.get("option", "1pctCO2")
         pubs["option"] = option
-        publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
+        publications = publications.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
         for exp in Experiment.objects.all().order_by('experiment'):
-            if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
+            if publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
                 continue
             exps = {}
             exps['type'] = 'experiment'
             exps['options'] = str(exp.experiment)
-            exps['count'] = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
+            exps['count'] = publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
             data[str(exp.experiment)] = exps
         pubs["pages"] = data
 
     elif page_filter == 'frequency':
         option = request.GET.get("option", "3-hourly")
         pubs["option"] = option
-        publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
+        publications = publications.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
         for frq in Frequency.objects.all().order_by('frequency'):
-            if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
+            if publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
                 continue
             frqs = {}
             frqs['type'] = 'frequency'
             frqs['options'] = str(frq.frequency)
-            frqs['count'] = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
+            frqs['count'] = publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
             data[str(frq.frequency)] = frqs
         pubs["pages"] = data
 
     elif page_filter == 'keyword':
         option = request.GET.get("option", "Abrupt change")
         pubs["option"] = option
-        publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
+        publications = publications.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
         for kyw in Keyword.objects.all().order_by('keyword'):
-            if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
+            if publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
                 continue
             kyws = {}
             kyws['type'] = 'keyword'
             kyws['options'] = str(kyw.keyword)
-            kyws['count'] = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
+            kyws['count'] = publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
             data[str(kyw.keyword)] = kyws
         pubs["pages"] = data
 
     elif page_filter == 'model':
         option = request.GET.get("option", "ACCESS1.0")
         pubs["option"] = option
-        publications = Publication.objects.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
+        publications = publications.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
         for mod in Model.objects.all().order_by('model'):
-            if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
+            if publications.filter(model=Model.objects.filter(model=mod)).count() == 0:
                 continue
             mods = {}
             mods['type'] = 'model'
             mods['options'] = str(mod.model)
-            mods['count'] = Publication.objects.filter(model=Model.objects.filter(model=mod)).count()
+            mods['count'] = publications.filter(model=Model.objects.filter(model=mod)).count()
             data[str(mod.model)] = mods
         pubs["pages"] = data
 
@@ -502,14 +502,14 @@ def view(request, project_name="all"):
             if str(v) == str(option):
                 lookup = k
                 break
-        publications = Publication.objects.filter(status=lookup).order_by("-publication_date")
+        publications = publications.filter(status=lookup).order_by("-publication_date")
         for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
-            if Publication.objects.filter(status=stat).count() == 0:
+            if publications.filter(status=stat).count() == 0:
                 continue
             stats = {}
             stats['type'] = 'status'
             stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
-            stats['count'] = Publication.objects.filter(status=stat).count()
+            stats['count'] = publications.filter(status=stat).count()
             data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
         pubs["pages"] = data
 
@@ -521,29 +521,29 @@ def view(request, project_name="all"):
             if str(v) == option:
                 lookup = k
                 break
-        publications = Publication.objects.filter(publication_type=lookup).order_by("-publication_date")
+        publications = publications.filter(publication_type=lookup).order_by("-publication_date")
         for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
-            if Publication.objects.filter(publication_type=pt).count() == 0:
+            if publications.filter(publication_type=pt).count() == 0:
                 continue
             pubtype = {}
             pubtype['type'] = 'type'
             typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
             pubtype['options'] = typename
-            pubtype['count'] = Publication.objects.filter(publication_type=pt).count()
+            pubtype['count'] = publications.filter(publication_type=pt).count()
             data[typename] = pubtype
         pubs["pages"] = data
 
     elif page_filter == 'variable':
         option = request.GET.get("option", "air pressure")
         pubs["option"] = request.GET.get("option", "air pressure")
-        publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
+        publications = publications.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
         for var in Variable.objects.all().order_by('variable'):
-            if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
+            if publications.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
                 continue
             vars = {}
             vars['type'] = 'variable'
             vars['options'] = str(var.variable)
-            vars['count'] = Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count()
+            vars['count'] = publications.filter(variables=Variable.objects.filter(variable=var)).count()
             data[str(var.variable)] = vars
         pubs["pages"] = data
 
@@ -551,26 +551,26 @@ def view(request, project_name="all"):
         now = datetime.datetime.now()
         option = request.GET.get("option", str(now.year))
         pubs["option"] = option
-        publications = Publication.objects.filter(publication_date__year=option).order_by("-publication_date")
+        publications = publications.filter(publication_date__year=option).order_by("-publication_date")
         for pub_years in AvailableYears.objects.all().order_by('-year'):
             years = {}
             years['type'] = 'year'
             years['options'] = str(pub_years.year)
-            years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
+            years['count'] = publications.filter(publication_date__year=pub_years.year).count()
             data[str(pub_years.year)] = years
         pubs["pages"] = data
 
     elif page_filter == 'project':
         option = request.GET.get("option", "CMIP5")
         pubs["option"] = option
-        publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
+        publications = publications.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
         for project in Project.objects.all().order_by('project'):
-            if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
+            if publications.filter(projects=Project.objects.filter(project=project)).count() == 0:
                 continue
             project_data = {}
             project_data['type'] = 'project'
             project_data['options'] = str(project)
-            project_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=project)).count()
+            project_data['count'] = publications.filter(projects=Project.objects.filter(project=project)).count()
             data[(str(project))] = project_data
         pubs['pages'] = data
 
@@ -580,14 +580,14 @@ def view(request, project_name="all"):
         if option == "all":
             publications = Publication.objects.exclude(projects__project__contains="CMIP").order_by("-publication_date")
         else:
-            publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
+            publications = publications.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
         for program in Project.objects.all().order_by('project'):
-            if Publication.objects.filter(projects=Project.objects.filter(project=program)).count() == 0 or "CMIP" in str(program):
+            if publications.filter(projects=Project.objects.filter(project=program)).count() == 0 or "CMIP" in str(program):
                 continue
             program_data = {}
             program_data['type'] = 'program'
             program_data['options'] = str(program)
-            program_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=program)).count()
+            program_data['count'] = publications.filter(projects=Project.objects.filter(project=program)).count()
             data[(str(program))] = program_data
         data['all'] = {'type': 'program', 'options': 'all', 'count': Publication.objects.exclude(projects__project__contains="CMIP").order_by("-publication_date").count()}
         pubs['pages'] = data
