@@ -13,6 +13,7 @@ $(document).ready(function(){
     if($("#id_status option:selected").text() !== "Published"){
         $( "#id_doi" ).parent().removeClass('required');
     }
+    $( "#meta-tabs" ).tabs();
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -30,6 +31,27 @@ $( "#id_status" ).change(function() {
     }
 });
 
+$( '#meta-tabs' ).on( "tabscreate", function( event, ui ) {
+    $('#meta-tabs .active').removeClass('active');
+    $(ui.tab).addClass('active');
+    $('#meta_type').val($(ui.tab).text());
+});
+
+$( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
+        $(ui.oldTab).removeClass('active');
+        $(ui.newTab).addClass('active');
+        $('#meta_type').val($(ui.newTab).text());
+});
+
+var meta = $('.meta-form-list ul li');
+$("#meta-filter").keyup(function() {
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    meta.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
+
 function doisearch() {
     $('#loading').show();
     var doi = $("#doi-field").val();
@@ -38,7 +60,6 @@ function doisearch() {
         method: 'GET',
         data: {'doi': doi},
         success: function(data){
-        console.log(data);
             if(data.success){
                 $('.warning-message').removeClass('alert alert-warning').text('');
                 if(data.doi) $('#id_doi').val(data.doi);

@@ -2,30 +2,35 @@ $( document ).ready(function() {
     year_sort_toggle = false;
     author_sort_toggle = false;
     title_sort_toggle = false;
-    last_sort = '';
+    last_sort = 'year';
+    $('#year-heading').addClass('descending');
     $('#search-toggle').click(function(){
         $('#search-container').slideToggle('fast');
     });
 
-    $(".publication-container").jscroll({
-        nextSelector: 'a.jscroll-next:last',
-        callback: function(){
-            $('.jscroll-added div').first().unwrap();
-            if (last_sort === 'year'){
-                year_sort_toggle = !year_sort_toggle;
-                year_sort();
-            }
-            else if (last_sort === 'author'){
-                author_sort_toggle = !author_sort_toggle;
-                author_sort();
-            }
-            else if (last_sort === 'title'){
-                title_sort_toggle = !title_sort_toggle;
-                title_sort();
-            }
-        },
-    });
-
+    try{
+        $(".publication-container").jscroll({
+            nextSelector: 'a.jscroll-next:last',
+            callback: function(){
+                $('.jscroll-added div').first().unwrap();
+                if (last_sort === 'year'){
+                    year_sort_toggle = !year_sort_toggle;
+                    year_sort();
+                }
+                else if (last_sort === 'author'){
+                    author_sort_toggle = !author_sort_toggle;
+                    author_sort();
+                }
+                else if (last_sort === 'title'){
+                    title_sort_toggle = !title_sort_toggle;
+                    title_sort();
+                }
+            },
+        });
+    }
+    catch(e){
+        //jscroll might not be loaded. just move on if it is not present
+    }
 });
 
 $('#facet-links-container input.radio-sort').change(function(){
@@ -244,6 +249,141 @@ $('#facet-links-container input.radio-sort').change(function(){
     }
   }
 
+function show_bibtex(id){
+    if ($("div #bibtex"+id).html() == "empty"){
+        url = "/ajax/citation/" + id;
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {},
+            dataType: 'json',
+            success: function(data){
+                var authorstring = '';
+                var bibtex = '';
+                $.each(data.authors, function(index, author){
+                    if(index == 0){
+                        authorstring = authorstring.concat(author);
+                    }
+                    else{
+                        authorstring = authorstring.concat(' and ', author);
+                    }
+                });
+                if (data.type == 'Journal'){
+                    bibtex = "@article{" + data.authors[0].split(',')[0] + ",\n" +
+                                "  title        = {{" + data.title + "}},\n" +
+                                "  author       = {" + authorstring + "}";
+                    if(data.url){
+                        bibtex += ',\n  url          = {' + '<a target="_blank" href="' + data.url + '">' + data.url + '</a>}';
+                    }
+                    if(data.journal_name){
+                        bibtex += ",\n  journal      = {" + data.journal_name + "}";
+                    }
+                    if(data.volume_number){
+                        bibtex += ",\n  volume       = {" + data.volume_number + "}";
+                    }
+                    if(data.article_number){
+                        bibtex += ",\n  number       = {" + data.article_number + "}";
+                    }
+                    if(data.start_page && data.end_page){
+                        bibtex += ",\n  pages        = {" + data.start_page + "-" + data.end_page + "}";
+                    }
+                }
+                else if (data.type == 'Book'){
+                    bibtex = "@book{" + data.authors[0].split(',')[0] + ",\n" +
+                            "  title        = {" + data.title + "},\n" +
+                            "  author       = {" + authorstring + "}";
+                    if(data.url){
+                        bibtex += ',\n  url          = {' + '<a target="_blank" href="' + data.url + '">' + data.url + '</a>}';
+                    }
+                    if(data.book_name){
+                        bibtex += ",\n  title        = {" + data.book_name + "}";
+                    }
+                    if(data.chapter_title){
+                        bibtex += ",\n  chaptertitle = {" + data.chapter_title + "}";
+                    }
+                    if(data.editor){
+                        bibtex += ",\n  editor       = {" + data.editor + "}";
+                    }
+                    if(data.start_page && data.end_page){
+                        bibtex += ",\n  pages        = {" + data.start_page + "-" + data.end_page + "}";
+                    }
+                    if(data.year){
+                        bibtex += ",\n  year         = {" + data.year + "}";
+                    }
+                    if(data.month){
+                        bibtex += ",\n  month        = {" + data.month + "}";
+                    }
+                    if(data.publisher){
+                        bibtex += ",\n  publisher    = {" + data.publisher + "}";
+                    }
+                    if(data.city_of_publication){
+                        bibtex += ",\n  address      = {" + data.city_of_publication + "}";
+                    }
+                }
+                else if (data.type == 'Technical Report'){
+                    bibtex = "@techreport{" + data.authors[0].split(',')[0] + ",\n" +
+                            "  author       = {" + authorstring + "},\n" +
+                            "  title        = {" + data.title + "}"; 
+                    if(data.number){
+                        bibtex += ",\n  number       = {" + data.number + "}";
+                    }
+                    if(data.editor){
+                        bibtex += ",\n  editor       = {" + data.editor + "}";
+                    }
+                    if(data.year){
+                        bibtex += ",\n  year         = {" + data.year + "}";
+                    }
+                    if(data.month){
+                        bibtex += ",\n  month        = {" + data.month + "}";
+                    }
+                }
+                else if (data.type == 'Conference'){
+                    bibtex = "@conference{" + data.authors[0].split(',')[0] + ",\n" +
+                            "  author       = {" + authorstring + "},\n" +
+                            "  title        = {" + data.title + "}"; 
+                    if(data.number){
+                        bibtex += ",\n  number       = {" + data.number + "}";
+                    }
+                    if(data.editor){
+                        bibtex += ",\n  editor       = {" + data.editor + "}";
+                    }
+                    if(data.year){
+                        bibtex += ",\n  year         = {" + data.year + "}";
+                    }
+                    if(data.month){
+                        bibtex += ",\n  month        = {" + data.month + "}";
+                    }
+                }
+                else {
+                    bibtex = "@misc{" + data.authors[0].split(',')[0] + ",\n" +
+                            "  author       = {" + authorstring + "},\n" +
+                            "  title        = {" + data.title + "}";
+                    if(data.year){
+                        bibtex += ",\n  year         = {" + data.year + "}";
+                    }
+                }
+                if (data.doi.indexOf('doi:') === 0){
+                        data.doi = data.doi.slice(4,data.doi.length).trim();
+                    }
+                if (data.doi.indexOf('doi.org/') > -1){
+                    data.doi = data.doi.split('doi.org/')[1]
+                }
+                if(data.doi){
+                    bibtex += ',\n  doi          = {' + '<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '</a>}';
+                }
+                $("div #bibtex"+id).html($('<pre/>').append(bibtex));
+                $("div #bibtex"+id).toggle();
+            },
+            error: function(request, status, error){
+                alert(request + " | " +  status + " | " +  error);
+            }
+        });
+    }
+    else{
+       $("div #bibtex"+id).toggle();
+    }
+}
+
 $.fn.push = function(selector) {
     Array.prototype.push.apply(this, $.makeArray($(selector)));
     return this;
@@ -265,7 +405,10 @@ function year_sort(){
         var obj = {year: parseInt($(this).find('.dates').text()), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!year_sort_toggle){
         array.sort(function(a, b){
             return a.year - b.year;
@@ -288,8 +431,13 @@ function year_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'year';
 };
 
@@ -300,7 +448,10 @@ function author_sort(){
         var obj = {author: $(this).find('.authors').text(), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!author_sort_toggle){
         array.sort(function(a, b){
             return a.author.localeCompare(b.author);
@@ -323,8 +474,13 @@ function author_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'author';
 };
 
@@ -335,7 +491,10 @@ function title_sort(){
         var obj = {title: $(this).find('.titles').text().trim(), elem: $(this).detach()};
         array.push(obj);
     });
-    var bottom = $('div.jscroll-next-parent').detach();
+    var bottom = $('div.jscroll-next-parent')
+    if(bottom.length != 0){
+        bottom.detach(); //if we are on a jscroll page, detatch the jscroll container at the bottom of the page
+    }
     if (!title_sort_toggle){
         array.sort(function(a, b){
             return a.title.localeCompare(b.title);
@@ -358,7 +517,12 @@ function title_sort(){
     array.forEach(function(obj){
          jq = $(jq).push(obj.elem);
     });
-    $(jq).appendTo('.publication-container .jscroll-inner');
-    $(bottom).appendTo('.publication-container .jscroll-inner');
+    if($(".publication-container .jscroll-inner").length == 0){
+        $(jq).appendTo('.publication-container');
+    }
+    else{
+        $(jq).appendTo('.publication-container .jscroll-inner');
+        $(bottom).appendTo('.publication-container .jscroll-inner');
+    }
     last_sort = 'title';
 };

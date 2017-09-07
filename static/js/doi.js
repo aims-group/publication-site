@@ -3,6 +3,7 @@ $(document).ready(function(){
     var JOURNAL = 2;
     var CMIP5 = 1;
     var CMIP6 = 2;
+    //These variables indicate which tab should be set as the "active" tab on page load
     setUpForm(JOURNAL, CMIP5);
     // When CMIP6 comes around, change the variable above to default to CMIP6 for new publications
 });
@@ -36,6 +37,15 @@ $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
     isDoiRequired();
 });
 
+var meta = $('.meta-form-list ul li');
+$("#meta-filter").keyup(function() {
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    meta.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
+
 function isDoiRequired(){
     if($("#id_pub-status option:selected").text() === "Published"){
         $( "#id_pub-doi" ).parent().addClass('required');
@@ -58,7 +68,6 @@ function doisearch(showFormClicked) {
             method: 'GET',
             data: {'doi': doi},
             success: function(data){
-            console.log(data);
                 if(data.success){
                     $('#journal-warning').empty();
                     $('.warning-message').removeClass('alert alert-warning').text('');
@@ -126,6 +135,14 @@ function submitPublication() {
         ensemble[index] = $(element).val()
     });
     $('#meta-tabs .panel-body div[style="display: none;"]').remove(); //remove unused form elements before serializing
+    $('.project-checkbox:not(:checked)').each(function(index, element){
+        var name = element.value; //Grab the name of the unchecked box
+        var tab = $("#".concat(name, "-tab")); //find the meta form tab it refers to
+        var link = $("#".concat(name, "-tab a")).attr("href"); //grab the link from the tab itself
+        $(link).remove(); //Remove the element the link points to. 
+        //This prevents meta data from being sent for unrelated projects. 
+        //i.e. If CMIP5 is not selected as a project, we don't want to send meta data about it 
+    });
     $.ajax({
         type: 'POST',
         url: '/new',
@@ -141,6 +158,7 @@ function submitPublication() {
 }
 
 function setUpForm() {
+    //Grab the active tab numbers from arguments or default to 0
     var active = arguments[0] === undefined ? 0 : arguments[0];
     var metaActive = arguments[1] === undefined ? 0 : arguments[1];
     $('#publication-optional-inputs').accordion({
@@ -172,3 +190,11 @@ function showForm(){
     $('.optional-inputs').accordion( "refresh" );
 }
 
+
+function updateTabs(){
+    $.each($('#project-form .panel-body label input'), function(index, element){
+        if($(element).prop( "checked" )){
+            $("#".concat(element.value, "-tab")); // find the tab with id #name-tab
+        }
+    });
+}

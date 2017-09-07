@@ -7,7 +7,7 @@ A Django skelaton site for tracking publications, posters, presentations...
     python manage.py makemigrations
     python manage.py makemigrations publisher
     python manage.py migrate
-    python mangae.py migrate publisher
+    python manage.py migrate publisher
     python manage.py createsuperuser
      > username:
      > email:

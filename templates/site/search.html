@@ -10,11 +10,19 @@
        class="btn btn-sm btn-info"
        href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
        target="_blank">Show Citations</a>
+       <a id="show-bibtex"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
+       target="_blank">Show BibTex</a>
     {% else %}
     <a id="show-citations"
        class="btn btn-sm btn-info"
        href="/search?type={{type}}&option={{option}}&display=citations"
        target="_blank">Show Citations</a>
+       <a id="show-bibtex"
+       class="btn btn-sm btn-info"
+       href="/search?type={{type}}&option={{option}}&display=bibtex"
+       target="_blank">Show BibTex</a>
     {% endif %}
 </div>
 <div id="search-container" style="{{hide_search|default:''}}" class="row">
@@ -41,7 +49,17 @@
     </div>
 </div>
 <div class="" id="search-row">
-    <h1>{{ type.title }}: {{ option }}</h1>
+    {% if type == "ESGF" or "CMIP" in type %}
+        <h1>{{ type.upper }}: 
+            {%if option == "all" %}
+                {{ option|title}}
+            {%else%}
+                {{ option }}
+            {%endif%}
+        </h1>
+    {% else %}
+        <h1>{{ type.title }}: {{ option }}</h1>
+    {%endif%}
 </div>
 
 <hr>
@@ -69,9 +87,11 @@
                         (<a onclick="show_citation({{ publication.id }})" href="javascript:void(0)">Citation</a>)
                         (<a onclick="show_more_info({{ publication.id }})" href="javascript:void(0)">More Info</a>)
                         (<a onclick="show_abstract({{ publication.id }})" href="javascript:void(0)">Abstract</a>)
+                        (<a onclick="show_bibtex({{ publication.id }})" href="javascript:void(0)">BibTex</a>)
                         <div id="citation{{ publication.id }}" style="display:none">empty</div>
                         <div id="more_info{{ publication.id }}"style="display:none">empty</div>
                         <div id="abstract{{ publication.id }}" style="display:none">empty</div>
+                        <div id="bibtex{{ publication.id }}" style="display:none">empty</div>
                 </div>
 
 
@@ -106,7 +126,7 @@
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}
