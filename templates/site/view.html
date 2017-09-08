@@ -80,11 +80,9 @@
                         <div id="abstract{{ publication.id }}" style="display:none">empty</div>
                         <div id="bibtex{{ publication.id }}" style="display:none">empty</div>
                 </div>
-
-
             </div>
             <hr>
-                </div>
+        </div>
         {% endfor %}
         {% if scroll_link %}
             <a class="jscroll-next" href="{{scroll_link}}"></a>
@@ -113,13 +111,13 @@
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="{{type}}?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}
 </div>
 
 <script type="text/javascript" src="/static/js/jscroll.min.js"></script>
-<script type="text/javascript" src="/static/js/search.js"></script>
+<script type="text/javascript" src="/static/js/view.js"></script>
 
 {% endblock %}

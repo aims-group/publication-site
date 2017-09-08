@@ -183,22 +183,22 @@ $('#facet-links-container input.radio-sort').change(function(){
               var arr = metadata[0].split("<br/>");
               for (var i = 0, len = arr.length; i < len; i++){
                 var link = arr[i].replace(' ', '%20')
-                exp += "<a href=\"/search?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
+                exp += "<a href=\"/?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
               }
               arr = metadata[1].split("<br/>");
               for (var i = 0, len = arr.length; i < len; i++){
                 var link = arr[i].replace(' ', '%20')
-                model += "<a href=\"/search?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
+                model += "<a href=\"/?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
               }
               arr = metadata[2].split("<br/>");
               for (var i = 0, len = arr.length; i < len; i++){
                 var link = arr[i].replace(' ', '%20')
-                variable += "<a href=\"/search?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
+                variable += "<a href=\"/?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
               }
               arr = metadata[3].split("<br/>");
               for (var i = 0, len = arr.length; i < len; i++){
                 var link = arr[i].replace(' ', '%20')
-                keyword += "<a href=\"/search?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
+                keyword += "<a href=\"/?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
               }
               data =  "<table class=\"table\">" +
                       "<th>Experiments</th><th>Models</th><th>Variables</th><th>Keywords</th><tr>" +
