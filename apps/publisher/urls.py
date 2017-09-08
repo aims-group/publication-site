@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^delete/(\d+)', views.delete, name='delete'),
     url(r'^(?P<project_name>[a-zA-Z0-9]*)/$', views.view, name='view'),
     # url(r'^statistics/', views.statistics, name='statistics'),
-    url(r'^network-graph/', views.network_graph, name='network_graph'),
     url(r'^ajax/?$', views.ajax),
     url(r'^ajax/citation/(?P<pub_id>\d+)/$', views.ajax_citation),
     url(r'^ajax/abstract/(?P<pub_id>\d+)/$', views.ajax_abstract),
