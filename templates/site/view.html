@@ -8,20 +8,20 @@
     {% if type == 'search'%}
     <a id="show-citations"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
+       href="?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
        target="_blank">Show Citations</a>
        <a id="show-bibtex"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
+       href="?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
        target="_blank">Show BibTex</a>
     {% else %}
     <a id="show-citations"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&option={{option}}&display=citations"
+       href="?type={{type}}&option={{option}}&display=citations"
        target="_blank">Show Citations</a>
        <a id="show-bibtex"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&option={{option}}&display=bibtex"
+       href="?type={{type}}&option={{option}}&display=bibtex"
        target="_blank">Show BibTex</a>
     {% endif %}
 </div>
