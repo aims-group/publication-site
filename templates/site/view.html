@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} search {% endblock %}
+{% block title %} Publication Hub {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="/static/css/search.css">
@@ -8,20 +8,20 @@
     {% if type == 'search'%}
     <a id="show-citations"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
+       href="?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=citations"
        target="_blank">Show Citations</a>
        <a id="show-bibtex"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
+       href="?type={{type}}&year={{search_year}}&author={{search_author}}&title={{search_title}}&display=bibtex"
        target="_blank">Show BibTex</a>
     {% else %}
     <a id="show-citations"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&option={{option}}&display=citations"
+       href="?type={{type}}&option={{option}}&display=citations"
        target="_blank">Show Citations</a>
        <a id="show-bibtex"
        class="btn btn-sm btn-info"
-       href="/search?type={{type}}&option={{option}}&display=bibtex"
+       href="?type={{type}}&option={{option}}&display=bibtex"
        target="_blank">Show BibTex</a>
     {% endif %}
 </div>
@@ -49,17 +49,7 @@
     </div>
 </div>
 <div class="" id="search-row">
-    {% if type == "ESGF" or "CMIP" in type %}
-        <h1>{{ type.upper }}: 
-            {%if option == "all" %}
-                {{ option|title}}
-            {%else%}
-                {{ option }}
-            {%endif%}
-        </h1>
-    {% else %}
-        <h1>{{ type.title }}: {{ option }}</h1>
-    {%endif%}
+    <h1>{{ category|title }}: {{ option }}</h1>
 </div>
 
 <hr>
@@ -68,14 +58,11 @@
 </div>
 
 <div class="publication-container col-sm-9">
-
     <div class="row">
         <div class="col-md-2"><h4 id="year-heading" class="sortable">Year</h4></div>
         <div class="col-md-2"><h4 id="author-heading" class="sortable">Author</h4></div>
         <div class="col-md-8"><h4 id="title-heading" class="sortable">Title</h4></div>
-
     </div>
-
     {% if publications %}
         {% for publication in publications %}
             <div class="publication">
@@ -93,11 +80,9 @@
                         <div id="abstract{{ publication.id }}" style="display:none">empty</div>
                         <div id="bibtex{{ publication.id }}" style="display:none">empty</div>
                 </div>
-
-
             </div>
             <hr>
-                </div>
+        </div>
         {% endfor %}
         {% if scroll_link %}
             <a class="jscroll-next" href="{{scroll_link}}"></a>
@@ -120,19 +105,19 @@
     {% if type == "all" %}
         <ul>
             {% for k, v in pages.items %}
-                <li><a href="search?type={{ k }}"> {{ v }}</a></li>
+                <li><a href="?type={{ k }}"> {{ v }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="search?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}
 </div>
 
 <script type="text/javascript" src="/static/js/jscroll.min.js"></script>
-<script type="text/javascript" src="/static/js/search.js"></script>
+<script type="text/javascript" src="/static/js/view.js"></script>
 
 {% endblock %}
