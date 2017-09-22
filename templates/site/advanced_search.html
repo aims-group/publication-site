@@ -50,6 +50,21 @@
             <div id="project_list" class="panel panel-default inline-checkboxes">
                     <div class="panel-heading">
                         <span class="md-font">Projects</span>
+                        <span class="pull-right">
+                            <input class="form-inline"
+                                type="checkbox" 
+                                data-toggle="toggle"
+                                data-on="Any" data-onstyle="success"
+                                data-off="All" data-offstyle="danger">
+                                <i class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top"
+                                    title="Any: filter for results that match any of the criteria">
+                                    <span 
+                                        class="help-tooltip" 
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="All: filter for results that match all criteria"></span>
+                                </i>
+                        </span>
                     </div>
                 <div class="panel-body">
                     {% for field in form.project %}
