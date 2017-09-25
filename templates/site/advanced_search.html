@@ -36,8 +36,19 @@
     <div class="row">
         <div class="col-md-6">
             <div id="program_list" class="panel panel-default inline-checkboxes">
-                    <div class="panel-heading">
+                    <div class="panel-heading clearfix">
                         <span class="md-font">Programs</span>
+                        <i class="help-tooltip glyphicon glyphicon-question-sign pull-right" data-toggle="tooltip" data-placement="top"
+                        title="Any: Filter for results that match any of the criteria 
+All: Filter for results that match all criteria"></span>
+                        </i>
+                        <span class="pull-right">
+                            <input class="form-inline"
+                                type="checkbox" 
+                                data-toggle="toggle"
+                                data-on="Any" data-onstyle="success"
+                                data-off="All" data-offstyle="danger">
+                        </span>
                     </div>
                 <div class="panel-body">
                     {% for field in form.program %}
@@ -48,22 +59,18 @@
         </div>
         <div class="col-md-6">
             <div id="project_list" class="panel panel-default inline-checkboxes">
-                    <div class="panel-heading">
+                    <div class="panel-heading clearfix">
                         <span class="md-font">Projects</span>
+                        <i class="help-tooltip glyphicon glyphicon-question-sign pull-right" data-toggle="tooltip" data-placement="top"
+                        title="Any: Filter for results that match any of the criteria 
+All: Filter for results that match all criteria"></span>
+                        </i>
                         <span class="pull-right">
                             <input class="form-inline"
                                 type="checkbox" 
                                 data-toggle="toggle"
                                 data-on="Any" data-onstyle="success"
                                 data-off="All" data-offstyle="danger">
-                                <i class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top"
-                                    title="Any: filter for results that match any of the criteria">
-                                    <span 
-                                        class="help-tooltip" 
-                                        data-toggle="tooltip"
-                                        data-placement="top"
-                                        title="All: filter for results that match all criteria"></span>
-                                </i>
                         </span>
                     </div>
                 <div class="panel-body">
@@ -77,7 +84,19 @@
     
     <div id="meta-panel" class="panel panel-default">
         <div class="panel-heading clearfix">
-            <span class="md-font">Meta Tags</span><span class="pull-right form-inline"><label>Filter: <input type="text" id="meta-filter" class="form-control"></label></span>
+            <span class="md-font">Meta Tags</span>
+            <i class="help-tooltip glyphicon glyphicon-question-sign pull-right" data-toggle="tooltip" data-placement="top"
+            title="Any: Filter for results that match any of the criteria 
+All: Filter for results that match all criteria"></span>
+            </i>
+            <span class="pull-right">
+                <input class="form-inline"
+                    type="checkbox" 
+                    data-toggle="toggle"
+                    data-on="Any" data-onstyle="success"
+                    data-off="All" data-offstyle="danger">
+            </span>
+            <span class="pull-right form-inline"><label>Filter: <input type="text" id="meta-filter" class="form-control"></label></span>
         </div>
         <div class="panel-body">
             <div class="meta-form-list col-md-4 well form-group"><label>Experiment: </label>{{ form.experiment }}</div>

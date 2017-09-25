@@ -29,6 +29,18 @@ form{
   margin-bottom: 5em;
 }
 
+.toggle.btn{
+  margin-left: 5px;
+}
+
+.help-tooltip{
+  margin-left: 1px;
+}
+
+.tooltip-inner{ /* Adds line wrapping to tooltips */
+  white-space: pre-wrap;
+}
+
 @media screen and (min-height: 1050px) and (min-width: 992px) {
   .meta-form-list {
     height: 240px;

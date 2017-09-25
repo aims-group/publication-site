@@ -449,7 +449,7 @@ def advanced_search(request):
 
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
                 for var in form.cleaned_data['variable']:
-                    pubs = pubs.filter(variables=var)
+                    pubs = pubs.filter(variables__variable=var)
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
             if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
