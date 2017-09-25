@@ -428,28 +428,47 @@ def advanced_search(request):
                     pubs = pubs.filter(projects=prog)
 
             if 'project' in form.cleaned_data.keys() and form.cleaned_data['project']:
-                for proj in form.cleaned_data['project']:
-                    pubs = pubs.filter(projects=proj)
+                if request.POST.get("project_search_by_any", "off") == "on":
+                    pubs = pubs.filter(projects__in=form.cleaned_data['project'])
+                else:
+                    for proj in form.cleaned_data['project']:
+                        pubs = pubs.filter(projects=proj)
 
             if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
-                for exp in form.cleaned_data['experiment']:
-                    pubs = pubs.filter(experiments__experiment=exp)
+                if request.POST.get("meta_search_by_any", "off") == "on":
+                    pubs = pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
+                else:
+                    for exp in form.cleaned_data['experiment']:
+                        pubs = pubs.filter(experiments__experiment=exp)
 
             if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
-                for freq in form.cleaned_data['frequency']:
-                    pubs = pubs.filter(frequency__frequency=freq)
+                if request.POST.get("meta_search_by_any", "off") == "on":
+                    pubs = pubs.filter(frequency__frequency__in=form.cleaned_data['frequency'])
+                else:
+                    for freq in form.cleaned_data['frequency']:
+                        pubs = pubs.filter(frequency__frequency=freq)
 
             if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
-                for keyw in form.cleaned_data['keyword']:
-                    pubs = pubs.filter(keywords__keyword=keyw)
+                if request.POST.get("meta_search_by_any", "off") == "on":
+                    pubs = pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
+                else:
+                    for keyw in form.cleaned_data['keyword']:
+                        pubs = pubs.filter(keywords__keyword=keyw)
 
             if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
-                for model in form.cleaned_data['model']:
-                    pubs = pubs.filter(model__model=model)
+                if request.POST.get("meta_search_by_any", "off") == "on":
+                    pubs = pubs.filter(model__model__in=form.cleaned_data['model'])
+                else:
+                    for model in form.cleaned_data['model']:
+                        pubs = pubs.filter(model__model=model)
 
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
-                for var in form.cleaned_data['variable']:
-                    pubs = pubs.filter(variables__variable=var)
+                if request.POST.get("meta_search_by_any", "off") == "on":
+                    pubs = pubs.filter(variables__variable__in=form.cleaned_data['variable'])
+                else:
+                    for var in form.cleaned_data['variable']:
+                        pubs = pubs.filter(variables__variable=var)
+
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
             if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
