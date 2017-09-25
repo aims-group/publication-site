@@ -117,9 +117,6 @@ def get_all_options():
     all_options['year'] = "Year"
     return all_options
 
-def get_nav_options():
-    return Project.objects.all().order_by("project")
-
 def view(request, project_name="all"):
     if request.method != 'GET':
         return HttpResponse(status=405) # Method other than get not allowed
@@ -392,17 +389,16 @@ def view(request, project_name="all"):
             else:
                 pubs["scroll_link"] = "/?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
             pubs["publications"] = publications[:publications_to_load]
-    pubs.update({'nav_options': get_nav_options()})
     return render(request, 'site/view.html', pubs)
 
 def advanced_search(request):
     if request.method == 'GET':
         advanced_search_form = AdvancedSearchForm()
-        return render(request, 'site/advanced_search.html', {'form': advanced_search_form, 'nav_options': get_nav_options()})
+        return render(request, 'site/advanced_search.html', {'form': advanced_search_form})
     elif request.method == 'POST':
         form = AdvancedSearchForm(request.POST)
         if not form.is_valid():
-            return render(request, 'site/advanced_search.html', {'form': form, 'nav_options': get_nav_options()})
+            return render(request, 'site/advanced_search.html', {'form': form})
         else:
             pubs = Publication.objects.all()
             if 'doi' in form.cleaned_data.keys() and form.cleaned_data['doi']:
@@ -506,7 +502,7 @@ def advanced_search(request):
                 return render(request, 'site/print_citations.html', {'publication_list': publication_list,
                                                                             'type': request.POST['display']})
             return render(request, 'site/advanced_search_results.html', {'publications': pubs.order_by("-publication_date"),
-                                                                        'form': form, 'nav_options': get_nav_options()})
+                                                                        'form': form})
     else:
         return HttpResponse(status=405)
 
@@ -516,7 +512,7 @@ def review(request):
     entries = Publication.objects.filter(submitter=request.user.id)
     if not entries:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None, 'nav_options': get_nav_options()})
+    return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
 
 
 @login_required()
@@ -529,7 +525,7 @@ def delete(request, pub_id):
     else:
         entries = Publication.objects.filter(submitter=userid)
         error = 'Error: You must be the owner of a submission to edit it.'
-        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error, 'nav_options': get_nav_options()})
+        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
 
 
 @login_required()
@@ -539,7 +535,7 @@ def edit(request, pubid):
         if not request.user.id == pub_instance.submitter.id:
             entries = Publication.objects.filter(submitter=request.user.id)
             error = 'Error: You must be the owner of a submission to edit it.'
-            return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error, 'nav_options': get_nav_options()})
+            return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
         pub_form = PublicationForm(request.POST or None, pub_id=pubid, instance=pub_instance)
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
         pub_type = int(request.POST.get('pub_type', ''))
@@ -590,7 +586,7 @@ def edit(request, pubid):
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
-                        "selected_projects": selected_projects, 'nav_options': get_nav_options()
+                        "selected_projects": selected_projects
                        })
 
     else:
@@ -639,12 +635,12 @@ def edit(request, pubid):
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
                           'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
-                          "selected_projects": selected_projects, 'nav_options': get_nav_options()
+                          "selected_projects": selected_projects
                            })
         else:
             entries = Publication.objects.filter(submitter=userid)
             error = 'Error: You must be the owner of a submission to edit it.'
-            return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error, 'nav_options': get_nav_options()})
+            return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
 
 
 @login_required()
@@ -665,7 +661,6 @@ def new(request):
             })
         meta_form.sort(key=lambda x: x['name'])
         all_forms.update({'meta_form': meta_form})
-        all_forms.update({'nav_options': get_nav_options()})
         return render(request, 'site/new_publication.html', all_forms)
 
     elif request.method == 'POST':
@@ -726,7 +721,6 @@ def new(request):
                 })
         meta_form = sorted(meta_form, key=lambda proj: proj['name'])
         all_forms.update({'meta_form': meta_form})
-        all_forms.update({'nav_options': get_nav_options()})
         return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
@@ -866,7 +860,7 @@ def finddoi(request):
 
 
 def statistics(request):
-    return render(request, 'site/statistics.html', {'nav_options': get_nav_options()})
+    return render(request, 'site/statistics.html', {})
 
 
 # ajax
