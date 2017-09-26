@@ -37,15 +37,8 @@ $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
 });
 
 $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(event) {
-    //if I am checked:
-        // if the count is 0, make me active
-        //increase the count
-    //if I am unchecked
-        //If i am active active, hide content
-        //decrease the count 
     if(this.checked){
         var metaTab = $('#'.concat(this.value, "-tab"))[0];
-        console.log(metaTab)
         $(metaTab).show();
         if(projectSelectedCount == 0){ //then since there will only be one tab, make it active
             var tabNumber = parseInt(metaTab.firstElementChild.getAttribute("href").split('-')[2]); //href holds a string "meta-tabs-x" where x is a number
