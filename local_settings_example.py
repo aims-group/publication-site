@@ -20,3 +20,6 @@ DATABASES = {
 SECRET_KEY = "}.!CLP*DF.CY=|DY<>~56?2N0I~UF^O>40'M|Y!)%E>6%<'95N" # Used by danjo for cryptographic signing. Set this to a unique random value
 RECAPTCHA_PUBLIC_KEY = "" # Google's recaptcha. Refer to the recaptcha web site for this key
 RECAPTCHA_PRIVATE_KEY = "" # https://www.google.com/recaptcha/intro/
+
+EMAIL_HOST = 'localhost' # Email values must be set for password recovery to function
+EMAIL_PORT = 1025

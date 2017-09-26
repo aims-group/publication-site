@@ -34,3 +34,11 @@
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
+
+#logo{
+  padding-left: 35px; /* Fix slightly uneven whitespace in logo image */
+}
+
+nav.navbar.navbar-default{
+  margin-bottom: 0;
+}
