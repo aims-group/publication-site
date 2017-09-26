@@ -1,11 +1,10 @@
+var projectSelectedCount = 0;
+
 $(document).ready(function(){
     $('#loading').hide();
     var JOURNAL = 2;
-    var CMIP5 = 1;
-    var CMIP6 = 2;
-    //These variables indicate which tab should be set as the "active" tab on page load
-    setUpForm(JOURNAL, CMIP5);
-    // When CMIP6 comes around, change the variable above to default to CMIP6 for new publications
+    //The variable indicates which tab should be set as the "active" tab on page load
+    setUpForm(JOURNAL);
 });
 
 $( "#publication-form-wrapper" ).on( "tabscreate", '#tabs', function( event, ui ) {
@@ -36,6 +35,33 @@ $( "#publication-form-wrapper" ).on( "tabsactivate", '#meta-tabs', function( eve
 $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
     isDoiRequired();
 });
+
+$( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(event) {
+    //if I am checked:
+        // if the count is 0, make me active
+        //increase the count
+    //if I am unchecked
+        //If i am active active, hide content
+        //decrease the count 
+    if(this.checked){
+        var metaTab = $('#'.concat(this.value, "-tab"))[0];
+        console.log(metaTab)
+        $(metaTab).show();
+        if(projectSelectedCount == 0){ //then since there will only be one tab, make it active
+            var tabNumber = parseInt(metaTab.firstElementChild.getAttribute("href").split('-')[2]); //href holds a string "meta-tabs-x" where x is a number
+            $('#meta-tabs').tabs("option", "active", tabNumber-1); //Off by one. id starts at one, but jquery-ui starts at 0
+        }
+        ++projectSelectedCount;
+    }
+    else{
+        if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
+            $('#meta-tabs').tabs("option", "active", -1); //set active to an invalid index so nothing is active
+        }
+        --projectSelectedCount;
+    }
+    
+});
+
 
 var meta = $('.meta-form-list ul li');
 $("#meta-filter").keyup(function() {
@@ -160,15 +186,23 @@ function submitPublication() {
 function setUpForm() {
     //Grab the active tab numbers from arguments or default to 0
     var active = arguments[0] === undefined ? 0 : arguments[0];
-    var metaActive = arguments[1] === undefined ? 0 : arguments[1];
     $('#publication-optional-inputs').accordion({
       collapsible: true, active: false
     });
     $('.optional-inputs').accordion({
       collapsible: true, active: false
     });
+    $('.project-checkbox').each(function(index, checkbox){
+        if(checkbox.checked){
+            $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
+            ++projectSelectedCount;
+        }
+        else{
+            $("#".concat(checkbox.value, "-tab")).hide() //find corresponding meta tab and hide it
+        }
+    });
     $( "#tabs" ).tabs({ active: active });
-    $( "#meta-tabs" ).tabs({ active: metaActive });
+    $( "#meta-tabs" ).tabs();
     isDoiRequired();
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
     for(i=0; i < count; i++) {
@@ -188,13 +222,4 @@ function showForm(){
     $("#publication-form-wrapper").removeClass("hidden");
     $('#publication-optional-inputs').accordion( "refresh" );
     $('.optional-inputs').accordion( "refresh" );
-}
-
-
-function updateTabs(){
-    $.each($('#project-form .panel-body label input'), function(index, element){
-        if($(element).prop( "checked" )){
-            $("#".concat(element.value, "-tab")); // find the tab with id #name-tab
-        }
-    });
 }
