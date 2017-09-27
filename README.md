@@ -27,7 +27,7 @@ The **initialize** command reads from the following files inside the "scripts" f
     variable.py
 
 The files are used to populate the database with relevant meta data. The meta data is currently designed with climate science in mind,
-but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project/program,
+but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project,
 then a list of relevant tags. For example, the CMIP5 project has various climate models, so each model is listed in the model.py file which allows users to optionally
 tag a publication as being related to that model. 
 

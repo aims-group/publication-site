@@ -353,10 +353,7 @@ class AdvancedSearchForm(forms.Form):
     date_start = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
     date_end = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
     project = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.filter(project__contains="CMIP").order_by(Lower("project")),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    program = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.exclude(project__contains="CMIP").order_by(Lower("project")),
+        queryset=Project.objects.all().order_by(Lower("project")),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     experiment = forms.MultipleChoiceField(
         choices=[(x,x) for x in Experiment.objects.all().order_by(Lower("experiment")).values_list('experiment', flat=True).distinct()],
