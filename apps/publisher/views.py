@@ -589,7 +589,7 @@ def edit(request, pubid):
                         "selected_projects": selected_projects
                        })
 
-    else:
+    else: # Method == GET
         publication = Publication.objects.get(id=pubid)
         authors = publication.authors.all()
         userid = request.user.id
@@ -618,23 +618,30 @@ def edit(request, pubid):
             meta_form = []
             all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
             selected_projects = [str(proj) for proj in publication.projects.all()]
-            for project in publication.projects.all():
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
-                                               queryset=project.experiments),
-                    'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
-                    'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
-                    'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
-                })
+            for project in Project.objects.all().order_by('project'):
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
+                                                queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
             meta_type = publication.projects.first()
-            # Technically, publications can have more than one project. currently only one is ever used, so take the first
-            ensemble_data = str([[value['model_id'], value['ensemble']] for value in
-                                 PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                          'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
+                          'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
                           "selected_projects": selected_projects
                            })
         else:

@@ -37,8 +37,8 @@ $( "#publication-form-wrapper" ).on('change', '#id_pub-status', function() {
 });
 
 $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(event) {
+    var metaTab = $('#'.concat(this.value, "-tab"))[0];
     if(this.checked){
-        var metaTab = $('#'.concat(this.value, "-tab"))[0];
         $(metaTab).show();
         if(projectSelectedCount == 0){ //then since there will only be one tab, make it active
             var tabNumber = parseInt(metaTab.firstElementChild.getAttribute("href").split('-')[2]); //href holds a string "meta-tabs-x" where x is a number
@@ -50,6 +50,7 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
         if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
             $('#meta-tabs').tabs("option", "active", -1); //set active to an invalid index so nothing is active
         }
+        $(metaTab).hide();
         --projectSelectedCount;
     }
     

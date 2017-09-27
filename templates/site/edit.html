@@ -50,12 +50,6 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
-<script type="text/javascript">
-    ensemble = JSON.parse({{ ensemble_data|my_json|safe }});
-    {# example ensemble: [[1,1], [2,5], [3,1]] #}
-    {# where 1,2,3 are experiment id's and 1,5,1 are ensemble values #}
-
-</script>
 <script type="text/javascript" src="/static/js/editform.js"></script>
 
 {% endblock %}
