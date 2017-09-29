@@ -749,7 +749,7 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = requests.get(initial['URL'], stream=True, verify=False).url  # use llnl cert instead of verify=False
+            url = requests.get(initial['URL'], stream=True).url
             url = url.split(';')[0]
         else:
             url = ''
