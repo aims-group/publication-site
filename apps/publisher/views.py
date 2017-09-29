@@ -847,6 +847,9 @@ def finddoi(request):
 def statistics(request):
     return render(request, 'site/statistics.html', {})
 
+def add_dois(request):
+    return HttpResponse(status=404)
+
 
 # ajax
 def ajax(request):
