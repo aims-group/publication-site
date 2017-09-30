@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm
+from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
@@ -848,7 +848,18 @@ def statistics(request):
     return render(request, 'site/statistics.html', {})
 
 def add_dois(request):
-    return HttpResponse(status=404)
+    if request.method == "GET":
+        doi_batch_form = DoiBatchForm()
+        return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+    else: # method == POST
+        doi_batch_form = DoiBatchForm(request.POST)
+        if not doi_batch_form.is_valid():
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+        # else: batch form is valid
+        doi_list = [doi for doi in doi_batch_form.cleaned_data['dois'].splitlines() if not doi.isspace()]
+        print doi_list
+        return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+
 
 
 # ajax

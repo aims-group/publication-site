@@ -389,3 +389,6 @@ class AdvancedSearchForm(forms.Form):
     variable= forms.MultipleChoiceField(
         choices=get_asf_variables,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
+
+class DoiBatchForm(forms.Form):
+    dois = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows':20}))
