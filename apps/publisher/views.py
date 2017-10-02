@@ -550,17 +550,28 @@ def edit(request, pubid):
             return redirect('review')
 
         meta_form = []
-        for project in pub_instance.projects.all():
-            meta_form.append({
-                'name': str(project),
-                'exp_form': ExperimentForm(initial={'experiment': [box.id for box in pub_instance.experiments.all()]}, queryset=project.experiments),
-                'freq_form': FrequencyForm(initial={'frequency': [box.id for box in pub_instance.frequency.all()]}, queryset=project.frequencies),
-                'keyword_form': KeywordForm(initial={'keyword': [box.id for box in pub_instance.keywords.all()]}, queryset=project.keywords),
-                'model_form': ModelForm(initial={'model': [box.id for box in pub_instance.model.all()]}, queryset=project.models),
-                'var_form': VariableForm(initial={'variable': [box.id for box in pub_instance.variables.all()]}, queryset=project.variables),
-            })
-        all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
-        selected_projects = [str(proj) for proj in pub_instance.projects.all().order_by('project')]
+        all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
+        selected_projects = [str(proj) for proj in request.POST.getlist("project", [])]
+        for project in Project.objects.all().order_by('project'):
+            if str(project) in selected_projects:
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                    'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                    'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                    'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                    'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                })
+            else:
+                print "no: " + str(project)
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(queryset=project.experiments),
+                    'freq_form': FrequencyForm(queryset=project.frequencies),
+                    'keyword_form': KeywordForm(queryset=project.keywords),
+                    'model_form': ModelForm(queryset=project.models),
+                    'var_form': VariableForm(queryset=project.variables),
+                })
         meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
