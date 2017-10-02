@@ -96,14 +96,12 @@ def init_forms(author_form, request=None, instance=None):
     model_form = ModelForm(request)
     var_form = VariableForm(request)
     all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
-    selected_projects = []
 
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
             'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form,
-            'selected_projects': selected_projects, 'all_projects': all_projects}
+            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form, 'all_projects': all_projects}
 
 
 def get_all_options():
@@ -701,16 +699,16 @@ def new(request, batch=False, batch_doi=""): # Defaults to single submission. Op
             media.save()
             return HttpResponse(status=200)
         meta_form = []
-        project_string = request.POST.get('meta_type', 'CMIP5')
+        selected_projects = request.POST.getlist("project")
         for project in Project.objects.all():
-            if str(project) == project_string:
+            if str(project) in selected_projects:
                 meta_form.append({
                     'name': str(project),
-                    'exp_form': ExperimentForm(request.POST, queryset=project.experiments),
-                    'freq_form': FrequencyForm(request.POST, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(request.POST, queryset=project.keywords),
-                    'model_form': ModelForm(request.POST, queryset=project.models),
-                    'var_form': VariableForm(request.POST, queryset=project.variables),
+                    'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                    'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                    'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                    'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                    'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                 })
             else:
                 meta_form.append({
@@ -723,6 +721,7 @@ def new(request, batch=False, batch_doi=""): # Defaults to single submission. Op
                 })
         meta_form = sorted(meta_form, key=lambda proj: proj['name'])
         all_forms.update({'meta_form': meta_form})
+        all_forms.update({'selected_projects': selected_projects})
         return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
