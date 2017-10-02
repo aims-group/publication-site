@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^delete/(\d+)', views.delete, name='delete'),
     url(r'^view/(?P<project_name>[a-zA-Z0-9]*)/$', views.view, name='view'),
     url(r'^add_dois/', views.add_dois, name='add_dois'),
+    url(r'^process_dois/', views.process_dois, name='process_dois'),
     # url(r'^statistics/', views.statistics, name='statistics'),
     url(r'^ajax/?$', views.ajax),
     url(r'^ajax/citation/(?P<pub_id>\d+)/$', views.ajax_citation),

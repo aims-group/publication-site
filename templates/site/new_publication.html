@@ -2,7 +2,9 @@
 {% block title %}New Publication{% endblock %}
 {% block content %}
 <link href="/static/css/new_publication.css" rel="stylesheet">
-
+{% if batch == True %}
+    <input id="batch_doi" type="text" value="{{batch_doi}}" style="display: hidden;">
+{% endif %}
 <div class="form-container">
     <div class="row margin-b">
         <div class="col-lg-6">

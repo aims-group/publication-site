@@ -8,6 +8,7 @@ from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSear
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
+from django.db import transaction
 from scripts.journals import journal_names
 from fuzzywuzzy import process
 from models import *
@@ -558,6 +559,8 @@ def edit(request, pubid):
                 'model_form': ModelForm(initial={'model': [box.id for box in pub_instance.model.all()]}, queryset=project.models),
                 'var_form': VariableForm(initial={'variable': [box.id for box in pub_instance.variables.all()]}, queryset=project.variables),
             })
+        all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
+        selected_projects = [str(proj) for proj in pub_instance.projects.all().order_by('project')]
         meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
@@ -629,7 +632,7 @@ def edit(request, pubid):
 
 
 @login_required()
-def new(request):
+def new(request, batch=False, batch_doi=""): # Defaults to single submission. Option arguments passed from "process_dois"
     if request.method == 'GET':
         formset = formset_factory(AuthorForm, extra=0, min_num=1, validate_min=True)
         author_form = formset()
@@ -646,6 +649,9 @@ def new(request):
             })
         meta_form.sort(key=lambda x: x['name'])
         all_forms.update({'meta_form': meta_form})
+        if batch:
+            all_forms.update({'batch': batch})
+            all_forms.update({'batch_doi': batch_doi})
         return render(request, 'site/new_publication.html', all_forms)
 
     elif request.method == 'POST':
@@ -856,11 +862,32 @@ def add_dois(request):
         if not doi_batch_form.is_valid():
             return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
         # else: batch form is valid
-        doi_list = [doi for doi in doi_batch_form.cleaned_data['dois'].splitlines() if not doi.isspace()]
-        print doi_list
+        doi_list = [doi for doi in doi_batch_form.cleaned_data['dois'].splitlines() if not doi.isspace() and doi != ""]
+        try:
+            with transaction.atomic():
+                for doi in doi_list:
+                    pass
+        except Error as e:
+            print e
+            error = "{}{}".format(
+                "Could not save list of DOIs. Double check that there is only 1 doi per line, and try again."
+                "If you continue to get this error, please <a href='https://github.com/aims-group/publication-site/issues'>submit an issue.</a>"
+            )
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'error': error})
         return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
 
-
+def process_dois(request):
+    if request.method == "GET":
+        pending_dois = PendingDoi.objects.filter(user=request.user)
+        if pending_dois:
+            new({"batch": True, "batch_doi": pending_dois[0].doi})
+        else:
+            info = "{}".format(
+                "You do not have any DOIs to process. Add some with the form below."
+            )
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'info': info})
+    else: # request.method == POST
+        pass
 
 # ajax
 def ajax(request):

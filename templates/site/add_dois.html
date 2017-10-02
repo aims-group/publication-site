@@ -2,6 +2,16 @@
 {% block title %}Add DOIs{% endblock %}
 {% block content %}
 {% comment %} <link href="/static/css/new_publication.css" rel="stylesheet"> {% endcomment %}
+{% if error %}
+    <div class="alert alert-danger">
+        {{error}}
+    </div>
+{% endif %}
+{% if info %}
+    <div class="alert alert-info">
+        {{info}}
+    </div>
+{% endif %}
 <h5>Enter a list of DOIs, one per line.</h5>
 <h5>After clicking submit, you will be presented with a series of autofilled forms to verify and submit.</h5>
 <div class="form-container">

@@ -251,3 +251,7 @@ class AvailableYears(django_models.Model):
 
     def __str__(self):
         return self.year
+
+class PendingDoi(django_models.Model):
+    doi = django_models.CharField(max_length=255)
+    user = django_models.ForeignKey(User)
