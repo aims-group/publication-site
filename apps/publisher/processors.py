@@ -7,8 +7,9 @@ def pending_dois(request):
     try:
         if request.user.is_anonymous():
             return {}
-        elif PendingDoi.objects.filter(user=request.user):
-            return {'pending_dois_info': "You have DOIs pending submission. Click <a href='/process_dois'>here</a> to submit them."}
+        pending_count = PendingDoi.objects.filter(user=request.user).count()
+        if pending_count > 0:
+            return {'dois_pending': True, "dois_pending_count": pending_count}
         return {}
     except Exception as e:
         print e

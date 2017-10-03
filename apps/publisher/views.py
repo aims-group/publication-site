@@ -880,7 +880,6 @@ def statistics(request):
 def add_dois(request):
     if request.method == "GET":
         doi_batch_form = DoiBatchForm()
-        print doi_batch_form
         return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
     else: # method == POST
         doi_batch_form = DoiBatchForm(request.POST)
@@ -904,9 +903,7 @@ def add_dois(request):
 @login_required
 def process_dois(request):
     if request.method == "GET":
-        print "get"
         pending_dois = PendingDoi.objects.filter(user=request.user)
-        print pending_dois
         if pending_dois:
             return new(request, True, pending_dois[0].doi)
         else:
@@ -918,13 +915,10 @@ def process_dois(request):
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
-            print "success"
             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
             pending_dois = PendingDoi.objects.filter(user=request.user)
             pending_entry = pending_dois.filter(doi__icontains=submitted_doi)
             if pending_entry.count() > 0: # if the doi that was saved was a pending doi
-                print pending_entry[0]
-                print pending_entry[0].doi
                 pending_entry[0].delete()  # remove it from the pool of pending entries
             if pending_dois: # if there are more dois pending for the user
                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
