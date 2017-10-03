@@ -901,58 +901,63 @@ def add_dois(request):
             )
             return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'error': error})
 
-# @login_required
-# def process_dois(request):
-#     if request.method == "GET":
-#         pending_dois = PendingDoi.objects.filter(user=request.user)
-#         if pending_dois:
-#             return new(request, True, pending_dois[0].doi)
-#         else:
-#             doi_batch_form = DoiBatchForm()
-#             info = "{}".format(
-#                 "You do not have any DOIs to process. Add some with the form below."
-#             )
-#             return redirect("/add_dois/", request=request)
-#     else: # request.method == POST
-#         submit_success, all_forms = process_publication(request)
-#         if(submit_success):
-#             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
-#             pending_dois = PendingDoi.objects.filter(user=request.user)
-#             pending_entry = pending_dois.filter(doi=submitted_doi)
-#             if pending_entry.count() > 0: # if the doi that was saved was a pending doi
-#                 pending_entry[0].delete()  # remove it from the pool of pending entries
-#             if pending_dois: # if there are more dois pending for the user
-#                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
-#             else:
-#                 return HttpResponse(status=200)
-#         else: # form was not valid
-#             meta_form = []
-#             selected_projects = request.POST.getlist("project")
-#             for project in Project.objects.all():
-#                 if str(project) in selected_projects:
-#                     meta_form.append({
-#                         'name': str(project),
-#                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
-#                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
-#                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
-#                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
-#                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
-#                     })
-#                 else:
-#                     meta_form.append({
-#                         'name': str(project),
-#                         'exp_form': ExperimentForm(queryset=project.experiments),
-#                         'freq_form': FrequencyForm(queryset=project.frequencies),
-#                         'keyword_form': KeywordForm(queryset=project.keywords),
-#                         'model_form': ModelForm(queryset=project.models),
-#                         'var_form': VariableForm(queryset=project.variables),
-#                     })
-#             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
-#             all_forms.update({'meta_form': meta_form})
-#             all_forms.update({'selected_projects': selected_projects})
-#             all_forms.update({'batch': True})
-#             all_forms.update({'batch_doi': ""})
-#             return render(request, 'site/publication_details.html', all_forms, status=400)
+@login_required
+def process_dois(request):
+    if request.method == "GET":
+        print "get"
+        pending_dois = PendingDoi.objects.filter(user=request.user)
+        print pending_dois
+        if pending_dois:
+            return new(request, True, pending_dois[0].doi)
+        else:
+            doi_batch_form = DoiBatchForm()
+            info = "{}".format(
+                "You do not have any DOIs to process. Add some with the form below."
+            )
+            return redirect("/add_dois/", request=request)
+    else: # request.method == POST
+        submit_success, all_forms = process_publication(request)
+        if(submit_success):
+            print "success"
+            submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
+            pending_dois = PendingDoi.objects.filter(user=request.user)
+            pending_entry = pending_dois.filter(doi__icontains=submitted_doi)
+            if pending_entry.count() > 0: # if the doi that was saved was a pending doi
+                print pending_entry[0]
+                print pending_entry[0].doi
+                pending_entry[0].delete()  # remove it from the pool of pending entries
+            if pending_dois: # if there are more dois pending for the user
+                return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
+            else:
+                return HttpResponse(status=200)
+        else: # form was not valid
+            meta_form = []
+            selected_projects = request.POST.getlist("project")
+            for project in Project.objects.all():
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
+            meta_form = sorted(meta_form, key=lambda proj: proj['name'])
+            all_forms.update({'meta_form': meta_form})
+            all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'batch': True})
+            all_forms.update({'batch_doi': ""})
+            return render(request, 'site/publication_details.html', all_forms, status=400)
 
 # ajax
 def ajax(request):

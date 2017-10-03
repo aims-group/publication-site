@@ -174,8 +174,11 @@ function submitPublication() {
         url: window.location.pathname,
         data: $('form').serialize(),
         success: function(result){
-            if(batchDoi){
-                
+            console.log(result.batch_doi);
+            if(result.batch_doi){
+                document.getElementById("doi-field").setAttribute("value", result.batch_doi);
+                doisearch();
+                window.scrollTo(0, 0);
             }
             else{
                 window.location.replace("/review");
