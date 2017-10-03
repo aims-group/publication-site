@@ -722,6 +722,8 @@ def new(request, batch=False, batch_doi=""): # Defaults to single submission. Op
         meta_form = sorted(meta_form, key=lambda proj: proj['name'])
         all_forms.update({'meta_form': meta_form})
         all_forms.update({'selected_projects': selected_projects})
+        all_forms.update({'batch': batch})
+        all_forms.update({'batch_doi': batch_doi})
         return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
@@ -863,6 +865,7 @@ def finddoi(request):
 def statistics(request):
     return render(request, 'site/statistics.html', {})
 
+@login_required
 def add_dois(request):
     if request.method == "GET":
         doi_batch_form = DoiBatchForm()
@@ -876,21 +879,22 @@ def add_dois(request):
         try:
             with transaction.atomic():
                 for doi in doi_list:
-                    pass
-        except Error as e:
+                    PendingDoi(doi=doi, user=request.user).save()
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+        except Exception as e:
             print e
             error = "{}{}".format(
-                "Could not save list of DOIs. Double check that there is only 1 doi per line, and try again."
+                "Could not save list of DOIs. Double check that there is only 1 doi per line, and try again.",
                 "If you continue to get this error, please <a href='https://github.com/aims-group/publication-site/issues'>submit an issue.</a>"
             )
             return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'error': error})
-        return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
 
+@login_required
 def process_dois(request):
     if request.method == "GET":
         pending_dois = PendingDoi.objects.filter(user=request.user)
         if pending_dois:
-            new({"batch": True, "batch_doi": pending_dois[0].doi})
+            return new(request, {"batch": True, "batch_doi": pending_dois[0].doi})
         else:
             info = "{}".format(
                 "You do not have any DOIs to process. Add some with the form below."

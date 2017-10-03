@@ -1,17 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Add DOIs{% endblock %}
 {% block content %}
-{% comment %} <link href="/static/css/new_publication.css" rel="stylesheet"> {% endcomment %}
 {% if error %}
     <div class="alert alert-danger">
-        {{error}}
+        {{error|safe}}
     </div>
 {% endif %}
-{% if info %}
+{% if success %}
+    <div class="alert alert-success">
+        {{success|safe}}
+    </div>
+{% elif pending_dois_info %}
     <div class="alert alert-info">
-        {{info}}
+        {{pending_dois_info|safe}}
     </div>
 {% endif %}
+
 <h5>Enter a list of DOIs, one per line.</h5>
 <h5>After clicking submit, you will be presented with a series of autofilled forms to verify and submit.</h5>
 <div class="form-container">
@@ -24,6 +28,4 @@
         <button class="btn btn-primary center-block" type="submit">Submit</button>
     </form>
 </div>
-{% comment %} <script type="text/javascript" src="/static/js/doi.js"></script> {% endcomment %}
-
 {% endblock %}
