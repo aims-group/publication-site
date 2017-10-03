@@ -78,6 +78,47 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
             obj.delete()
     return publication
 
+# Helper function that will attempt to validate and save a publication.
+# Returns a tuple of (boolean, dictionary)
+# The boolean is true if the publication was submitted successfully and false if it was invalid
+# The dictionary holds the forms that were checked. (Meta forms are not present)
+def process_publication(request):
+    pub_type = request.POST.get('pub_type', '')
+    formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
+    author_form_set = formset(request.POST)
+    all_forms = init_forms(author_form_set, request.POST)
+    if pub_type == 'Book':
+        pub_type = 0
+        media_form = BookForm(request.POST, prefix='book')
+    elif pub_type == 'Conference':
+        pub_type = 1
+        media_form = ConferenceForm(request.POST, prefix='conf')
+    elif pub_type == 'Journal':
+        pub_type = 2
+        media_form = JournalForm(request.POST, prefix='journal')
+    elif pub_type == 'Magazine':
+        pub_type = 3
+        media_form = MagazineForm(request.POST, prefix='mag')
+    elif pub_type == 'Poster':
+        pub_type = 4
+        media_form = PosterForm(request.POST, prefix='poster')
+    elif pub_type == 'Presentation':
+        pub_type = 5
+        media_form = PresentationForm(request.POST, prefix='pres')
+    elif pub_type == 'Technical Report':
+        pub_type = 6
+        media_form = TechnicalReportForm(request.POST, prefix='tech')
+    else:
+        pub_type = 7
+        media_form = OtherForm(request.POST, prefix='other')
+    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
+        publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
+        media = media_form.save(commit=False)
+        media.publication_id = publication
+        media.save()
+        return True, all_forms
+    else:
+        return False, all_forms
 
 def init_forms(author_form, request=None, instance=None):
     # The author form is passed in seperately since it takes different arguments depending on the circumstances
@@ -664,67 +705,37 @@ def new(request, batch=False, batch_doi=""): # Defaults to single submission. Op
         return render(request, 'site/new_publication.html', all_forms)
 
     elif request.method == 'POST':
-        pub_type = request.POST.get('pub_type', '')
-        formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
-        author_form_set = formset(request.POST)
-        all_forms = init_forms(author_form_set, request.POST)
-        if pub_type == 'Book':
-            pub_type = 0
-            media_form = BookForm(request.POST, prefix='book')
-        elif pub_type == 'Conference':
-            pub_type = 1
-            media_form = ConferenceForm(request.POST, prefix='conf')
-        elif pub_type == 'Journal':
-            pub_type = 2
-            media_form = JournalForm(request.POST, prefix='journal')
-        elif pub_type == 'Magazine':
-            pub_type = 3
-            media_form = MagazineForm(request.POST, prefix='mag')
-        elif pub_type == 'Poster':
-            pub_type = 4
-            media_form = PosterForm(request.POST, prefix='poster')
-        elif pub_type == 'Presentation':
-            pub_type = 5
-            media_form = PresentationForm(request.POST, prefix='pres')
-        elif pub_type == 'Technical Report':
-            pub_type = 6
-            media_form = TechnicalReportForm(request.POST, prefix='tech')
-        else:
-            pub_type = 7
-            media_form = OtherForm(request.POST, prefix='other')
-        if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
-            publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
-            media = media_form.save(commit=False)
-            media.publication_id = publication
-            media.save()
+        submit_success, all_forms = process_publication(request)
+        if submit_success: # if the publication was saved
             return HttpResponse(status=200)
-        meta_form = []
-        selected_projects = request.POST.getlist("project")
-        for project in Project.objects.all():
-            if str(project) in selected_projects:
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
-                    'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
-                    'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
-                    'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
-                })
-            else:
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(queryset=project.experiments),
-                    'freq_form': FrequencyForm(queryset=project.frequencies),
-                    'keyword_form': KeywordForm(queryset=project.keywords),
-                    'model_form': ModelForm(queryset=project.models),
-                    'var_form': VariableForm(queryset=project.variables),
-                })
-        meta_form = sorted(meta_form, key=lambda proj: proj['name'])
-        all_forms.update({'meta_form': meta_form})
-        all_forms.update({'selected_projects': selected_projects})
-        all_forms.update({'batch': batch})
-        all_forms.update({'batch_doi': batch_doi})
-        return render(request, 'site/publication_details.html', all_forms, status=400)
+        else: # the form was not valid re-rendder form with errors
+            meta_form = []
+            selected_projects = request.POST.getlist("project")
+            for project in Project.objects.all():
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
+            meta_form = sorted(meta_form, key=lambda proj: proj['name'])
+            all_forms.update({'meta_form': meta_form})
+            all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'batch': batch})
+            all_forms.update({'batch_doi': batch_doi})
+            return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
 def finddoi(request):
@@ -869,6 +880,7 @@ def statistics(request):
 def add_dois(request):
     if request.method == "GET":
         doi_batch_form = DoiBatchForm()
+        print doi_batch_form
         return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
     else: # method == POST
         doi_batch_form = DoiBatchForm(request.POST)
@@ -889,19 +901,58 @@ def add_dois(request):
             )
             return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'error': error})
 
-@login_required
-def process_dois(request):
-    if request.method == "GET":
-        pending_dois = PendingDoi.objects.filter(user=request.user)
-        if pending_dois:
-            return new(request, {"batch": True, "batch_doi": pending_dois[0].doi})
-        else:
-            info = "{}".format(
-                "You do not have any DOIs to process. Add some with the form below."
-            )
-            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'info': info})
-    else: # request.method == POST
-        pass
+# @login_required
+# def process_dois(request):
+#     if request.method == "GET":
+#         pending_dois = PendingDoi.objects.filter(user=request.user)
+#         if pending_dois:
+#             return new(request, True, pending_dois[0].doi)
+#         else:
+#             doi_batch_form = DoiBatchForm()
+#             info = "{}".format(
+#                 "You do not have any DOIs to process. Add some with the form below."
+#             )
+#             return redirect("/add_dois/", request=request)
+#     else: # request.method == POST
+#         submit_success, all_forms = process_publication(request)
+#         if(submit_success):
+#             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
+#             pending_dois = PendingDoi.objects.filter(user=request.user)
+#             pending_entry = pending_dois.filter(doi=submitted_doi)
+#             if pending_entry.count() > 0: # if the doi that was saved was a pending doi
+#                 pending_entry[0].delete()  # remove it from the pool of pending entries
+#             if pending_dois: # if there are more dois pending for the user
+#                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
+#             else:
+#                 return HttpResponse(status=200)
+#         else: # form was not valid
+#             meta_form = []
+#             selected_projects = request.POST.getlist("project")
+#             for project in Project.objects.all():
+#                 if str(project) in selected_projects:
+#                     meta_form.append({
+#                         'name': str(project),
+#                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+#                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+#                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+#                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+#                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+#                     })
+#                 else:
+#                     meta_form.append({
+#                         'name': str(project),
+#                         'exp_form': ExperimentForm(queryset=project.experiments),
+#                         'freq_form': FrequencyForm(queryset=project.frequencies),
+#                         'keyword_form': KeywordForm(queryset=project.keywords),
+#                         'model_form': ModelForm(queryset=project.models),
+#                         'var_form': VariableForm(queryset=project.variables),
+#                     })
+#             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
+#             all_forms.update({'meta_form': meta_form})
+#             all_forms.update({'selected_projects': selected_projects})
+#             all_forms.update({'batch': True})
+#             all_forms.update({'batch_doi': ""})
+#             return render(request, 'site/publication_details.html', all_forms, status=400)
 
 # ajax
 def ajax(request):

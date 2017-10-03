@@ -5,6 +5,12 @@ $(document).ready(function(){
     var JOURNAL = 2;
     //The variable indicates which tab should be set as the "active" tab on page load
     setUpForm(JOURNAL);
+    var batchDoi = document.getElementById("batch_doi").value;
+    if(batchDoi){
+        document.getElementById("doi-field").setAttribute("value", batchDoi);
+        doisearch()
+    }
+
 });
 
 $( "#publication-form-wrapper" ).on( "tabscreate", '#tabs', function( event, ui ) {
@@ -165,10 +171,15 @@ function submitPublication() {
     });
     $.ajax({
         type: 'POST',
-        url: '/new',
+        url: window.location.pathname,
         data: $('form').serialize(),
         success: function(result){
-            window.location.replace("/review");
+            if(batchDoi){
+                
+            }
+            else{
+                window.location.replace("/review");
+            }
         },
     }).fail(function($xhr) {
         $("#publication-form-wrapper").html($xhr.responseText);
