@@ -535,7 +535,7 @@ def review(request):
         userid = request.user.id
         delete_type = request.POST.get("delete-type", "")
         try:
-            obj_id = int(request.POST.get("delete-type", ""))
+            delete_id = int(request.POST.get("delete-id", ""))
         except ValueError:
             if delete_type == "publication":
                 error = "Invalid id to delete."
@@ -544,31 +544,37 @@ def review(request):
             delete_type = "" # id was invalid. This will cause the view to render the page without deleting
             
         if delete_type == "publication":
-            publication = Publication.objects.get(id=pub_id)
-            if userid == publication.submitter.id:
-                try:
-                    publication.delete()
-                except Exception as e:
-                    error = "{}{}".format(
-                        "Encountered an error while deleting. "
-                        "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
-                    )
-            else:
-                error = 'Error: You must be the owner of a submission to edit it.'
+            try:
+                publication = Publication.objects.get(id=delete_id)
+                if userid == publication.submitter.id:
+                    try:
+                        publication.delete()
+                    except Exception as e:
+                        error = "{}{}".format(
+                            "Encountered an error while deleting. "
+                            "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                        )
+                else:
+                    error = 'Error: You must be the owner of a submission to edit it.'
+            except Publication.DoesNotExist:
+                pending_error = "Pending DOI does not exist and could not be deleted."
 
         elif delete_type == "doi":
             show_pending = True
-            pending_doi = PendingDoi.objects.get(id=doi_id)
-            if userid == pending_doi.user.id:
-                try:
-                    pending_doi.delete()
-                except Exception as e:
-                    pending_error = "{}{}".format(
-                        "Encountered an error while deleting. "
-                        "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
-                    )
-            else:
-                pending_error = 'Error: You must be the owner of a submission to edit it.'
+            try:
+                pending_doi = PendingDoi.objects.get(id=delete_id)
+                if userid == pending_doi.user.id:
+                    try:
+                        pending_doi.delete()
+                    except Exception as e:
+                        pending_error = "{}{}".format(
+                            "Encountered an error while deleting. "
+                            "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                        )
+                else:
+                    pending_error = 'Error: You must be the owner of a submission to edit it.'
+            except PendingDoi.DoesNotExist:
+                pending_error = "Pending DOI does not exist and could not be deleted."
 
     publications = Publication.objects.filter(submitter=request.user.id)
     pending_dois = PendingDoi.objects.filter(user=request.user)
