@@ -530,7 +530,7 @@ def review(request):
     pending_message = None
     error = None
     pending_error = None
-    show_pending = False
+    show_pending = True if request.GET.get('show_pending') == 'true' else False
     if request.method == "POST":
         userid = request.user.id
         delete_type = request.POST.get("delete-type", "")

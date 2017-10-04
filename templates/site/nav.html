@@ -30,7 +30,13 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if dois_pending %}
-                    <li><a href="/process_dois/">Pending <span class="badge">{{dois_pending_count}}</span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pending <span class="badge">{{dois_pending_count}}</span> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                            <li><a href="/review/?show_pending=true">View Pending Items</a></li>
+                        <li><a href="/process_dois/">Process Pending Items</a></li>
+                    </ul>
+                </li>
                 {% endif %}
                 {% if user.is_authenticated %}
                     <li><a href="/accounts/logout">Logout</a></li>
