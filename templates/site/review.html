@@ -2,35 +2,81 @@
 {% block title %}Review Publications{% endblock %}
 {% block content %}
 
-{% if error %}
-<div class="alert alert-warning" role="alert">{{error}}</div>
-{% endif %}
 
-{% if message %}
-<div class="alert alert-info" role="alert">{{message|safe}}</div>
-{% endif %}
 
-{% if entries %}
+
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <table class="table table-hover">
-            <tbody>
-            {% for entry in entries %}
-            <tr>
-                <td>
-                    <a href="/edit/{{entry.id}}">{{entry}}</a>
-                </td>
-                <td class="text-right text-nowrap">
-                    <a class="btn btn-xs btn-danger" href="/delete/{{entry.id}}" role="button" title="Delete">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#publications" aria-controls="home" role="tab" data-toggle="tab">Publications</a></li>
+        <li role="presentation"><a href="#pending-publications" aria-controls="pending-publications" role="tab" data-toggle="tab">Pending Publications</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="publications">
+            <!-- Publication Tab content -->
+            {% if error %}
+            <div class="alert alert-warning" role="alert">{{error}}</div>
+            {% endif %}
+            
+            {% if message %}
+            <div class="alert alert-info" role="alert">{{message|safe}}</div>
+            {% endif %}
+            
+            {% if publications %}
+            <div>
+                <div class="panel panel-default">
+                    <table class="table table-hover">
+                        <tbody>
+                        {% for pub in publications %}
+                        <tr>
+                            <td>
+                                <a href="/edit/{{pub.id}}">{{pub}}</a>
+                            </td>
+                            <td class="text-right text-nowrap">
+                                <a class="btn btn-xs btn-danger" href="/delete/{{pub.id}}" role="button" title="Delete">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- End Publication Tab content -->
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="pending-publications">
+            <!-- Pending Tab content -->
+            {% if pending_message %}
+            <div class="alert alert-info" role="alert">{{pending_message|safe}}</div>
+            {% endif %}
+            {% if pending_dois %}
+            <div>
+                <div class="panel panel-default">
+                    <table class="table table-hover">
+                        <tbody>
+                        {% for pending in pending_dois %}
+                        <tr>
+                            <td>
+                                <span>{{pending.doi}}</span>
+                            </td>
+                            <td class="text-right text-nowrap">
+                                <a class="btn btn-xs btn-danger" href="/delete_doi/{{pending.id}}" role="button" title="Delete">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <!-- End Pending Tab content -->
+        </div>
     </div>
 </div>
-
-{% endif %}
 {% endblock %}

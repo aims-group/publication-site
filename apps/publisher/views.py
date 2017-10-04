@@ -525,13 +525,17 @@ def advanced_search(request):
         return HttpResponse(status=405)
 
 @login_required()
-def review(request):
+def review(request, active="publications"):
     message = None
-    entries = Publication.objects.filter(submitter=request.user.id)
-    if not entries:
+    pending_message = None
+    publications = Publication.objects.filter(submitter=request.user.id)
+    pending_dois = PendingDoi.objects.filter(user=request.user)
+    if not publications:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
-
+    if not pending_dois:
+        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
+    return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
+                                                'pending_dois': pending_dois, 'error': None, "active": active})
 
 @login_required()
 def delete(request, pub_id):
