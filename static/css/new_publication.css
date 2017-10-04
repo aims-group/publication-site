@@ -38,6 +38,14 @@ label{
     margin-bottom: 0;
 }
 
+#batch-alert-wrapper {
+    top: -8px;
+}
+
+#batch-alert{
+    margin-bottom: 0;
+}
+
 #project-form > div.panel-body{
   display: flex;
   flex-direction: row;
