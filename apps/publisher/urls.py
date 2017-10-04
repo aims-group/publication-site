@@ -9,7 +9,6 @@ urlpatterns = [
     url(r'^new$', views.new, name='new'),
     url(r'^finddoi$', views.finddoi),
     url(r'^edit/(\d+)', views.edit, name='edit'),
-    url(r'^delete/(\d+)', views.delete, name='delete'),
     url(r'^view/(?P<project_name>[a-zA-Z0-9]*)/$', views.view, name='view'),
     url(r'^add_dois/', views.add_dois, name='add_dois'),
     url(r'^process_dois/', views.process_dois, name='process_dois'),

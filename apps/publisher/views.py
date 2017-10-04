@@ -525,9 +525,51 @@ def advanced_search(request):
         return HttpResponse(status=405)
 
 @login_required()
-def review(request, active="publications"):
+def review(request):
     message = None
     pending_message = None
+    error = None
+    pending_error = None
+    show_pending = False
+    if request.method == "POST":
+        userid = request.user.id
+        delete_type = request.POST.get("delete-type", "")
+        try:
+            obj_id = int(request.POST.get("delete-type", ""))
+        except ValueError:
+            if delete_type == "publication":
+                error = "Invalid id to delete."
+            else:
+                pending_error = "Invalid id to delete."
+            delete_type = "" # id was invalid. This will cause the view to render the page without deleting
+            
+        if delete_type == "publication":
+            publication = Publication.objects.get(id=pub_id)
+            if userid == publication.submitter.id:
+                try:
+                    publication.delete()
+                except Exception as e:
+                    error = "{}{}".format(
+                        "Encountered an error while deleting. "
+                        "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                    )
+            else:
+                error = 'Error: You must be the owner of a submission to edit it.'
+
+        elif delete_type == "doi":
+            show_pending = True
+            pending_doi = PendingDoi.objects.get(id=doi_id)
+            if userid == pending_doi.user.id:
+                try:
+                    pending_doi.delete()
+                except Exception as e:
+                    pending_error = "{}{}".format(
+                        "Encountered an error while deleting. "
+                        "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                    )
+            else:
+                pending_error = 'Error: You must be the owner of a submission to edit it.'
+
     publications = Publication.objects.filter(submitter=request.user.id)
     pending_dois = PendingDoi.objects.filter(user=request.user)
     if not publications:
@@ -535,20 +577,7 @@ def review(request, active="publications"):
     if not pending_dois:
         pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
     return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
-                                                'pending_dois': pending_dois, 'error': None, "active": active})
-
-@login_required()
-def delete(request, pub_id):
-    publication = Publication.objects.get(id=pub_id)
-    userid = request.user.id
-    if userid == publication.submitter.id:
-        publication.delete()
-        return redirect('review')
-    else:
-        entries = Publication.objects.filter(submitter=userid)
-        error = 'Error: You must be the owner of a submission to edit it.'
-        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
-
+                                                'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
 
 @login_required()
 def edit(request, pubid):
