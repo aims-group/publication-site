@@ -9,6 +9,7 @@ from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, Variabl
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.db import transaction
+from itertools import chain
 from scripts.journals import journal_names
 from fuzzywuzzy import process
 from models import *
@@ -448,40 +449,44 @@ def advanced_search(request):
                     for proj in form.cleaned_data['project']:
                         pubs = pubs.filter(projects=proj)
 
+            meta_any_mode_pubs = Publication.objects.none() # Initialize variable so we can reference it without error
+            meta_search_by_any = request.POST.get("meta_search_by_any", "off")
             if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
-                if request.POST.get("meta_search_by_any", "off") == "on":
-                    pubs = pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
                 else:
                     for exp in form.cleaned_data['experiment']:
                         pubs = pubs.filter(experiments__experiment=exp)
 
             if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
-                if request.POST.get("meta_search_by_any", "off") == "on":
-                    pubs = pubs.filter(frequency__frequency__in=form.cleaned_data['frequency'])
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(frequency__frequency__in=form.cleaned_data['frequency'])
                 else:
                     for freq in form.cleaned_data['frequency']:
                         pubs = pubs.filter(frequency__frequency=freq)
 
             if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
-                if request.POST.get("meta_search_by_any", "off") == "on":
-                    pubs = pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
                 else:
                     for keyw in form.cleaned_data['keyword']:
                         pubs = pubs.filter(keywords__keyword=keyw)
 
             if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
-                if request.POST.get("meta_search_by_any", "off") == "on":
-                    pubs = pubs.filter(model__model__in=form.cleaned_data['model'])
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(model__model__in=form.cleaned_data['model'])
                 else:
                     for model in form.cleaned_data['model']:
                         pubs = pubs.filter(model__model=model)
 
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
-                if request.POST.get("meta_search_by_any", "off") == "on":
-                    pubs = pubs.filter(variables__variable__in=form.cleaned_data['variable'])
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(variables__variable__in=form.cleaned_data['variable'])
                 else:
                     for var in form.cleaned_data['variable']:
                         pubs = pubs.filter(variables__variable=var)
+            if meta_search_by_any == "on":
+                pubs = meta_any_mode_pubs.distinct()
             pubs = pubs.distinct()
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
