@@ -534,17 +534,25 @@ def review(request):
     if request.method == "POST":
         userid = request.user.id
         delete_type = request.POST.get("delete-type", "")
-        try:
-            delete_id = int(request.POST.get("delete-id", ""))
-        except ValueError:
-            if delete_type == "publication":
-                error = "Invalid id to delete."
-            else:
-                pending_error = "Invalid id to delete."
-            delete_type = "" # id was invalid. This will cause the view to render the page without deleting
-            
+        if delete_type == "all-doi":
+            try:
+                show_pending = True
+                PendingDoi.objects.filter(user=request.user).delete()
+            except Exception as e:
+                print e
+        else:
+            try:
+                delete_id = int(request.POST.get("delete-id", ""))
+            except ValueError:
+                if delete_type == "publication":
+                    error = "Invalid id to delete."
+                else:
+                    pending_error = "Invalid id to delete."
+                delete_type = "" # id was invalid. This will cause the view to render the page without deleting
+
         if delete_type == "publication":
             try:
+                show_pending = False
                 publication = Publication.objects.get(id=delete_id)
                 if userid == publication.submitter.id:
                     try:
@@ -556,8 +564,10 @@ def review(request):
                         )
                 else:
                     error = 'Error: You must be the owner of a submission to edit it.'
+                
             except Publication.DoesNotExist:
                 pending_error = "Pending DOI does not exist and could not be deleted."
+
 
         elif delete_type == "doi":
             show_pending = True

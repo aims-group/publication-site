@@ -83,6 +83,11 @@
                         </tbody>
                     </table>
                 </div>
+                <form method="post" onsubmit="return confirm('This will delete all pending submissions. Are you sure?')">
+                    {% csrf_token %}
+                    <input type="hidden" id="delete-type" name=delete-type value="all-doi">
+                    <button class="btn btn-danger pull-right">Remove All</button>
+                </form>
             </div>
             {% endif %}
             <!-- End Pending Tab content -->
