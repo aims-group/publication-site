@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Add DOIs{% endblock %}
+{% block content %}
+{% if error %}
+    <div class="alert alert-danger">
+        {{error|safe}}
+    </div>
+{% endif %}
+{% if success %}
+    <div class="alert alert-success">
+        {{success|safe}}
+    </div>
+{% elif pending_dois_info %}
+    <div class="alert alert-info">
+        {{pending_dois_info|safe}}
+    </div>
+{% endif %}
+
+<h5>Enter a list of DOIs, one per line.</h5>
+<h5>After clicking submit, you will be presented with a series of autofilled forms to verify and submit.</h5>
+<div class="form-container">
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in doi_batch_form %}
+            {{field}}
+        {% endfor %}
+        <br>
+        <button class="btn btn-primary center-block" type="submit">Submit</button>
+    </form>
+</div>
+<script type="text/javascript" src="/static/js/add_dois.js"></script>
+{% endblock %}

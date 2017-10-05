@@ -1,7 +1,18 @@
+var projectSelectedCount = 0;
+
 $(document).ready(function(){
     $('#loading').hide();
     $('#publication-optional-inputs').accordion({
       collapsible: true
+    });
+    $('.project-checkbox').each(function(index, checkbox){
+        if(checkbox.checked){
+            $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
+            ++projectSelectedCount;
+        }
+        else{
+            $("#".concat(checkbox.value, "-tab")).hide() //find corresponding meta tab and hide it
+        }
     });
     $.each($('.meta-form-list ul'), function(index, element) {
         if($(element).html() === "")
@@ -41,6 +52,25 @@ $( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
         $(ui.oldTab).removeClass('active');
         $(ui.newTab).addClass('active');
         $('#meta_type').val($(ui.newTab).text());
+});
+
+$( "#project-form" ).on('change', '.project-checkbox', function(event) {
+    var metaTab = $('#'.concat(this.value, "-tab"))[0];
+    if(this.checked){
+        $(metaTab).show();
+        if(projectSelectedCount == 0){ //then since there will only be one tab, make it active
+            var tabNumber = parseInt(metaTab.firstElementChild.getAttribute("href").split('-')[2]); //href holds a string "meta-tabs-x" where x is a number
+            $('#meta-tabs').tabs("option", "active", tabNumber-1); //Off by one. id starts at one, but jquery-ui starts at 0
+        }
+        ++projectSelectedCount;
+    }
+    else{
+        if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
+            $('#meta-tabs').tabs("option", "active", -1); //set active to an invalid index so nothing is active
+        }
+        $(metaTab).hide();
+        --projectSelectedCount;
+    }
 });
 
 var meta = $('.meta-form-list ul li');

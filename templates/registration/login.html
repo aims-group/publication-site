@@ -3,15 +3,14 @@
 
 {% block content %}
 <link href="/static/css/form.css" rel="stylesheet">
-
-{% if form.errors %}
-<div class="alert alert-danger" role="alert">
-Your username and password didn't match. Please try again. Forgot your password? <a href="/accounts/password/reset">Click Here</a>
-</div>
-{% endif %}
+<img id="logo" class="img-responsive center-block" src="/static/img/Logo.png" alt="Publication Hub">
 
 <form id="login_form" action="" method="post" class="account-form">
-
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+    Your username and password didn't match. Forgot your password? <a href="/accounts/password/reset">Click Here</a>
+    </div>
+    {% endif %}
     <h2 class="form-signin-heading">Please Sign In</h2>
     {% csrf_token %}
     <label for="username" class="sr-only">User name:</label>

@@ -21,6 +21,9 @@ $(document).ready(function(){
     if($('#result-count').length != 0){
         updateSearchCount();
     }
+
+    $('i.help-tooltip').tooltip(); //initialize all tolltips on the page
+     
 });
 
 $("form").on("change", '.search-input', function(event){

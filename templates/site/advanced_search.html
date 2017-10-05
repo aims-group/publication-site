@@ -34,22 +34,22 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <div id="program_list" class="panel panel-default inline-checkboxes">
-                    <div class="panel-heading">
-                        <span class="md-font">Programs</span>
-                    </div>
-                <div class="panel-body">
-                    {% for field in form.program %}
-                        {{field}}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div id="project_list" class="panel panel-default inline-checkboxes">
-                    <div class="panel-heading">
+                    <div class="panel-heading clearfix">
                         <span class="md-font">Projects</span>
+                        <i class="help-tooltip glyphicon glyphicon-question-sign pull-right" data-toggle="tooltip" data-placement="top"
+                        title="Any: Filter for results that match any of the criteria 
+All: Filter for results that match all criteria"></span>
+                        </i>
+                        <span class="pull-right">
+                            <input class="form-inline search-input"
+                                type="checkbox" 
+                                name="project_search_by_any"
+                                data-toggle="toggle"
+                                data-on="Any" data-onstyle="info"
+                                data-off="All" data-offstyle="primary">
+                        </span>
                     </div>
                 <div class="panel-body">
                     {% for field in form.project %}
@@ -62,7 +62,20 @@
     
     <div id="meta-panel" class="panel panel-default">
         <div class="panel-heading clearfix">
-            <span class="md-font">Meta Tags</span><span class="pull-right form-inline"><label>Filter: <input type="text" id="meta-filter" class="form-control"></label></span>
+            <span class="md-font">Meta Tags</span>
+            <i class="help-tooltip glyphicon glyphicon-question-sign pull-right" data-toggle="tooltip" data-placement="top"
+            title="Any: Filter for results that match any of the criteria 
+All: Filter for results that match all criteria"></span>
+            </i>
+            <span class="pull-right">
+                <input class="form-inline search-input"
+                    type="checkbox"
+                    name="meta_search_by_any" 
+                    data-toggle="toggle"
+                    data-on="Any" data-onstyle="info"
+                    data-off="All" data-offstyle="primary">
+            </span>
+            <span class="pull-right form-inline"><label>Filter: <input type="text" id="meta-filter" class="form-control"></label></span>
         </div>
         <div class="panel-body">
             <div class="meta-form-list col-md-4 well form-group"><label>Experiment: </label>{{ form.experiment }}</div>

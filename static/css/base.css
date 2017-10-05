@@ -1,15 +1,30 @@
 * {
-margin: 0;
+    margin: 0;
 }
+
 html, body {
-height: 100%;
+    height: 100%;
 }
+
 .content-wrapper {
-min-height: 100%;
-height: auto !important;
-height: 100%;
-margin: 0 auto 0em;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto 0em;
 }
+
 .footer, .push {
-height: 1em;
+    height: 1em;
+}
+
+div.navbar-header>a.navbar-brand,
+ul.nav.navbar-nav li a,
+.nav.navbar-nav li ul li a{
+    color: #2c4886;
+}
+
+div.navbar-header>a.navbar-brand:hover,
+ul.nav.navbar-nav li a:hover,
+.nav.navbar-nav li ul li a:hover{
+    color: #3992c5
 }

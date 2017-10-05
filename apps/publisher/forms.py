@@ -10,6 +10,23 @@ from django.db.models.functions import Lower
 from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
 
+# Advanced Search form helper functions. 
+# Django will try to execute these statements before migrations are run, unless they are wrapped in a function like below
+# Projects are not listed here because it is a modelmultiplechoice field
+def get_asf_experiments():
+    return [(x,x) for x in Experiment.objects.all().order_by(Lower("experiment")).values_list('experiment', flat=True).distinct()]
+
+def get_asf_frequencies():
+    return [(x,x) for x in Frequency.objects.all().order_by(Lower("frequency")).values_list('frequency', flat=True).distinct()]
+
+def get_asf_keywords():
+    return [(x,x) for x in Keyword.objects.all().order_by(Lower("keyword")).values_list("keyword", flat=True).distinct()]
+
+def get_asf_models():
+    return [(x,x) for x in Model.objects.all().order_by(Lower("model")).values_list("model", flat=True).distinct()]
+    
+def get_asf_variables():
+    return [(x,x) for x in Variable.objects.all().order_by(Lower("variable")).values_list("variable", flat=True).distinct()]
 
 # If you don't do this you cannot use Bootstrap CSS
 class LoginForm(AuthenticationForm):
@@ -352,24 +369,26 @@ class AdvancedSearchForm(forms.Form):
     author = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
     date_start = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
     date_end = forms.DateField(widget=forms.TextInput(attrs={'class': 'form-control search-input'}), required=False)
+
+    #Queryset and choices are populated by helper function at the top of this file
     project = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.filter(project__contains="CMIP").order_by(Lower("project")),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
-    program = forms.ModelMultipleChoiceField(
-        queryset=Project.objects.exclude(project__contains="CMIP").order_by(Lower("project")),
+        queryset=Project.objects.all().order_by(Lower("project")),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     experiment = forms.MultipleChoiceField(
-        choices=[(x,x) for x in Experiment.objects.all().order_by(Lower("experiment")).values_list('experiment', flat=True).distinct()],
+        choices=get_asf_experiments,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     frequency = forms.MultipleChoiceField(
-        choices=[(x,x) for x in Frequency.objects.all().order_by(Lower("frequency")).values_list('frequency', flat=True).distinct()],
+        choices=get_asf_frequencies,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     keyword = forms.MultipleChoiceField(
-        choices=[(x,x) for x in Keyword.objects.all().order_by(Lower("keyword")).values_list("keyword", flat=True).distinct()],
+        choices=get_asf_keywords,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     model = forms.MultipleChoiceField(
-        choices=[(x,x) for x in Model.objects.all().order_by(Lower("model")).values_list("model", flat=True).distinct()],
+        choices=get_asf_models,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     variable= forms.MultipleChoiceField(
-        choices=[(x,x) for x in Variable.objects.all().order_by(Lower("variable")).values_list("variable", flat=True).distinct()],
+        choices=get_asf_variables,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
+
+class DoiBatchForm(forms.Form):
+    dois = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows':20}))

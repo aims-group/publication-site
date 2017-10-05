@@ -4,10 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm
+from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
 from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
+from django.db import transaction
+from itertools import chain
 from scripts.journals import journal_names
 from fuzzywuzzy import process
 from models import *
@@ -77,6 +79,47 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
             obj.delete()
     return publication
 
+# Helper function that will attempt to validate and save a publication.
+# Returns a tuple of (boolean, dictionary)
+# The boolean is true if the publication was submitted successfully and false if it was invalid
+# The dictionary holds the forms that were checked. (Meta forms are not present)
+def process_publication(request):
+    pub_type = request.POST.get('pub_type', '')
+    formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
+    author_form_set = formset(request.POST)
+    all_forms = init_forms(author_form_set, request.POST)
+    if pub_type == 'Book':
+        pub_type = 0
+        media_form = BookForm(request.POST, prefix='book')
+    elif pub_type == 'Conference':
+        pub_type = 1
+        media_form = ConferenceForm(request.POST, prefix='conf')
+    elif pub_type == 'Journal':
+        pub_type = 2
+        media_form = JournalForm(request.POST, prefix='journal')
+    elif pub_type == 'Magazine':
+        pub_type = 3
+        media_form = MagazineForm(request.POST, prefix='mag')
+    elif pub_type == 'Poster':
+        pub_type = 4
+        media_form = PosterForm(request.POST, prefix='poster')
+    elif pub_type == 'Presentation':
+        pub_type = 5
+        media_form = PresentationForm(request.POST, prefix='pres')
+    elif pub_type == 'Technical Report':
+        pub_type = 6
+        media_form = TechnicalReportForm(request.POST, prefix='tech')
+    else:
+        pub_type = 7
+        media_form = OtherForm(request.POST, prefix='other')
+    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
+        publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
+        media = media_form.save(commit=False)
+        media.publication_id = publication
+        media.save()
+        return True, all_forms
+    else:
+        return False, all_forms
 
 def init_forms(author_form, request=None, instance=None):
     # The author form is passed in seperately since it takes different arguments depending on the circumstances
@@ -95,36 +138,36 @@ def init_forms(author_form, request=None, instance=None):
     model_form = ModelForm(request)
     var_form = VariableForm(request)
     all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
-    selected_projects = []
 
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
             'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form,
-            'selected_projects': selected_projects, 'all_projects': all_projects}
+            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form, 'all_projects': all_projects}
 
 
 def get_all_options():
     all_options = collections.OrderedDict()
-    all_options['CMIP'] = "CMIP"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
-    all_options['project'] = "Project"
-    all_options['program'] = "Program"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
     all_options['variable'] = "Variable"
     all_options['year'] = "Year"
     return all_options
 
-
-def search(request):
+def view(request, project_name="all"):
+    if request.method != 'GET':
+        return HttpResponse(status=405) # Method other than get not allowed
+    projects = [str(x).lower() for x in Project.objects.all()]
+    if project_name != "all" and not project_name.lower() in projects:
+        return HttpResponse(status=404) #invalid project name
     publications_to_load = 100  # number of publications to load at a time
     pubs = {}
     data = collections.OrderedDict()
+    pubs["category"] = project_name
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
     pubs["total"] = Publication.objects.all().count()
@@ -135,277 +178,241 @@ def search(request):
         print e
         scroll_count = 0
 
-    if request.method == 'GET':
-        if pubs["type"] in ["all", "CMIP", "ESGF", "experiment", "frequency", "keyword", "model", "project", "program",  "status", "type", "variable", "year"]:
-            pubs["search"] = True
-            page_filter = request.GET.get("type", "all")
-            display = request.GET.get('display', '')  # expect display == 'citations' or nothing
+    pubs["search"] = True
+    page_filter = request.GET.get("type", "all")
+    display = request.GET.get('display', '')  # expect display == 'citations', 'bibtex' or nothing
+    if project_name == "all":
+        publications = Publication.objects.all().order_by("-publication_date")
+    else:
+        try:
+            publications = Project.objects.get(project__iexact=project_name).publication_set.order_by("-publication_date")    
+        except Project.DoesNotExist as e:
+            print e
+            return HttpResponse(status=404)
+    if page_filter == 'all':
+        pubs["pages"] = get_all_options()
 
-            if page_filter == 'all':
-                publications = Publication.objects.all().order_by("-publication_date")
-                pubs["pages"] = get_all_options()
+    elif page_filter == 'experiment':
+        option = request.GET.get("option", "1pctCO2")
+        pubs["option"] = option
+        for exp in Experiment.objects.all().order_by('experiment'):
+            if publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
+                continue
+            exps = {}
+            exps['type'] = 'experiment'
+            exps['options'] = str(exp.experiment)
+            exps['count'] = publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
+            data[str(exp.experiment)] = exps
+        publications = publications.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == "CMIP":
-                option = request.GET.get("option", "all")
-                pubs["option"] = option
-                total_cmip_pubs = 0
-                #todo: verify that no other logic needs to be here for dealing with CMIP oddities
-                #Todo: there is a lot of double filtering going on. these can be replaced by using "publication_set" generally
-                all_cmips = Project.objects.filter(project__contains="CMIP")
-                if option == "all":
-                    publications = Publication.objects.filter(projects__project__contains="CMIP").order_by("-publication_date")
-                else:
-                    publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
-                for cmip in all_cmips.order_by('-project'):
-                    if cmip.publication_set.count() == 0:
-                        continue
-                    project_data = {}
-                    project_data['type'] = 'CMIP'
-                    project_data['options'] = str(cmip).upper() #name of cmip being filtered
-                    project_data['count'] = cmip.publication_set.count()
-                    total_cmip_pubs += project_data['count']
-                    data[(str(cmip))] = project_data
-                data['all'] = {'type': 'CMIP', 'options': 'all', 'count': total_cmip_pubs}
-                pubs['pages'] = data
-            elif page_filter == 'experiment':
-                option = request.GET.get("option", "1pctCO2")
-                pubs["option"] = option
-                publications = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
-                for exp in Experiment.objects.all().order_by('experiment'):
-                    if Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
-                        continue
-                    exps = {}
-                    exps['type'] = 'experiment'
-                    exps['options'] = str(exp.experiment)
-                    exps['count'] = Publication.objects.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
-                    data[str(exp.experiment)] = exps
-                pubs["pages"] = data
+    elif page_filter == 'frequency':
+        option = request.GET.get("option", "3-hourly")
+        pubs["option"] = option
+        for frq in Frequency.objects.all().order_by('frequency'):
+            if publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
+                continue
+            frqs = {}
+            frqs['type'] = 'frequency'
+            frqs['options'] = str(frq.frequency)
+            frqs['count'] = publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
+            data[str(frq.frequency)] = frqs
+        publications = publications.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'frequency':
-                option = request.GET.get("option", "3-hourly")
-                pubs["option"] = option
-                publications = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
-                for frq in Frequency.objects.all().order_by('frequency'):
-                    if Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
-                        continue
-                    frqs = {}
-                    frqs['type'] = 'frequency'
-                    frqs['options'] = str(frq.frequency)
-                    frqs['count'] = Publication.objects.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
-                    data[str(frq.frequency)] = frqs
-                pubs["pages"] = data
+    elif page_filter == 'keyword':
+        option = request.GET.get("option", "Abrupt change")
+        pubs["option"] = option
+        for kyw in Keyword.objects.all().order_by('keyword'):
+            if publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
+                continue
+            kyws = {}
+            kyws['type'] = 'keyword'
+            kyws['options'] = str(kyw.keyword)
+            kyws['count'] = publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
+            data[str(kyw.keyword)] = kyws
+        publications = publications.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'keyword':
-                option = request.GET.get("option", "Abrupt change")
-                pubs["option"] = option
-                publications = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
-                for kyw in Keyword.objects.all().order_by('keyword'):
-                    if Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
-                        continue
-                    kyws = {}
-                    kyws['type'] = 'keyword'
-                    kyws['options'] = str(kyw.keyword)
-                    kyws['count'] = Publication.objects.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
-                    data[str(kyw.keyword)] = kyws
-                pubs["pages"] = data
+    elif page_filter == 'model':
+        option = request.GET.get("option", "ACCESS1.0")
+        pubs["option"] = option
+        for mod in Model.objects.all().order_by('model'):
+            if publications.filter(model=Model.objects.filter(model=mod)).count() == 0:
+                continue
+            mods = {}
+            mods['type'] = 'model'
+            mods['options'] = str(mod.model)
+            mods['count'] = publications.filter(model=Model.objects.filter(model=mod)).count()
+            data[str(mod.model)] = mods
+        publications = publications.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'model':
-                option = request.GET.get("option", "ACCESS1.0")
-                pubs["option"] = option
-                publications = Publication.objects.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
-                for mod in Model.objects.all().order_by('model'):
-                    if Publication.objects.filter(model=Model.objects.filter(model=mod)).count() == 0:
-                        continue
-                    mods = {}
-                    mods['type'] = 'model'
-                    mods['options'] = str(mod.model)
-                    mods['count'] = Publication.objects.filter(model=Model.objects.filter(model=mod)).count()
-                    data[str(mod.model)] = mods
-                pubs["pages"] = data
+    elif page_filter == 'status':
+        option = request.GET.get("option", "Published")
+        pubs["option"] = option
+        lookup = 0
+        for k, v in PUBLICATION_STATUS_CHOICE:
+            if str(v) == str(option):
+                lookup = k
+                break
+        for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
+            if publications.filter(status=stat).count() == 0:
+                continue
+            stats = {}
+            stats['type'] = 'status'
+            stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
+            stats['count'] = publications.filter(status=stat).count()
+            data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
+        publications = publications.filter(status=lookup).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'status':
-                option = request.GET.get("option", "Published")
-                pubs["option"] = option
-                lookup = 0
-                for k, v in PUBLICATION_STATUS_CHOICE:
-                    if str(v) == str(option):
-                        lookup = k
-                        break
-                publications = Publication.objects.filter(status=lookup).order_by("-publication_date")
-                for stat in range(0, len(PUBLICATION_STATUS_CHOICE)):
-                    if Publication.objects.filter(status=stat).count() == 0:
-                        continue
-                    stats = {}
-                    stats['type'] = 'status'
-                    stats['options'] = PUBLICATION_STATUS_CHOICE[stat][1]
-                    stats['count'] = Publication.objects.filter(status=stat).count()
-                    data[str(PUBLICATION_STATUS_CHOICE[stat][1])] = stats
-                pubs["pages"] = data
+    elif page_filter == 'type':
+        option = request.GET.get("option", "Journal")
+        pubs["option"] = option
+        lookup = 2
+        for k, v in PUBLICATION_TYPE_CHOICE:
+            if str(v) == option:
+                lookup = k
+                break
+        for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
+            if publications.filter(publication_type=pt).count() == 0:
+                continue
+            pubtype = {}
+            pubtype['type'] = 'type'
+            typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
+            pubtype['options'] = typename
+            pubtype['count'] = publications.filter(publication_type=pt).count()
+            data[typename] = pubtype
+        publications = publications.filter(publication_type=lookup).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'type':
-                option = request.GET.get("option", "Journal")
-                pubs["option"] = option
-                lookup = 2
-                for k, v in PUBLICATION_TYPE_CHOICE:
-                    if str(v) == option:
-                        lookup = k
-                        break
-                publications = Publication.objects.filter(publication_type=lookup).order_by("-publication_date")
-                for pt in range(0, len(PUBLICATION_TYPE_CHOICE) - 1):
-                    if Publication.objects.filter(publication_type=pt).count() == 0:
-                        continue
-                    pubtype = {}
-                    pubtype['type'] = 'type'
-                    typename = str(PUBLICATION_TYPE_CHOICE[pt][1])
-                    pubtype['options'] = typename
-                    pubtype['count'] = Publication.objects.filter(publication_type=pt).count()
-                    data[typename] = pubtype
-                pubs["pages"] = data
+    elif page_filter == 'variable':
+        option = request.GET.get("option", "air pressure")
+        pubs["option"] = request.GET.get("option", "air pressure")
+        for var in Variable.objects.all().order_by('variable'):
+            if publications.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
+                continue
+            vars = {}
+            vars['type'] = 'variable'
+            vars['options'] = str(var.variable)
+            vars['count'] = publications.filter(variables=Variable.objects.filter(variable=var)).count()
+            data[str(var.variable)] = vars
+        publications = publications.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'variable':
-                option = request.GET.get("option", "air pressure")
-                pubs["option"] = request.GET.get("option", "air pressure")
-                publications = Publication.objects.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
-                for var in Variable.objects.all().order_by('variable'):
-                    if Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
-                        continue
-                    vars = {}
-                    vars['type'] = 'variable'
-                    vars['options'] = str(var.variable)
-                    vars['count'] = Publication.objects.filter(variables=Variable.objects.filter(variable=var)).count()
-                    data[str(var.variable)] = vars
-                pubs["pages"] = data
+    elif page_filter == 'year':
+        now = datetime.datetime.now()
+        option = request.GET.get("option", str(now.year))
+        pubs["option"] = option
+        for pub_years in AvailableYears.objects.all().order_by('-year'):
+            years = {}
+            years['type'] = 'year'
+            years['options'] = str(pub_years.year)
+            years['count'] = publications.filter(publication_date__year=pub_years.year).count()
+            data[str(pub_years.year)] = years
+        publications = publications.filter(publication_date__year=option).order_by("-publication_date")
+        pubs["pages"] = data
 
-            elif page_filter == 'year':
-                now = datetime.datetime.now()
-                option = request.GET.get("option", str(now.year))
-                pubs["option"] = option
-                publications = Publication.objects.filter(publication_date__year=option).order_by("-publication_date")
-                for pub_years in AvailableYears.objects.all().order_by('-year'):
-                    years = {}
-                    years['type'] = 'year'
-                    years['options'] = str(pub_years.year)
-                    years['count'] = Publication.objects.filter(publication_date__year=pub_years.year).count()
-                    data[str(pub_years.year)] = years
-                pubs["pages"] = data
+    elif page_filter == 'project':
+        option = request.GET.get("option", "CMIP5")
+        pubs["option"] = option
+        for project in Project.objects.all().order_by('project'):
+            if publications.filter(projects=Project.objects.filter(project=project)).count() == 0:
+                continue
+            project_data = {}
+            project_data['type'] = 'project'
+            project_data['options'] = str(project)
+            project_data['count'] = publications.filter(projects=Project.objects.filter(project=project)).count()
+            data[(str(project))] = project_data
+        publications = publications.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
+        pubs['pages'] = data
 
-            elif page_filter == 'project':
-                option = request.GET.get("option", "CMIP5")
-                pubs["option"] = option
-                publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
-                for project in Project.objects.all().order_by('project'):
-                    if Publication.objects.filter(projects=Project.objects.filter(project=project)).count() == 0:
-                        continue
-                    project_data = {}
-                    project_data['type'] = 'project'
-                    project_data['options'] = str(project)
-                    project_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=project)).count()
-                    data[(str(project))] = project_data
-                pubs['pages'] = data
+    elif page_filter == 'search':
+        year = request.GET.get('year', '')
+        author = request.GET.get('author', '')
+        title = request.GET.get('title', '')
+        try:
+            year = int(year)
+        except ValueError:
+            year = ''
 
-            elif page_filter == 'program':
-                option = request.GET.get("option", "all")
-                pubs["option"] = option
-                if option == "all":
-                    publications = Publication.objects.exclude(projects__project__contains="CMIP").order_by("-publication_date")
-                else:
-                    publications = Publication.objects.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
-                for program in Project.objects.all().order_by('project'):
-                    if Publication.objects.filter(projects=Project.objects.filter(project=program)).count() == 0 or "CMIP" in str(program):
-                        continue
-                    program_data = {}
-                    program_data['type'] = 'program'
-                    program_data['options'] = str(program)
-                    program_data['count'] = Publication.objects.filter(projects=Project.objects.filter(project=program)).count()
-                    data[(str(program))] = program_data
-                data['all'] = {'type': 'program', 'options': 'all', 'count': Publication.objects.exclude(projects__project__contains="CMIP").order_by("-publication_date").count()}
-                pubs['pages'] = data
+        if not year:
+            publications = Publication.objects.all()
+        else:
+            publications = Publication.objects.filter(publication_date__year=year)
 
-            elif page_filter == 'search':
-                year = request.GET.get('year', '')
-                author = request.GET.get('author', '')
-                title = request.GET.get('title', '')
-                try:
-                    year = int(year)
-                except ValueError:
-                    year = ''
+        if not author:
+            pass
+        else:
+            publications = publications.filter(authors__name__icontains=author)
 
-                if not year:
-                    publications = Publication.objects.all()
-                else:
-                    publications = Publication.objects.filter(publication_date__year=year)
-
-                if not author:
-                    pass
-                else:
-                    publications = publications.filter(authors__name__icontains=author)
-
-                if not title:
-                    pass
-                else:
-                    publications = publications.filter(title__icontains=title)
-                pubs['search_count'] = publications.count()
-                pubs['publications'] = publications
-                pubs['hide_search'] = False
-                pubs["search_year"] = year
-                pubs["search_author"] = author
-                pubs["search_title"] = title
-            if display in ['citations', "bibtex"]:
-                publication_list = []
-                for pub in publications:
-                    authors = [author.name for author in pub.authors.all().order_by('id')]
-                    pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
-                    if pub_type == 'Journal':
-                        if pub.doi in ['doi:', 'doi: ']:
-                            pub.doi = ''
-                        if pub.doi and pub.doi.find('doi.org') != -1:
-                            pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
-                        elif pub.doi and not pub.doi.startswith('doi:'):
-                            pub.doi = 'doi:' + pub.doi
-                        journal = pub.journal_set.all()[0]
-                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
-                            'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
-                            'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
-                            'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
-                    elif pub_type == 'Book':
-                        book = pub.book_set.all()[0]
-                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
-                            'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
-                            'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
-                            'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
-                    elif pub_type == 'Technical Report':
-                        report = pub.technicalreport_set.all()[0]
-                        obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
-                                'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
-                                'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
-                    else:
-                        obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
-                            'doi': pub.doi, 'type': pub_type, 'author_key': authors[0].split(',')[0]}
-                    publication_list.append(obj)
-                data = {
-                    'publication_list': publication_list,
-                    'type': display
-                }
-                return render(request, 'site/print_citations.html', data)
-
-        if page_filter != 'search':
-            if scroll_count:
-                prev_articles = publications_to_load*scroll_count
-                new_articles = publications_to_load*(scroll_count+1)
-                if page_filter == 'all':
-                    pubs["scroll_link"] = "/search?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
-                else:
-                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
-                pubs["publications"] = publications[prev_articles:new_articles]
-                return render(request, 'snippets/load_publications.html', pubs)
-
+        if not title:
+            pass
+        else:
+            publications = publications.filter(title__icontains=title)
+        pubs['search_count'] = publications.count()
+        pubs['publications'] = publications
+        pubs['hide_search'] = False
+        pubs["search_year"] = year
+        pubs["search_author"] = author
+        pubs["search_title"] = title
+    if display in ['citations', "bibtex"]:
+        publication_list = []
+        for pub in publications:
+            authors = [author.name for author in pub.authors.all().order_by('id')]
+            pub_type = PUBLICATION_TYPE_CHOICE[pub.publication_type][1]
+            if pub_type == 'Journal':
+                if pub.doi in ['doi:', 'doi: ']:
+                    pub.doi = ''
+                if pub.doi and pub.doi.find('doi.org') != -1:
+                    pub.doi = 'doi:' + pub.doi.split('doi.org/')[1]
+                elif pub.doi and not pub.doi.startswith('doi:'):
+                    pub.doi = 'doi:' + pub.doi
+                journal = pub.journal_set.all()[0]
+                obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                    'doi': pub.doi, 'journal_name': str(journal.journal_name), 'volume_number': journal.volume_number,
+                    'start_page': journal.start_page, 'end_page': journal.end_page, 'type': pub_type,
+                    'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+            elif pub_type == 'Book':
+                book = pub.book_set.all()[0]
+                obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                    'doi': pub.doi, 'book_name': str(book.book_name), 'chapter_title': book.chapter_title,
+                    'start_page': book.start_page, 'end_page': book.end_page, 'type': pub_type,
+                    'editor': book.editor, 'publisher': book.publisher, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}
+            elif pub_type == 'Technical Report':
+                report = pub.technicalreport_set.all()[0]
+                obj = {'title': pub.title, 'url': pub.url, 'authors': authors,
+                        'doi': pub.doi, 'number': str(report.report_number), 'type': pub_type, 'editor': report.editor,
+                        'issuer': report.issuer, 'year': pub.publication_date.year, 'author_key': authors[0].split(',')[0]}    
             else:
-                if page_filter == 'all':
-                    pubs["scroll_link"] = "/search?type={}&scroll_count=1".format(page_filter)
-                else:
-                    pubs["scroll_link"] = "/search?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
-                pubs["publications"] = publications[:publications_to_load]
-    return render(request, 'site/search.html', pubs)
+                obj = {'title': pub.title, 'year': pub.publication_date.year, 'url': pub.url, 'authors': authors,
+                    'doi': pub.doi, 'type': pub_type, 'author_key': authors[0].split(',')[0]}
+            publication_list.append(obj)
+        data = {
+            'publication_list': publication_list,
+            'type': display
+        }
+        return render(request, 'site/print_citations.html', data)
+
+    if page_filter != 'search':
+        if scroll_count:
+            prev_articles = publications_to_load*scroll_count
+            new_articles = publications_to_load*(scroll_count+1)
+            if page_filter == 'all':
+                pubs["scroll_link"] = "/?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
+            else:
+                pubs["scroll_link"] = "/?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
+            pubs["publications"] = publications[prev_articles:new_articles]
+            return render(request, 'snippets/load_publications.html', pubs)
+
+        else:
+            if page_filter == 'all':
+                pubs["scroll_link"] = "/?type={}&scroll_count=1".format(page_filter)
+            else:
+                pubs["scroll_link"] = "/?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
+            pubs["publications"] = publications[:publications_to_load]
+    return render(request, 'site/view.html', pubs)
 
 def advanced_search(request):
     if request.method == 'GET':
@@ -435,33 +442,52 @@ def advanced_search(request):
             elif 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_end']:
                 pubs = pubs.filter(publication_date__lte=form.cleaned_data['date_end'])
 
-            if 'program' in form.cleaned_data.keys() and form.cleaned_data['program']:
-                for prog in form.cleaned_data['program']:
-                    pubs = pubs.filter(projects=prog)
-
             if 'project' in form.cleaned_data.keys() and form.cleaned_data['project']:
-                for proj in form.cleaned_data['project']:
-                    pubs = pubs.filter(projects=proj)
+                if request.POST.get("project_search_by_any", "off") == "on":
+                    pubs = pubs.filter(projects__in=form.cleaned_data['project'])
+                else:
+                    for proj in form.cleaned_data['project']:
+                        pubs = pubs.filter(projects=proj)
 
+            meta_any_mode_pubs = Publication.objects.none() # Initialize variable so we can reference it without error
+            meta_search_by_any = request.POST.get("meta_search_by_any", "off")
             if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
-                for exp in form.cleaned_data['experiment']:
-                    pubs = pubs.filter(experiments__experiment=exp)
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
+                else:
+                    for exp in form.cleaned_data['experiment']:
+                        pubs = pubs.filter(experiments__experiment=exp)
 
             if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
-                for freq in form.cleaned_data['frequency']:
-                    pubs = pubs.filter(frequency__frequency=freq)
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(frequency__frequency__in=form.cleaned_data['frequency'])
+                else:
+                    for freq in form.cleaned_data['frequency']:
+                        pubs = pubs.filter(frequency__frequency=freq)
 
             if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
-                for keyw in form.cleaned_data['keyword']:
-                    pubs = pubs.filter(keywords__keyword=keyw)
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
+                else:
+                    for keyw in form.cleaned_data['keyword']:
+                        pubs = pubs.filter(keywords__keyword=keyw)
 
             if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
-                for model in form.cleaned_data['model']:
-                    pubs = pubs.filter(model__model=model)
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(model__model__in=form.cleaned_data['model'])
+                else:
+                    for model in form.cleaned_data['model']:
+                        pubs = pubs.filter(model__model=model)
 
             if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
-                for var in form.cleaned_data['variable']:
-                    pubs = pubs.filter(variables=var)
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(variables__variable__in=form.cleaned_data['variable'])
+                else:
+                    for var in form.cleaned_data['variable']:
+                        pubs = pubs.filter(variables__variable=var)
+            if meta_search_by_any == "on":
+                pubs = meta_any_mode_pubs.distinct()
+            pubs = pubs.distinct()
             if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
             if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
@@ -506,24 +532,73 @@ def advanced_search(request):
 @login_required()
 def review(request):
     message = None
-    entries = Publication.objects.filter(submitter=request.user.id)
-    if not entries:
+    pending_message = None
+    error = None
+    pending_error = None
+    show_pending = True if request.GET.get('show_pending') == 'true' else False
+    if request.method == "POST":
+        userid = request.user.id
+        delete_type = request.POST.get("delete-type", "")
+        if delete_type == "all-doi":
+            try:
+                show_pending = True
+                PendingDoi.objects.filter(user=request.user).delete()
+            except Exception as e:
+                print e
+        else:
+            try:
+                delete_id = int(request.POST.get("delete-id", ""))
+            except ValueError:
+                if delete_type == "publication":
+                    error = "Invalid id to delete."
+                else:
+                    pending_error = "Invalid id to delete."
+                delete_type = "" # id was invalid. This will cause the view to render the page without deleting
+
+        if delete_type == "publication":
+            try:
+                show_pending = False
+                publication = Publication.objects.get(id=delete_id)
+                if userid == publication.submitter.id:
+                    try:
+                        publication.delete()
+                    except Exception as e:
+                        error = "{}{}".format(
+                            "Encountered an error while deleting. "
+                            "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                        )
+                else:
+                    error = 'Error: You must be the owner of a submission to edit it.'
+                
+            except Publication.DoesNotExist:
+                pending_error = "Pending DOI does not exist and could not be deleted."
+
+
+        elif delete_type == "doi":
+            show_pending = True
+            try:
+                pending_doi = PendingDoi.objects.get(id=delete_id)
+                if userid == pending_doi.user.id:
+                    try:
+                        pending_doi.delete()
+                    except Exception as e:
+                        pending_error = "{}{}".format(
+                            "Encountered an error while deleting. "
+                            "If this error persists, please <a href='https://github.com/aims-group/publication-site/issues'>file an issue</a>."
+                        )
+                else:
+                    pending_error = 'Error: You must be the owner of a submission to edit it.'
+            except PendingDoi.DoesNotExist:
+                pending_error = "Pending DOI does not exist and could not be deleted."
+
+    publications = Publication.objects.filter(submitter=request.user.id)
+    pending_dois = PendingDoi.objects.filter(user=request.user)
+    if not publications:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    return render(request, 'site/review.html', {'message': message, 'entries': entries, 'error': None})
-
-
-@login_required()
-def delete(request, pub_id):
-    publication = Publication.objects.get(id=pub_id)
-    userid = request.user.id
-    if userid == publication.submitter.id:
-        publication.delete()
-        return redirect('review')
-    else:
-        entries = Publication.objects.filter(submitter=userid)
-        error = 'Error: You must be the owner of a submission to edit it.'
-        return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
-
+    if not pending_dois:
+        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
+    return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
+                                                'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
 
 @login_required()
 def edit(request, pubid):
@@ -568,15 +643,28 @@ def edit(request, pubid):
             return redirect('review')
 
         meta_form = []
-        for project in pub_instance.projects.all():
-            meta_form.append({
-                'name': str(project),
-                'exp_form': ExperimentForm(initial={'experiment': [box.id for box in pub_instance.experiments.all()]}, queryset=project.experiments),
-                'freq_form': FrequencyForm(initial={'frequency': [box.id for box in pub_instance.frequency.all()]}, queryset=project.frequencies),
-                'keyword_form': KeywordForm(initial={'keyword': [box.id for box in pub_instance.keywords.all()]}, queryset=project.keywords),
-                'model_form': ModelForm(initial={'model': [box.id for box in pub_instance.model.all()]}, queryset=project.models),
-                'var_form': VariableForm(initial={'variable': [box.id for box in pub_instance.variables.all()]}, queryset=project.variables),
-            })
+        all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
+        selected_projects = [str(proj) for proj in request.POST.getlist("project", [])]
+        for project in Project.objects.all().order_by('project'):
+            if str(project) in selected_projects:
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                    'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                    'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                    'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                    'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                })
+            else:
+                print "no: " + str(project)
+                meta_form.append({
+                    'name': str(project),
+                    'exp_form': ExperimentForm(queryset=project.experiments),
+                    'freq_form': FrequencyForm(queryset=project.frequencies),
+                    'keyword_form': KeywordForm(queryset=project.keywords),
+                    'model_form': ModelForm(queryset=project.models),
+                    'var_form': VariableForm(queryset=project.variables),
+                })
         meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
@@ -586,7 +674,7 @@ def edit(request, pubid):
                         "selected_projects": selected_projects
                        })
 
-    else:
+    else: # Method == GET
         publication = Publication.objects.get(id=pubid)
         authors = publication.authors.all()
         userid = request.user.id
@@ -615,23 +703,30 @@ def edit(request, pubid):
             meta_form = []
             all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
             selected_projects = [str(proj) for proj in publication.projects.all()]
-            for project in publication.projects.all():
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
-                                               queryset=project.experiments),
-                    'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
-                    'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
-                    'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
-                })
+            for project in Project.objects.all().order_by('project'):
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
+                                                queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
             meta_type = publication.projects.first()
-            # Technically, publications can have more than one project. currently only one is ever used, so take the first
-            ensemble_data = str([[value['model_id'], value['ensemble']] for value in
-                                 PubModels.objects.filter(publication_id=publication.id).values('model_id', 'ensemble')])
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
-                          'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
+                          'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
                           "selected_projects": selected_projects
                            })
         else:
@@ -641,7 +736,7 @@ def edit(request, pubid):
 
 
 @login_required()
-def new(request):
+def new(request, batch=False, batch_doi=""): # Defaults to single submission. Option arguments passed from "process_dois"
     if request.method == 'GET':
         formset = formset_factory(AuthorForm, extra=0, min_num=1, validate_min=True)
         author_form = formset()
@@ -658,67 +753,43 @@ def new(request):
             })
         meta_form.sort(key=lambda x: x['name'])
         all_forms.update({'meta_form': meta_form})
+        if batch:
+            all_forms.update({'batch': batch})
+            all_forms.update({'batch_doi': batch_doi})
         return render(request, 'site/new_publication.html', all_forms)
 
     elif request.method == 'POST':
-        pub_type = request.POST.get('pub_type', '')
-        formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
-        author_form_set = formset(request.POST)
-        all_forms = init_forms(author_form_set, request.POST)
-        if pub_type == 'Book':
-            pub_type = 0
-            media_form = BookForm(request.POST, prefix='book')
-        elif pub_type == 'Conference':
-            pub_type = 1
-            media_form = ConferenceForm(request.POST, prefix='conf')
-        elif pub_type == 'Journal':
-            pub_type = 2
-            media_form = JournalForm(request.POST, prefix='journal')
-        elif pub_type == 'Magazine':
-            pub_type = 3
-            media_form = MagazineForm(request.POST, prefix='mag')
-        elif pub_type == 'Poster':
-            pub_type = 4
-            media_form = PosterForm(request.POST, prefix='poster')
-        elif pub_type == 'Presentation':
-            pub_type = 5
-            media_form = PresentationForm(request.POST, prefix='pres')
-        elif pub_type == 'Technical Report':
-            pub_type = 6
-            media_form = TechnicalReportForm(request.POST, prefix='tech')
-        else:
-            pub_type = 7
-            media_form = OtherForm(request.POST, prefix='other')
-        if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
-            publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
-            media = media_form.save(commit=False)
-            media.publication_id = publication
-            media.save()
+        submit_success, all_forms = process_publication(request)
+        if submit_success: # if the publication was saved
             return HttpResponse(status=200)
-        meta_form = []
-        project_string = request.POST.get('meta_type', 'CMIP5')
-        for project in Project.objects.all():
-            if str(project) == project_string:
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(request.POST, queryset=project.experiments),
-                    'freq_form': FrequencyForm(request.POST, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(request.POST, queryset=project.keywords),
-                    'model_form': ModelForm(request.POST, queryset=project.models),
-                    'var_form': VariableForm(request.POST, queryset=project.variables),
-                })
-            else:
-                meta_form.append({
-                    'name': str(project),
-                    'exp_form': ExperimentForm(queryset=project.experiments),
-                    'freq_form': FrequencyForm(queryset=project.frequencies),
-                    'keyword_form': KeywordForm(queryset=project.keywords),
-                    'model_form': ModelForm(queryset=project.models),
-                    'var_form': VariableForm(queryset=project.variables),
-                })
-        meta_form = sorted(meta_form, key=lambda proj: proj['name'])
-        all_forms.update({'meta_form': meta_form})
-        return render(request, 'site/publication_details.html', all_forms, status=400)
+        else: # the form was not valid re-rendder form with errors
+            meta_form = []
+            selected_projects = request.POST.getlist("project")
+            for project in Project.objects.all():
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
+            meta_form = sorted(meta_form, key=lambda proj: proj['name'])
+            all_forms.update({'meta_form': meta_form})
+            all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'batch': batch})
+            all_forms.update({'batch_doi': batch_doi})
+            return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
 def finddoi(request):
@@ -761,7 +832,7 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = requests.get(initial['URL'], stream=True, verify=False).url  # use llnl cert instead of verify=False
+            url = requests.get(initial['URL'], stream=True).url
             url = url.split(';')[0]
         else:
             url = ''
@@ -857,16 +928,88 @@ def finddoi(request):
 
 
 def statistics(request):
-    return render(request, 'site/statistics.html')
+    return render(request, 'site/statistics.html', {})
 
+@login_required
+def add_dois(request):
+    if request.method == "GET":
+        doi_batch_form = DoiBatchForm()
+        return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+    else: # method == POST
+        doi_batch_form = DoiBatchForm(request.POST)
+        if not doi_batch_form.is_valid():
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+        # else: batch form is valid
+        doi_list = [doi for doi in doi_batch_form.cleaned_data['dois'].splitlines() if not doi.isspace() and doi != ""]
+        try:
+            with transaction.atomic():
+                for doi in doi_list:
+                    PendingDoi(doi=doi, user=request.user).save()
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
+        except Exception as e:
+            print e
+            error = "{}{}".format(
+                "Could not save list of DOIs. Double check that there is only 1 doi per line, and try again.",
+                "If you continue to get this error, please <a href='https://github.com/aims-group/publication-site/issues'>submit an issue.</a>"
+            )
+            return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form, 'error': error})
 
-def network_graph(request):
-    return render(request, 'site/network-graph.html')
-
+@login_required
+def process_dois(request):
+    if request.method == "GET":
+        pending_dois = PendingDoi.objects.filter(user=request.user)
+        if pending_dois:
+            return new(request, True, pending_dois[0].doi)
+        else:
+            doi_batch_form = DoiBatchForm()
+            info = "{}".format(
+                "You do not have any DOIs to process. Add some with the form below."
+            )
+            return redirect("/add_dois/", request=request)
+    else: # request.method == POST
+        submit_success, all_forms = process_publication(request)
+        if(submit_success):
+            submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
+            pending_dois = PendingDoi.objects.filter(user=request.user)
+            pending_entry = pending_dois.filter(doi__icontains=submitted_doi)
+            if pending_entry.count() > 0: # if the doi that was saved was a pending doi
+                pending_entry[0].delete()  # remove it from the pool of pending entries
+            if pending_dois: # if there are more dois pending for the user
+                return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
+            else:
+                return HttpResponse(status=200)
+        else: # form was not valid
+            meta_form = []
+            selected_projects = request.POST.getlist("project")
+            for project in Project.objects.all():
+                if str(project) in selected_projects:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
+                        'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
+                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
+                        'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
+                    })
+                else:
+                    meta_form.append({
+                        'name': str(project),
+                        'exp_form': ExperimentForm(queryset=project.experiments),
+                        'freq_form': FrequencyForm(queryset=project.frequencies),
+                        'keyword_form': KeywordForm(queryset=project.keywords),
+                        'model_form': ModelForm(queryset=project.models),
+                        'var_form': VariableForm(queryset=project.variables),
+                    })
+            meta_form = sorted(meta_form, key=lambda proj: proj['name'])
+            all_forms.update({'meta_form': meta_form})
+            all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'batch': True})
+            all_forms.update({'batch_doi': ""})
+            return render(request, 'site/publication_details.html', all_forms, status=400)
 
 # ajax
 def ajax(request):
-    return HttpResponseRedirect("/search?type='all'")
+    return HttpResponseRedirect("/?type='all'")
 
 
 def ajax_citation(request, pub_id):
@@ -904,11 +1047,15 @@ def ajax_abstract(request, pub_id):
 
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
+    experiment_list = sorted(set([str(exp) for exp in pub.experiments.all()])) # remove duplicates by calling set()
+    model_list = sorted(set([str(model) for model in pub.model.all()]))
+    variable_list = sorted(set([str(variable) for variable in pub.variables.all()]))
+    keyword_list = sorted(set([str(keyword) for keyword in pub.keywords.all()]))
 
-    experiments = ",".join(["{experiments.experiment}".format(experiments=experiments) for experiments in pub.experiments.all()])
-    model = ",".join(["{model.model}".format(model=model) for model in pub.model.all()])
-    variables = ",".join(["{variables.variable}".format(variables=variables) for variables in pub.variables.all()])
-    keywords = ",".join(["{keywords.keyword}".format(keywords=keywords) for keywords in pub.keywords.all()])
+    experiments = ",".join(experiment_list)
+    model = ",".join(model_list)
+    variables = ",".join(variable_list)
+    keywords = ",".join(keyword_list)
     # frequency = ",".join(["{frequency.frequency}".format(frequency=frequency) for frequency in pub.frequency.all()])
     # tags = ",".join(["{tags.name}".format(tags=tags) for tags in pub.tags.all()])
 
@@ -927,4 +1074,3 @@ def ajax_all_authors(request):
     authors = Author.objects.all().values_list('name', 'institution').distinct()
     authors = [{'name': author[0], 'institution': author[1]} for author in authors]
     return JsonResponse(authors, safe=False)
-
