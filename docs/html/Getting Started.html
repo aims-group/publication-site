@@ -216,7 +216,7 @@ python manage.py createsuperuser
 </ul>
 </div></blockquote>
 <p>The files are used to populate the database with relevant meta data. The meta data is currently designed with climate science in mind, but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project, then a list of relevant tags. For example, the CMIP5 project has various climate models, so each model is listed in the model.py file which allows users to optionally tag a publication as being related to that model.
-The exception to this pattern is the journals.py file. Journals often have long names, and there are various abbreviations for any given journal. The full names of journals relevant to the publications to be stored should be placed here.</p>
+The exception to this pattern is the journals.py file. Journals often have long names, and there are various abbreviations for any given journal. The <strong>full names</strong> of journals relevant to the publications to be stored should be placed here.</p>
 <p>Each of the files (except journals.py) represents a category of metadata that will be shown to users as possible tags for a given project. For instance:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">keyword_data</span> <span class="o">=</span> <span class="p">[</span>
 <span class="p">{</span><span class="s1">&#39;project_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my-project&#39;</span><span class="p">,</span>
@@ -240,10 +240,15 @@ python manage.py runserver
 </pre></div>
 </div>
 <p>For <strong>development</strong>, use the following line to start a simple smtp server:</p>
-<p>python -m smtpd -n -c DebuggingServer localhost:1025
-Inside of local_settings.py you will want to set the following values:</p>
-<p>EMAIL_HOST = ‘localhost’
-EMAIL_PORT = 1025</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -m smtpd -n -c DebuggingServer localhost:1025
+</pre></div>
+</div>
+<p>Inside of local_settings.py you will want to set the following values:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">EMAIL_HOST</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
+<span class="nv">EMAIL_PORT</span> <span class="o">=</span> <span class="m">1025</span>
+</pre></div>
+</div>
+<p><strong>Production</strong> versions should set the full suite of smtp options according to the mail server being used.</p>
 </div>
 </div>
 

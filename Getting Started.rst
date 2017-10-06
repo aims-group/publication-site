@@ -60,7 +60,7 @@ Now that the databse has the proper tables, the following files should be edited
  * scripts/journals.py
 
 The files are used to populate the database with relevant meta data. The meta data is currently designed with climate science in mind, but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project, then a list of relevant tags. For example, the CMIP5 project has various climate models, so each model is listed in the model.py file which allows users to optionally tag a publication as being related to that model. 
-The exception to this pattern is the journals.py file. Journals often have long names, and there are various abbreviations for any given journal. The full names of journals relevant to the publications to be stored should be placed here.
+The exception to this pattern is the journals.py file. Journals often have long names, and there are various abbreviations for any given journal. The **full names** of journals relevant to the publications to be stored should be placed here.
 
 Each of the files (except journals.py) represents a category of metadata that will be shown to users as possible tags for a given project. For instance:
 
@@ -91,8 +91,15 @@ Once these files are filled in run the following commands:
 
 For **development**, use the following line to start a simple smtp server:
 
-python -m smtpd -n -c DebuggingServer localhost:1025
+.. code-block:: bash
+
+    python -m smtpd -n -c DebuggingServer localhost:1025
+
 Inside of local_settings.py you will want to set the following values:
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+.. code-block:: bash
+
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+
+**Production** versions should set the full suite of smtp options according to the mail server being used.

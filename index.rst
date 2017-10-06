@@ -12,10 +12,3 @@ Welcome to Publication Hub's documentation!
 
    Getting Started
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
