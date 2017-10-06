@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; Publication Hub 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Publication Hub 0.2.0 documentation" href="index.html"/>
+        <link rel="prev" title="Welcome to Publication Hub’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Publication Hub
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Publication Hub</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Getting Started.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>Publication Hub is a publication management site for group and organizations that produce more publications than can be managed by hand.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>You will need to following software installed to follow these instructions:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://www.python.org/download/releases/2.7/">Python 2.7</a></li>
+<li><a class="reference external" href="https://virtualenv.pypa.io/en/latest/installation/">Virtualenv</a></li>
+<li><a class="reference external" href="https://git-scm.com/downloads">Git</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p>Begin by downloading the project files with git:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/aims-group/publication-site.git
+</pre></div>
+</div>
+<p>From inside the new folder, execute the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>virtualenv env
+<span class="nb">source</span> env/bin/activate
+pip install -r requirements.txt
+cp local_settings_example.py local_settings.py
+</pre></div>
+</div>
+<p>Before continuing, open the local_settings and set each variable to a valid setting.</p>
+<p>Next run the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python manage.py makemigrations
+python manage.py makemigrations publisher
+python manage.py migrate
+python manage.py createsuperuser
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Now that the databse has the proper tables, the following files should be edited and customized based on your own use cases.</p>
+<blockquote>
+<div><ul class="simple">
+<li>scripts/experiment.py</li>
+<li>scripts/frequency.py</li>
+<li>scripts/keyword.py</li>
+<li>scripts/model.py</li>
+<li>scripts/variable.py</li>
+<li>scripts/journals.py</li>
+</ul>
+</div></blockquote>
+<p>The files are used to populate the database with relevant meta data. The meta data is currently designed with climate science in mind, but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project, then a list of relevant tags. For example, the CMIP5 project has various climate models, so each model is listed in the model.py file which allows users to optionally tag a publication as being related to that model.
+The exception to this pattern is the journals.py file. Journals often have long names, and there are various abbreviations for any given journal. The full names of journals relevant to the publications to be stored should be placed here.</p>
+<p>Each of the files (except journals.py) represents a category of metadata that will be shown to users as possible tags for a given project. For instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">keyword_data</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">{</span><span class="s1">&#39;project_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my-project&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="s1">&#39;keyword1&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;keyword2&#39;</span>
+ <span class="p">]},</span>
+<span class="p">{</span><span class="s1">&#39;project_name&#39;</span><span class="p">:</span> <span class="s1">&#39;another-project&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;keywords&#39;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="s1">&#39;keyword1&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;keyword2&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;keyword3&#39;</span><span class="p">,</span>
+ <span class="p">]},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>When a user selects ‘my-project’ for a publication they will be given the option to tag it with the keywords “keyword1”, and “keyword2”. Duplicate tags such as “keyword1” and “keywrod2” are fully supported.</p>
+<p>Once these files are filled in run the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python manage.py initialize
+python manage.py runserver
+</pre></div>
+</div>
+<p>For <strong>development</strong>, use the following line to start a simple smtp server:</p>
+<p>python -m smtpd -n -c DebuggingServer localhost:1025
+Inside of local_settings.py you will want to set the following values:</p>
+<p>EMAIL_HOST = ‘localhost’
+EMAIL_PORT = 1025</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to Publication Hub’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, James Crean.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

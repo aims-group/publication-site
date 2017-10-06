@@ -10,7 +10,7 @@ Welcome to Publication Hub's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   testpage
+   Getting Started
 
 
 Indices and tables
