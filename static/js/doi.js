@@ -87,6 +87,7 @@ function doisearch(showFormClicked) {
         showForm();
     }
     else {
+        $("#publication-form-wrapper").addClass("hidden");
         $('#loading').show();
         var doi = $("#doi-field").val();
         $.ajax({
