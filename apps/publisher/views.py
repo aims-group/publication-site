@@ -832,8 +832,11 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = requests.get(initial['URL'], stream=True).url
-            url = url.split(';')[0]
+            try:
+                url = requests.get(initial['URL'], stream=True).url
+                url = url.split(';')[0]
+            except requests.exceptions.ConnectionError:
+                url = ''
         else:
             url = ''
         if 'container-title' in initial.keys():
@@ -907,7 +910,15 @@ def finddoi(request):
 
             if 'given' in initial['author'][0].keys():
                 for author in initial['author']:
-                    authors_list.append({'name': author['family'] + ', ' + author['given']})
+                    try:
+                        name = ""
+                        if 'family' in author.keys():
+                            name += author['family'] 
+                        if 'given' in author.keys():
+                            name += ', ' + author['given']
+                        authors_list.append({'name': name})
+                    except Exception:
+                        pass
 
             elif 'literal' in initial['author'][0].keys():
                 for author in initial['author']:
