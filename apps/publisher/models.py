@@ -1,5 +1,6 @@
 from django.db import models as django_models
 from django.contrib.auth.models import User
+from django.utils import timezone
 AUTHOR_TITLE_CHOICE = (
     (0, 'Dr'),
     (1, 'Hon'),
@@ -255,3 +256,4 @@ class AvailableYears(django_models.Model):
 class PendingDoi(django_models.Model):
     doi = django_models.CharField(max_length=255)
     user = django_models.ForeignKey(User)
+    date_time = django_models.DateTimeField(default=timezone.now)

@@ -371,6 +371,7 @@ function show_bibtex(id){
                 if(data.doi){
                     bibtex += ',\n  doi          = {' + '<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '</a>}';
                 }
+                bibtex += '\n}'
                 $("div #bibtex"+id).html($('<pre/>').append(bibtex));
                 $("div #bibtex"+id).toggle();
             },
