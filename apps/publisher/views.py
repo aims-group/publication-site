@@ -592,13 +592,22 @@ def review(request):
                 pending_error = "Pending DOI does not exist and could not be deleted."
 
     publications = Publication.objects.filter(submitter=request.user.id)
-    pending_dois = PendingDoi.objects.filter(user=request.user)
+    pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
     if not publications:
         message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
     if not pending_dois:
         pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
     return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
                                                 'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
+@login_required()
+def skip_doi(request):
+    try:
+        pending_doi = PendingDoi.objects.filter(user=request.user).order_by('date_time').first()
+        pending_doi.date_time = timezone.now()
+        pending_doi.save()
+    except Exception as e:
+        print e
+    return redirect('process_dois')
 
 @login_required()
 def edit(request, pubid):
@@ -656,7 +665,6 @@ def edit(request, pubid):
                     'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                 })
             else:
-                print "no: " + str(project)
                 meta_form.append({
                     'name': str(project),
                     'exp_form': ExperimentForm(queryset=project.experiments),
@@ -814,7 +822,7 @@ def finddoi(request):
         try:
             r = requests.get(url, headers=headers)
             status = r.status_code
-        except:
+        except Exception:
             status = 500
     if not empty and status == 200:
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
@@ -832,8 +840,11 @@ def finddoi(request):
         else:
             title = ''
         if 'URL' in initial.keys():
-            url = requests.get(initial['URL'], stream=True).url
-            url = url.split(';')[0]
+            try:
+                url = requests.get(initial['URL'], stream=True).url
+                url = url.split(';')[0]
+            except requests.exceptions.ConnectionError:
+                url = ''
         else:
             url = ''
         if 'container-title' in initial.keys():
@@ -907,7 +918,15 @@ def finddoi(request):
 
             if 'given' in initial['author'][0].keys():
                 for author in initial['author']:
-                    authors_list.append({'name': author['family'] + ', ' + author['given']})
+                    try:
+                        name = ""
+                        if 'family' in author.keys():
+                            name += author['family'] 
+                        if 'given' in author.keys():
+                            name += ', ' + author['given']
+                        authors_list.append({'name': name})
+                    except Exception:
+                        pass
 
             elif 'literal' in initial['author'][0].keys():
                 for author in initial['author']:
@@ -957,7 +976,7 @@ def add_dois(request):
 @login_required
 def process_dois(request):
     if request.method == "GET":
-        pending_dois = PendingDoi.objects.filter(user=request.user)
+        pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
         if pending_dois:
             return new(request, True, pending_dois[0].doi)
         else:
@@ -969,10 +988,10 @@ def process_dois(request):
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
+            import pdb
             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
-            pending_dois = PendingDoi.objects.filter(user=request.user)
-            pending_entry = pending_dois.filter(doi__icontains=submitted_doi)
-            if pending_entry.count() > 0: # if the doi that was saved was a pending doi
+            pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
+            if pending_dois.count > 0: # if the doi that was saved was a pending doi
                 pending_entry[0].delete()  # remove it from the pool of pending entries
             if pending_dois: # if there are more dois pending for the user
                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
