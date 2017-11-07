@@ -988,10 +988,10 @@ def process_dois(request):
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
+            import pdb
             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
             pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
-            pending_entry = pending_dois.filter(doi__icontains=submitted_doi)
-            if pending_entry.count() > 0: # if the doi that was saved was a pending doi
+            if pending_dois.count > 0: # if the doi that was saved was a pending doi
                 pending_entry[0].delete()  # remove it from the pool of pending entries
             if pending_dois: # if there are more dois pending for the user
                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one

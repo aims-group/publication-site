@@ -161,6 +161,16 @@ function submitPublication() {
     $.each($("#id_model input[name='ensemble']"), function(index, element){
         ensemble[index] = $(element).val()
     });
+    var batchDoi = $('#batch-alert-text').text()
+    if(batchDoi && $('#id_pub-doi').val().indexOf(batchDoi) == -1){
+        // If the submitted doi is significantly different from the one the user should be submitting,
+        // Confirm the submission
+        var ok = confirm("The Doi being submitted is different from the doi that was queued. Continuing will remove '".concat(batchDoi, "' from the queue."))
+        if(!ok){
+            // If the user cancels the submission, return early
+            return
+        }
+    }
     $('#meta-tabs .panel-body div[style="display: none;"]').remove(); //remove unused form elements before serializing
     $('.project-checkbox:not(:checked)').each(function(index, element){
         var name = element.value; //Grab the name of the unchecked box
