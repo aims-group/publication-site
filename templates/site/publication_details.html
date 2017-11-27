@@ -9,6 +9,9 @@
     <div id="tabs" class="panel panel-default">
         <div class="panel-heading">
             <input id="pub_type" type="hidden" name="pub_type" value="Book">
+            {% if batch_doi_id > 0 %}
+                <input id="batch_doi_id" type="hidden" name="batch_doi_id" value={{batch_doi_id}}>
+            {% endif %}
             <ul class="nav nav-tabs">
                 <li class="active" role="presentation"><a href="#tabs-1">Book</a></li>
                 <li role="presentation"><a href="#tabs-2">Conference</a></li>

@@ -744,7 +744,7 @@ def edit(request, pubid):
 
 
 @login_required()
-def new(request, batch=False, batch_doi=""): # Defaults to single submission. Option arguments passed from "process_dois"
+def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to single submission. Option arguments passed from "process_dois"
     if request.method == 'GET':
         formset = formset_factory(AuthorForm, extra=0, min_num=1, validate_min=True)
         author_form = formset()
@@ -764,6 +764,7 @@ def new(request, batch=False, batch_doi=""): # Defaults to single submission. Op
         if batch:
             all_forms.update({'batch': batch})
             all_forms.update({'batch_doi': batch_doi})
+            all_forms.update({'batch_doi_id': batch_doi_id})
         return render(request, 'site/new_publication.html', all_forms)
 
     elif request.method == 'POST':
@@ -978,7 +979,7 @@ def process_dois(request):
     if request.method == "GET":
         pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
         if pending_dois:
-            return new(request, True, pending_dois[0].doi)
+            return new(request, True, pending_dois[0].doi, pending_dois[0].id)
         else:
             doi_batch_form = DoiBatchForm()
             info = "{}".format(
@@ -988,11 +989,14 @@ def process_dois(request):
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
-            import pdb
             submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
-            pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
+            try:
+                doi_id = int(request.POST["batch_doi_id"])
+            except:
+                doi_id = 0
+            pending_dois = PendingDoi.objects.filter(user=request.user, id=doi_id)
             if pending_dois.count > 0: # if the doi that was saved was a pending doi
-                pending_entry[0].delete()  # remove it from the pool of pending entries
+                pending_dois[0].delete()  # remove it from the pool of pending entries
             if pending_dois: # if there are more dois pending for the user
                 return JsonResponse({"batch_doi": pending_dois[0].doi}) # set up the form with the next one
             else:
