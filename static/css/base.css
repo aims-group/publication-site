@@ -28,3 +28,9 @@ ul.nav.navbar-nav li a:hover,
 .nav.navbar-nav li ul li a:hover{
     color: #3992c5
 }
+
+#nav-logo{
+    display:inline-block;
+    height:30px;
+    margin-top:-5px
+}
