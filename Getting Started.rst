@@ -87,19 +87,59 @@ Once these files are filled in run the following commands:
 .. code-block:: bash
 
     python manage.py initialize
-    python manage.py runserver
 
-For **development**, use the following line to start a simple smtp server:
+Development Settings
+---------------------
+
+Inside the local_settings.py file there are various keys and settings that need to be set for full functionality.
+
+You can generate the secret key with the following python lines: 
+
+.. code-block:: python
+
+    import random
+    ''.join(random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50))
+
+
+.. code-block: python
+
+    EMAIL_HOST = 'localhost' 
+    EMAIL_PORT = 1025       # We will run a development server that will listen to this port
+
+Finally, make sure to set the google captcha keys. https://www.google.com/recaptcha/intro/ will explain how to get them. 
+
+
+With those settings added, we just need a local smtp server to for debugging password reset emails. 
+Run this command in a separate terminal. (Any emails sent will appear as plain text in this window.)
 
 .. code-block:: bash
 
     python -m smtpd -n -c DebuggingServer localhost:1025
 
-Inside of local_settings.py you will want to set the following values:
+Now you can run the server locally:
 
 .. code-block:: bash
 
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 1025
+    python manage.py runserver
+
+Load Production Data For Testing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In some cases, it can be very useful to have real world data to test with. The generalized steps for setting this up are as follows:
+
+* Install Postgress (If you are on Mac, you can use postgresapp.com)
+
+* Create a new database (optional for mac. postgressapp creates a database with your username)
+
+* Update your local_settings.py file to connect to the new database
+
+* Dump the remote database to a file and load it into your local database. https://www.postgresql.org/docs/9.1/static/backup-dump.html
+
+
+Production Settings
+---------------------
 
 **Production** versions should set the full suite of smtp options according to the mail server being used.
+Sometimes this may only require setting the ``EMAIL_HOST`` field, while other servers may require more settings. 
+
+In a **Production** environment, apache/mod_wsgi will be responsible for serving the site.
