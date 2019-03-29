@@ -4,6 +4,7 @@ from registration.forms import RegistrationFormUniqueEmail
 from registration.backends.simple.views import RegistrationView
 from django.contrib.auth.models import User
 from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 from django.core.exceptions import ValidationError
 from django.db.models.functions import Lower
 
@@ -39,7 +40,7 @@ class LoginForm(AuthenticationForm):
 class RegistrationForm(RegistrationFormUniqueEmail):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
                              required=True)
-    captcha = ReCaptchaField(attrs={'theme': 'clean'})
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox(attrs={'data-theme': 'light'}))
     password1 = forms.CharField(label="Password",
                                 widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password', 'autocomplete': 'off'}))
     password2 = forms.CharField(label="Confirm Password",
