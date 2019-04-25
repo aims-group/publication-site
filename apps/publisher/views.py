@@ -170,7 +170,6 @@ def view(request, project_name="all"):
     pubs["category"] = project_name
     pubs["type"] = request.GET.get("type", "all")
     pubs["option"] = request.GET.get("option", "")
-    pubs["total"] = Publication.objects.all().count()
     pubs["hide_search"] = "display:none;"
     try:
         scroll_count = int(request.GET.get("scroll_count", "0"))
@@ -183,9 +182,11 @@ def view(request, project_name="all"):
     display = request.GET.get('display', '')  # expect display == 'citations', 'bibtex' or nothing
     if project_name == "all":
         publications = Publication.objects.all().order_by("-publication_date")
+        pubs["total"] = Publication.objects.all().count()
     else:
         try:
-            publications = Project.objects.get(project__iexact=project_name).publication_set.order_by("-publication_date")    
+            publications = Project.objects.get(project__iexact=project_name).publication_set.order_by("-publication_date") 
+            pubs["total"] = Project.objects.get(project__iexact=project_name).publication_set.count()  
         except Project.DoesNotExist as e:
             print e
             return HttpResponse(status=404)
