@@ -19,7 +19,7 @@ class Command(BaseCommand):
             pair_list = []
             temp_count = []
             for experiment in publication.experiments.all():
-                if not str(experiment) in lookupdict.keys():
+                if not str(experiment) in list(lookupdict.keys()):
                     size = Publication.experiments.through.objects.filter(experiment_id=experiment.id).count()
                     max_size = (size if size > max_size else max_size)
                     exp = {'size': size, 'score': 0, 'id': str(experiment), 'type': "circle", 'facet_type': 'experiment'}
@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 temp_count.append(str(experiment))
 
             for frequency in publication.frequency.all():
-                if not str(frequency) in lookupdict.keys():
+                if not str(frequency) in list(lookupdict.keys()):
                     size = Publication.frequency.through.objects.filter(frequency_id=frequency.id).count()
                     max_size = (size if size > max_size else max_size)
                     exp = {'size': size, 'score': 1, 'id': str(frequency), 'type': "circle", 'facet_type': 'frequency'}
@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 temp_count.append(str(frequency))
 
             for keyword in publication.keywords.all():
-                if not str(keyword) in lookupdict.keys():
+                if not str(keyword) in list(lookupdict.keys()):
                     size = Publication.keywords.through.objects.filter(keyword_id=keyword.id).count()
                     max_size = (size if size > max_size else max_size)
                     exp = {'size': size, 'score': 2, 'id': str(keyword), 'type': "circle", 'facet_type': 'keyword'}
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 temp_count.append(str(keyword))
 
             for model in publication.model.all():
-                if not str(model) in lookupdict.keys():
+                if not str(model) in list(lookupdict.keys()):
                     size = Publication.model.through.objects.filter(model_id=model.id).count()
                     max_size = (size if size > max_size else max_size)
                     exp = {'size': size, 'score': 3, 'id': str(model), 'type': "circle", 'facet_type': 'model'}
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 temp_count.append(str(model))
 
             for variable in publication.variables.all():
-                if not str(variable) in lookupdict.keys():
+                if not str(variable) in list(lookupdict.keys()):
                     size = Publication.variables.through.objects.filter(variable_id=variable.id).count()
                     max_size = (size if size > max_size else max_size)
                     exp = {'size': size, 'score': 4, 'id': str(variable), 'type': "circle", 'facet_type': 'variable'}
@@ -71,7 +71,7 @@ class Command(BaseCommand):
             for source in temp_count:
                 for target in temp_count:
                     if not source == target:
-                        if source not in stats.keys():
+                        if source not in list(stats.keys()):
                             stats[source] = {}
                         if target not in stats[source]:
                             stats[source][target] = 0

@@ -12,5 +12,5 @@ def pending_dois(request):
             return {'dois_pending': True, "dois_pending_count": pending_count}
         return {}
     except Exception as e:
-        print e
+        print(e)
         return {}

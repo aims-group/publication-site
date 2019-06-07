@@ -28,11 +28,11 @@ def my_json(data):
         '&': '\\u0026',
         '<': '\\u003c',
         '>': '\\u003e',
-        '\u2028': '\\u2028',
-        '\u2029': '\\u2029'}
+        '\\u2028': '\\u2028',
+        '\\u2029': '\\u2029'}
     json_str = json_dumps(data, cls=DjangoJSONEncoder)
 
-    for (c, d) in unsafe_chars.items():
+    for (c, d) in list(unsafe_chars.items()):
         json_str = json_str.replace(c, d)
 
     return json_str

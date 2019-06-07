@@ -3,16 +3,16 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
-from forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
-from forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
-from forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
+from .forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
+from .forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
+from .forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.db import transaction
 from itertools import chain
 from scripts.journals import journal_names
 from fuzzywuzzy import process
-from models import *
+from .models import *
 import requests
 import datetime
 import collections
@@ -174,7 +174,7 @@ def view(request, project_name="all"):
     try:
         scroll_count = int(request.GET.get("scroll_count", "0"))
     except ValueError as e:
-        print e
+        print(e)
         scroll_count = 0
 
     pubs["search"] = True
@@ -188,7 +188,7 @@ def view(request, project_name="all"):
             publications = Project.objects.get(project__iexact=project_name).publication_set.order_by("-publication_date") 
             pubs["total"] = Project.objects.get(project__iexact=project_name).publication_set.count()  
         except Project.DoesNotExist as e:
-            print e
+            print(e)
             return HttpResponse(status=404)
     if page_filter == 'all':
         pubs["pages"] = get_all_options()
@@ -425,25 +425,25 @@ def advanced_search(request):
             return render(request, 'site/advanced_search.html', {'form': form})
         else:
             pubs = Publication.objects.all()
-            if 'doi' in form.cleaned_data.keys() and form.cleaned_data['doi']:
+            if 'doi' in list(form.cleaned_data.keys()) and form.cleaned_data['doi']:
                 pubs = pubs.filter(doi__icontains=form.cleaned_data['doi'])
 
-            if 'title' in form.cleaned_data.keys() and form.cleaned_data['title']:
+            if 'title' in list(form.cleaned_data.keys()) and form.cleaned_data['title']:
                 pubs = pubs.filter(title__icontains=form.cleaned_data['title'])
 
-            if 'author' in form.cleaned_data.keys() and form.cleaned_data['author']:
+            if 'author' in list(form.cleaned_data.keys()) and form.cleaned_data['author']:
                 pubs = pubs.filter(authors__name__icontains=form.cleaned_data['author'])
 
-            if 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_start'] and form.cleaned_data['date_end']:
+            if 'date_end' in list(form.cleaned_data.keys()) and form.cleaned_data['date_start'] and form.cleaned_data['date_end']:
                 pubs = pubs.filter(publication_date__range=[form.cleaned_data['date_start'], form.cleaned_data['date_end']])
 
-            elif 'date_start' in form.cleaned_data.keys() and form.cleaned_data['date_start']:
+            elif 'date_start' in list(form.cleaned_data.keys()) and form.cleaned_data['date_start']:
                 pubs = pubs.filter(publication_date__gte=form.cleaned_data['date_start'])
 
-            elif 'date_end' in form.cleaned_data.keys() and form.cleaned_data['date_end']:
+            elif 'date_end' in list(form.cleaned_data.keys()) and form.cleaned_data['date_end']:
                 pubs = pubs.filter(publication_date__lte=form.cleaned_data['date_end'])
 
-            if 'project' in form.cleaned_data.keys() and form.cleaned_data['project']:
+            if 'project' in list(form.cleaned_data.keys()) and form.cleaned_data['project']:
                 if request.POST.get("project_search_by_any", "off") == "on":
                     pubs = pubs.filter(projects__in=form.cleaned_data['project'])
                 else:
@@ -452,35 +452,35 @@ def advanced_search(request):
 
             meta_any_mode_pubs = Publication.objects.none() # Initialize variable so we can reference it without error
             meta_search_by_any = request.POST.get("meta_search_by_any", "off")
-            if 'experiment' in form.cleaned_data.keys() and form.cleaned_data['experiment']:
+            if 'experiment' in list(form.cleaned_data.keys()) and form.cleaned_data['experiment']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
                 else:
                     for exp in form.cleaned_data['experiment']:
                         pubs = pubs.filter(experiments__experiment=exp)
 
-            if 'frequency' in form.cleaned_data.keys() and form.cleaned_data['frequency']:
+            if 'frequency' in list(form.cleaned_data.keys()) and form.cleaned_data['frequency']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(frequency__frequency__in=form.cleaned_data['frequency'])
                 else:
                     for freq in form.cleaned_data['frequency']:
                         pubs = pubs.filter(frequency__frequency=freq)
 
-            if 'keyword' in form.cleaned_data.keys() and form.cleaned_data['keyword']:
+            if 'keyword' in list(form.cleaned_data.keys()) and form.cleaned_data['keyword']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
                 else:
                     for keyw in form.cleaned_data['keyword']:
                         pubs = pubs.filter(keywords__keyword=keyw)
 
-            if 'model' in form.cleaned_data.keys() and form.cleaned_data['model']:
+            if 'model' in list(form.cleaned_data.keys()) and form.cleaned_data['model']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(model__model__in=form.cleaned_data['model'])
                 else:
                     for model in form.cleaned_data['model']:
                         pubs = pubs.filter(model__model=model)
 
-            if 'variable' in form.cleaned_data.keys() and form.cleaned_data['variable']:
+            if 'variable' in list(form.cleaned_data.keys()) and form.cleaned_data['variable']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(variables__variable__in=form.cleaned_data['variable'])
                 else:
@@ -489,9 +489,9 @@ def advanced_search(request):
             if meta_search_by_any == "on":
                 pubs = meta_any_mode_pubs.distinct()
             pubs = pubs.distinct()
-            if 'ajax' in request.POST.keys() and request.POST['ajax'] == 'true':
+            if 'ajax' in list(request.POST.keys()) and request.POST['ajax'] == 'true':
                 return JsonResponse({'count': pubs.count()})
-            if 'display' in request.POST.keys() and request.POST['display'] in ['citations', 'bibtex']:
+            if 'display' in list(request.POST.keys()) and request.POST['display'] in ['citations', 'bibtex']:
                 publication_list = []
                 for pub in pubs.order_by("-publication_date"):
                     authors = [author.name for author in pub.authors.all().order_by('id')]
@@ -545,7 +545,7 @@ def review(request):
                 show_pending = True
                 PendingDoi.objects.filter(user=request.user).delete()
             except Exception as e:
-                print e
+                print(e)
         else:
             try:
                 delete_id = int(request.POST.get("delete-id", ""))
@@ -607,7 +607,7 @@ def skip_doi(request):
         pending_doi.date_time = timezone.now()
         pending_doi.save()
     except Exception as e:
-        print e
+        print(e)
     return redirect('process_dois')
 
 @login_required()
@@ -676,7 +676,7 @@ def edit(request, pubid):
                 })
         meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
-        ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not u''])
+        ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not ''])
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
@@ -707,7 +707,7 @@ def edit(request, pubid):
             elif publication.publication_type == 7:  # other
                 media_form = OtherForm(instance=Other.objects.get(publication_id=publication))
             else:
-                print "Unknown publication type found"
+                print("Unknown publication type found")
 
             meta_form = []
             all_projects = [ str(proj) for proj in Project.objects.all().order_by('project') ]
@@ -829,19 +829,19 @@ def finddoi(request):
     if not empty and status == 200:
         # TODO: Catch differences between agencies e.g. Crossref vs DataCite
         initial = r.json()
-        if 'DOI' in initial.keys():
+        if 'DOI' in list(initial.keys()):
             doi = initial['DOI']
         else:
             doi = ''
-        if 'ISBN' in initial.keys():
+        if 'ISBN' in list(initial.keys()):
             isbn = initial['ISBN']
         else:
             isbn = ''
-        if 'title' in initial.keys():
+        if 'title' in list(initial.keys()):
             title = initial['title']
         else:
             title = ''
-        if 'URL' in initial.keys():
+        if 'URL' in list(initial.keys()):
             try:
                 url = requests.get(initial['URL'], stream=True).url
                 url = url.split(';')[0]
@@ -849,7 +849,7 @@ def finddoi(request):
                 url = ''
         else:
             url = ''
-        if 'container-title' in initial.keys():
+        if 'container-title' in list(initial.keys()):
             container_title = initial['container-title']
             if container_title in journal_names:
                 journal_index = journal_names.index(container_title)
@@ -866,7 +866,7 @@ def finddoi(request):
             container_title = ''
             journal_index = 0
             guessed_journal = False
-        if 'page' in initial.keys():
+        if 'page' in list(initial.keys()):
             try:
                 startpage, endpage = str(initial['page']).split('-')
             except:
@@ -874,20 +874,20 @@ def finddoi(request):
         else:
             startpage = ''
             endpage = ''
-        if 'volume' in initial.keys():
+        if 'volume' in list(initial.keys()):
             volume = initial['volume']
         else:
             volume = ''
-        if 'issue' in initial.keys():
+        if 'issue' in list(initial.keys()):
             issue = initial['issue']
         else:
             issue = ''
-        if 'publisher' in initial.keys():
+        if 'publisher' in list(initial.keys()):
             publisher = initial['publisher']
         else:
             publisher = ''
         try:
-            if 'published-print' in initial.keys():
+            if 'published-print' in list(initial.keys()):
                 datelength = len(initial['published-print']['date-parts'][0])
                 if datelength == 1:
                     publication_date = '1/1/' + str(initial['published-print']['date-parts'][0][0])
@@ -897,7 +897,7 @@ def finddoi(request):
                 elif datelength == 3:
                     publication_date = str(initial['published-print']['date-parts'][0][1]) + '/' + str(
                         initial['published-print']['date-parts'][0][2]) + '/' + str(initial['published-print']['date-parts'][0][0])
-            elif 'issued' in initial.keys() and 'date-parts' in initial['issued'].keys() and initial['issued']['date-parts'][0][0]:
+            elif 'issued' in list(initial.keys()) and 'date-parts' in list(initial['issued'].keys()) and initial['issued']['date-parts'][0][0]:
                 datelength = len(initial['issued']['date-parts'][0])
                 publication_date = initial['issued']['date-parts'][0][0]
                 if datelength == 1:
@@ -907,7 +907,7 @@ def finddoi(request):
                 elif datelength == 3:
                     publication_date = str(initial['issued']['date-parts'][0][1]) + '/' + str(initial['issued']['date-parts'][0][2]) + '/' + str(
                         initial['issued']['date-parts'][0][0])
-            elif 'created' in initial.keys():
+            elif 'created' in list(initial.keys()):
                 publication_date = str(initial['created']['date-parts'][0][1]) + '/' + str(initial['created']['date-parts'][0][2]) + '/' + str(
                     initial['created']['date-parts'][0][0])
             else:
@@ -916,21 +916,21 @@ def finddoi(request):
             print(e)
             publication_date = ''
         authors_list = []
-        if 'author' in initial.keys():
+        if 'author' in list(initial.keys()):
 
-            if 'given' in initial['author'][0].keys():
+            if 'given' in list(initial['author'][0].keys()):
                 for author in initial['author']:
                     try:
                         name = ""
-                        if 'family' in author.keys():
+                        if 'family' in list(author.keys()):
                             name += author['family'] 
-                        if 'given' in author.keys():
+                        if 'given' in list(author.keys()):
                             name += ', ' + author['given']
                         authors_list.append({'name': name})
                     except Exception:
                         pass
 
-            elif 'literal' in initial['author'][0].keys():
+            elif 'literal' in list(initial['author'][0].keys()):
                 for author in initial['author']:
                     authors_list.append({'name': author['literal']})
             else:
@@ -968,7 +968,7 @@ def add_dois(request):
                     PendingDoi(doi=doi, user=request.user).save()
             return render(request, "site/add_dois.html", {'doi_batch_form': doi_batch_form})
         except Exception as e:
-            print e
+            print(e)
             error = "{}{}".format(
                 "Could not save list of DOIs. Double check that there is only 1 doi per line, and try again.",
                 "If you continue to get this error, please <a href='https://github.com/aims-group/publication-site/issues'>submit an issue.</a>"
