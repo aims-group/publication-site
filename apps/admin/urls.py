@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/logout/$', logout_then_login),
     url(r'^accounts/register/$', RegistrationViewUniqueEmail.as_view()),
-    url(r'^accounts/', include('registration.backends.simple.urls')),
+    url(r'^accounts/', include('django_registration.backends.one_step.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^', include('publisher.urls')),
 ]
