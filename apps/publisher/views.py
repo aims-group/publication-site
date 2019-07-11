@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import password_change
 from django.forms import forms, formset_factory, modelformset_factory
 from .forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from .forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
