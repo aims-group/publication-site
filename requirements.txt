@@ -1,5 +1,5 @@
-Django==2.2.3
-django-recaptcha==2.0.4 
+Django==2.2.7
+django-recaptcha==2.0.5 
 django-registration==3.0.1
 django-widget-tweaks==1.4.5
 fuzzywuzzy==0.17.0
