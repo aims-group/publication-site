@@ -196,56 +196,56 @@ def view(request, project_name="all"):
         option = request.GET.get("option", "1pctCO2")
         pubs["option"] = option
         for exp in Experiment.objects.all().order_by('experiment'):
-            if publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count() == 0:
+            if publications.filter(experiments=exp).count() == 0:
                 continue
             exps = {}
             exps['type'] = 'experiment'
             exps['options'] = str(exp.experiment)
-            exps['count'] = publications.filter(experiments=Experiment.objects.filter(experiment=exp)).count()
+            exps['count'] = publications.filter(experiments=exp).count()
             data[str(exp.experiment)] = exps
-        publications = publications.filter(experiments=Experiment.objects.filter(experiment=option)).order_by("-publication_date")
+        publications = publications.filter(experiments=Experiment.objects.filter(experiment=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'frequency':
         option = request.GET.get("option", "3-hourly")
         pubs["option"] = option
         for frq in Frequency.objects.all().order_by('frequency'):
-            if publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count() == 0:
+            if publications.filter(frequency=frq).count() == 0:
                 continue
             frqs = {}
             frqs['type'] = 'frequency'
             frqs['options'] = str(frq.frequency)
-            frqs['count'] = publications.filter(frequency=Frequency.objects.filter(frequency=frq)).count()
+            frqs['count'] = publications.filter(frequency=frq).count()
             data[str(frq.frequency)] = frqs
-        publications = publications.filter(frequency=Frequency.objects.filter(frequency=option)).order_by("-publication_date")
+        publications = publications.filter(frequency=Frequency.objects.filter(frequency=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'keyword':
         option = request.GET.get("option", "Abrupt change")
         pubs["option"] = option
         for kyw in Keyword.objects.all().order_by('keyword'):
-            if publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count() == 0:
+            if publications.filter(keywords=kyw).count() == 0:
                 continue
             kyws = {}
             kyws['type'] = 'keyword'
             kyws['options'] = str(kyw.keyword)
-            kyws['count'] = publications.filter(keywords=Keyword.objects.filter(keyword=kyw)).count()
+            kyws['count'] = publications.filter(keywords=kyw).count()
             data[str(kyw.keyword)] = kyws
-        publications = publications.filter(keywords=Keyword.objects.filter(keyword=option)).order_by("-publication_date")
+        publications = publications.filter(keywords=Keyword.objects.filter(keyword=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'model':
         option = request.GET.get("option", "ACCESS1.0")
         pubs["option"] = option
         for mod in Model.objects.all().order_by('model'):
-            if publications.filter(model=Model.objects.filter(model=mod)).count() == 0:
+            if publications.filter(model=mod).count() == 0:
                 continue
             mods = {}
             mods['type'] = 'model'
             mods['options'] = str(mod.model)
-            mods['count'] = publications.filter(model=Model.objects.filter(model=mod)).count()
+            mods['count'] = publications.filter(model=mod).count()
             data[str(mod.model)] = mods
-        publications = publications.filter(model=Model.objects.filter(model=option)).order_by("-publication_date")
+        publications = publications.filter(model=Model.objects.filter(model=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'status':
@@ -291,14 +291,14 @@ def view(request, project_name="all"):
         option = request.GET.get("option", "air pressure")
         pubs["option"] = request.GET.get("option", "air pressure")
         for var in Variable.objects.all().order_by('variable'):
-            if publications.filter(variables=Variable.objects.filter(variable=var)).count() == 0:
+            if publications.filter(variables=var).count() == 0:
                 continue
             vars = {}
             vars['type'] = 'variable'
             vars['options'] = str(var.variable)
-            vars['count'] = publications.filter(variables=Variable.objects.filter(variable=var)).count()
+            vars['count'] = publications.filter(variables=var).count()
             data[str(var.variable)] = vars
-        publications = publications.filter(variables=Variable.objects.filter(variable=option)).order_by("-publication_date")
+        publications = publications.filter(variables=Variable.objects.filter(variable=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'year':
@@ -318,14 +318,14 @@ def view(request, project_name="all"):
         option = request.GET.get("option", "CMIP5")
         pubs["option"] = option
         for project in Project.objects.all().order_by('project'):
-            if publications.filter(projects=Project.objects.filter(project=project)).count() == 0:
+            if publications.filter(projects=project).count() == 0:
                 continue
             project_data = {}
             project_data['type'] = 'project'
             project_data['options'] = str(project)
-            project_data['count'] = publications.filter(projects=Project.objects.filter(project=project)).count()
+            project_data['count'] = publications.filter(projects=project).count()
             data[(str(project))] = project_data
-        publications = publications.filter(projects=Project.objects.filter(project=option)).order_by("-publication_date")
+        publications = publications.filter(projects=Project.objects.filter(project=option)[0]).order_by("-publication_date")
         pubs['pages'] = data
 
     elif page_filter == 'search':
