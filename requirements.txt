@@ -1,7 +1,7 @@
 appnope==0.1.0
 backports.shutil-get-terminal-size==1.0.0
 decorator==4.0.10
-Django==1.11.20
+Django==1.11.28
 django-recaptcha==2.0.2
 django-registration==2.0.4
 django-widget-tweaks==1.4.1
