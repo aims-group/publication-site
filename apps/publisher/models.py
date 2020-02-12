@@ -141,7 +141,7 @@ class Publication(django_models.Model):
     def get_authors(self):
         # return self.authors.first()
         count = self.authors.count()
-        authors = self.authors.all().order_by('id')
+        authors = [author.name for author in self.authors.all().order_by('id')]
         if count > 2:
             return "{0}, {1}, et al.".format(str(authors[0]), str(authors[1]))
         elif count == 2:
