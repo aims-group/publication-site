@@ -83,7 +83,7 @@ class Project(django_models.Model):
 class JournalOptions(django_models.Model):
     journal_name = django_models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.journal_name)
 
 
@@ -98,7 +98,7 @@ class Author(django_models.Model):
     name = django_models.TextField()
     institution = django_models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -122,7 +122,7 @@ class Publication(django_models.Model):
     model = django_models.ManyToManyField(Model, through='PubModels')
     variables = django_models.ManyToManyField(Variable)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -141,7 +141,7 @@ class Publication(django_models.Model):
     def get_authors(self):
         # return self.authors.first()
         count = self.authors.count()
-        authors = [author.name for author in self.authors.all().order_by('id')]
+        authors = self.authors.all().order_by('id')
         if count > 2:
             return "{0}, {1}, et al.".format(str(authors[0]), str(authors[1]))
         elif count == 2:
@@ -195,7 +195,7 @@ class Journal(django_models.Model):
     start_page = django_models.TextField(blank=True)
     end_page = django_models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.journal_name)
 
 
