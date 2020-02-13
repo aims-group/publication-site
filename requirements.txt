@@ -1,4 +1,4 @@
-Django==2.2.7
+Django==2.2.10
 django-recaptcha==2.0.5 
 django-registration==3.0.1
 django-widget-tweaks==1.4.5
