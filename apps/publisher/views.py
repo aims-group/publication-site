@@ -16,6 +16,7 @@ import requests
 import datetime
 import collections
 import operator
+import urllib
 
 
 # Helper functions
@@ -402,7 +403,7 @@ def view(request, project_name="all"):
             if page_filter == 'all':
                 pubs["scroll_link"] = "?type={}&scroll_count={}".format(page_filter, scroll_count + 1)
             else:
-                pubs["scroll_link"] = "?type={}&option={}&scroll_count={}".format(page_filter, option.replace(' ', '%20'), scroll_count + 1)
+                pubs["scroll_link"] = "?type={}&option={}&scroll_count={}".format(page_filter, urllib.parse.quote(option), scroll_count + 1)
             pubs["publications"] = publications[prev_articles:new_articles]
             return render(request, 'snippets/load_publications.html', pubs)
 
@@ -410,7 +411,7 @@ def view(request, project_name="all"):
             if page_filter == 'all':
                 pubs["scroll_link"] = "?type={}&scroll_count=1".format(page_filter)
             else:
-                pubs["scroll_link"] = "?type={}&option={}&scroll_count=1".format(page_filter, option.replace(' ', '%20'))
+                pubs["scroll_link"] = "?type={}&option={}&scroll_count=1".format(page_filter, urllib.parse.quote(option))
             pubs["publications"] = publications[:publications_to_load]
     return render(request, 'site/view.html', pubs)
 

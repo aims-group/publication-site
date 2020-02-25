@@ -111,7 +111,7 @@
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="?type={{ v.type }}&option={{ v.options|urlencode }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}
