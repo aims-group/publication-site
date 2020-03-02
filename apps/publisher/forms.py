@@ -1,14 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from registration.forms import RegistrationFormUniqueEmail
-from registration.backends.simple.views import RegistrationView
+from django_registration.forms import RegistrationFormUniqueEmail
+from django_registration.backends.one_step.views import RegistrationView
 from django.contrib.auth.models import User
 from captcha.fields import ReCaptchaField
 from captcha.widgets import ReCaptchaV2Checkbox
 from django.core.exceptions import ValidationError
 from django.db.models.functions import Lower
 
-from models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
+from .models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
 
 # Advanced Search form helper functions. 
@@ -87,7 +87,7 @@ class PublicationForm(forms.ModelForm):
         try:
             self.pub_id = int(kwargs.pop('pub_id', 0))
         except Exception as e:
-            print e
+            print(e)
             self.pub_id = 0
         super(PublicationForm, self).__init__(*args, **kwargs)
         self.fields['doi'].required = True

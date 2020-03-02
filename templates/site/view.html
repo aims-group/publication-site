@@ -27,7 +27,7 @@
 </div>
 <div id="search-container" style="{{hide_search|default:''}}" class="row">
     <div id="search-wrapper">
-        <form action="/search" method="GET">
+        <form action="" method="GET">
             <input type="hidden" name="type" value="search">
             <div class="form-group col-xs-2 col-md-2">
                 <label for="year-search" class="control-label text-center">Year</label>
@@ -111,7 +111,7 @@
     {% else %}
         <table class="table">
             {% for k, v in pages.items %}
-<tr><td><a href="?type={{ v.type }}&option={{ v.options }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
+<tr><td><a href="?type={{ v.type }}&option={{ v.options|urlencode }}">{{ v.options|capfirst }}</a></td><td>{{ v.count }}</td></tr>
             {% endfor %}
         </table>
     {% endif %}

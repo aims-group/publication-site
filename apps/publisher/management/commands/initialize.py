@@ -23,9 +23,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if Experiment.objects.all():
-            print 'experiments already loaded'
+            print('experiments already loaded')
         else:
-            print 'loading experiments'
+            print('loading experiments')
             for project in experiment_data:
                 project_obj = get_project(project['project_name'])
                 for exps in project['experiments']:
@@ -36,12 +36,12 @@ class Command(BaseCommand):
                         new_exp = Experiment(experiment=exps)
                         new_exp.save()
                         project_obj.experiments.add(new_exp)
-            print 'exp done'
+            print('exp done')
 
         if Frequency.objects.all():
-            print 'frequency already loaded'
+            print('frequency already loaded')
         else:
-            print 'loading frequency'
+            print('loading frequency')
             for project in frequency_data:
                 project_obj = get_project(project['project_name'])
                 for freq in project['frequencies']:
@@ -52,12 +52,12 @@ class Command(BaseCommand):
                         new_freq = Frequency(frequency=freq)
                         new_freq.save()
                         project_obj.frequencies.add(new_freq)
-            print 'freq done'
+            print('freq done')
 
         if Keyword.objects.all():
-            print 'keyword already loaded'
+            print('keyword already loaded')
         else:
-            print 'loading keyword'
+            print('loading keyword')
             for project in keyword_data:
                 project_obj = get_project(project['project_name'])
                 for keyw in project['keywords']:
@@ -68,12 +68,12 @@ class Command(BaseCommand):
                         new_keyw = Keyword(keyword=keyw)
                         new_keyw.save()
                         project_obj.keywords.add(new_keyw)
-            print 'key done'
+            print('key done')
 
         if Model.objects.all():
-            print 'model already loaded'
+            print('model already loaded')
         else:
-            print 'loading model'
+            print('loading model')
             for project in model_data:
                 project_obj = get_project(project['project_name'])
                 for mod in project['models']:
@@ -84,12 +84,12 @@ class Command(BaseCommand):
                         new_mod = Model(model=mod)
                         new_mod.save()
                         project_obj.models.add(new_mod)
-            print 'mod done'
+            print('mod done')
 
         if Variable.objects.all():
-            print 'variable already loaded'
+            print('variable already loaded')
         else:
-            print 'loading variable'
+            print('loading variable')
             for project in variable_data:
                 project_obj = get_project(project['project_name'])
                 for var in project['variables']:
@@ -100,15 +100,15 @@ class Command(BaseCommand):
                         new_var = Variable(variable=var)
                         new_var.save()
                         project_obj.variables.add(new_var)
-            print 'var done'
+            print('var done')
 
         if JournalOptions.objects.all():
-            print 'journal names already loaded'
+            print('journal names already loaded')
         else:
-            print 'loading journal names'
+            print('loading journal names')
             for jour in journal_names:
                 new_jour = JournalOptions(journal_name=jour)
                 new_jour.save()
-            print 'journal names done'
+            print('journal names done')
 
-        print 'all done'
+        print('all done')

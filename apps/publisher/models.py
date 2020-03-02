@@ -83,7 +83,7 @@ class Project(django_models.Model):
 class JournalOptions(django_models.Model):
     journal_name = django_models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.journal_name)
 
 
@@ -98,14 +98,14 @@ class Author(django_models.Model):
     name = django_models.TextField()
     institution = django_models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class Publication(django_models.Model):
     publication_type = django_models.IntegerField(choices=PUBLICATION_TYPE_CHOICE, default=2)
     status = django_models.IntegerField(choices=PUBLICATION_STATUS_CHOICE, default=0)
-    submitter = django_models.ForeignKey(User)
+    submitter = django_models.ForeignKey(User, on_delete=django_models.CASCADE)
     title = django_models.TextField()
     projects = django_models.ManyToManyField(Project)
     funding = django_models.ManyToManyField(Funding)
@@ -122,7 +122,7 @@ class Publication(django_models.Model):
     model = django_models.ManyToManyField(Model, through='PubModels')
     variables = django_models.ManyToManyField(Variable)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -153,13 +153,13 @@ class Publication(django_models.Model):
 
 
 class PubModels(django_models.Model):
-    publication = django_models.ForeignKey(Publication)
-    model = django_models.ForeignKey(Model)
+    publication = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
+    model = django_models.ForeignKey(Model, on_delete=django_models.CASCADE)
     ensemble = django_models.IntegerField()
 
 
 class Book(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     book_name = django_models.TextField()
     chapter_title = django_models.TextField(blank=True)
     start_page = django_models.TextField(blank=True)
@@ -173,7 +173,7 @@ class Book(django_models.Model):
 
 
 class Conference(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     conference_name = django_models.TextField()
     conference_serial_number = django_models.TextField(blank=True)
     event_location = django_models.TextField(blank=True)
@@ -188,19 +188,19 @@ class Conference(django_models.Model):
 
 
 class Journal(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
-    journal_name = django_models.ForeignKey(JournalOptions)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
+    journal_name = django_models.ForeignKey(JournalOptions, on_delete=django_models.CASCADE)
     volume_number = django_models.TextField(blank=True)
     article_number = django_models.TextField(blank=True)
     start_page = django_models.TextField(blank=True)
     end_page = django_models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.journal_name)
 
 
 class Magazine(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     magazine_name = django_models.TextField()
     editor = django_models.TextField(blank=True)
     volume_number = django_models.TextField(blank=True)
@@ -213,7 +213,7 @@ class Magazine(django_models.Model):
 
 
 class Poster(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     poster_title = django_models.TextField()
     event = django_models.TextField(blank=True)
 
@@ -222,7 +222,7 @@ class Poster(django_models.Model):
 
 
 class Presentation(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     presentation_title = django_models.TextField()
 
     def __str__(self):
@@ -230,7 +230,7 @@ class Presentation(django_models.Model):
 
 
 class TechnicalReport(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     report_number = django_models.TextField()
     editor = django_models.TextField(blank=True)
     issuer = django_models.TextField(blank=True)
@@ -240,7 +240,7 @@ class TechnicalReport(django_models.Model):
 
 
 class Other(django_models.Model):
-    publication_id = django_models.ForeignKey(Publication)
+    publication_id = django_models.ForeignKey(Publication, on_delete=django_models.CASCADE)
     other_pub = django_models.TextField()
 
     def __str__(self):
@@ -255,5 +255,5 @@ class AvailableYears(django_models.Model):
 
 class PendingDoi(django_models.Model):
     doi = django_models.CharField(max_length=255)
-    user = django_models.ForeignKey(User)
+    user = django_models.ForeignKey(User, on_delete=django_models.CASCADE)
     date_time = django_models.DateTimeField(default=timezone.now)
