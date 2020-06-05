@@ -1,6 +1,7 @@
 env/
 db.sqlite
 db.sqlite3
+local.db
 local_settings.py
 static/scripts/db_settings.py
 *.pyc
