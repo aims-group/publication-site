@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Welcome to Publication Hub’s documentation!" href="index.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -170,13 +172,12 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt>You will need to following software installed to follow these instructions:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="https://www.python.org/download/releases/2.7/">Python 2.7</a></li>
-<li><a class="reference external" href="https://virtualenv.pypa.io/en/latest/installation/">Virtualenv</a></li>
-<li><a class="reference external" href="https://git-scm.com/downloads">Git</a></li>
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>You will need to following software installed to follow these instructions:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://www.python.org/download/releases/2.7/">Python 2.7</a></p></li>
+<li><p><a class="reference external" href="https://virtualenv.pypa.io/en/latest/installation/">Virtualenv</a></p></li>
+<li><p><a class="reference external" href="https://git-scm.com/downloads">Git</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -207,12 +208,12 @@ python manage.py createsuperuser
 <p>Now that the databse has the proper tables, the following files should be edited and customized based on your own use cases.</p>
 <blockquote>
 <div><ul class="simple">
-<li>scripts/experiment.py</li>
-<li>scripts/frequency.py</li>
-<li>scripts/keyword.py</li>
-<li>scripts/model.py</li>
-<li>scripts/variable.py</li>
-<li>scripts/journals.py</li>
+<li><p>scripts/experiment.py</p></li>
+<li><p>scripts/frequency.py</p></li>
+<li><p>scripts/keyword.py</p></li>
+<li><p>scripts/model.py</p></li>
+<li><p>scripts/variable.py</p></li>
+<li><p>scripts/journals.py</p></li>
 </ul>
 </div></blockquote>
 <p>The files are used to populate the database with relevant meta data. The meta data is currently designed with climate science in mind, but these files can be customized to fit a variety of needs. Each of the files generally follows a pattern of declaring a project, then a list of relevant tags. For example, the CMIP5 project has various climate models, so each model is listed in the model.py file which allows users to optionally tag a publication as being related to that model.
@@ -260,11 +261,10 @@ Run this command in a separate terminal. (Any emails sent will appear as plain t
 <h4>Load Production Data For Testing<a class="headerlink" href="#load-production-data-for-testing" title="Permalink to this headline">¶</a></h4>
 <p>In some cases, it can be very useful to have real world data to test with. The generalized steps for setting this up are as follows:</p>
 <ul class="simple">
-<li>Install Postgress (If you are on Mac, you can use postgresapp.com)</li>
-<li>Create a new user in Postgres (recommended)</li>
-<li>Create a new database and give the new user access</li>
-<li>Update your settings.py file to connect to the new database</li>
-<li>Migrate</li>
+<li><p>Install Postgress (If you are on Mac, you can use postgresapp.com)</p></li>
+<li><p>Create a new database (optional for mac. postgressapp creates a database with your username)</p></li>
+<li><p>Update your local_settings.py file to connect to the new database</p></li>
+<li><p>Dump the remote database to a file and load it into your local database. <a class="reference external" href="https://www.postgresql.org/docs/9.1/static/backup-dump.html">https://www.postgresql.org/docs/9.1/static/backup-dump.html</a></p></li>
 </ul>
 </div>
 </div>
@@ -286,7 +286,7 @@ Sometimes this may only require setting the <code class="docutils literal notran
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to Publication Hub’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Publication Hub’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -295,7 +295,7 @@ Sometimes this may only require setting the <code class="docutils literal notran
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, James Crean.
+        &copy; Copyright 2017, James Crean
 
     </p>
   </div>
@@ -312,32 +312,16 @@ Sometimes this may only require setting the <code class="docutils literal notran
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

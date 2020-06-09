@@ -129,13 +129,11 @@ In some cases, it can be very useful to have real world data to test with. The g
 
 * Install Postgress (If you are on Mac, you can use postgresapp.com)
 
-* Create a new user in Postgres (recommended)
+* Create a new database (optional for mac. postgressapp creates a database with your username)
 
-* Create a new database and give the new user access
+* Update your local_settings.py file to connect to the new database
 
-* Update your settings.py file to connect to the new database
-
-* Migrate
+* Dump the remote database to a file and load it into your local database. https://www.postgresql.org/docs/9.1/static/backup-dump.html
 
 
 Production Settings
