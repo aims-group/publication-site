@@ -16,7 +16,7 @@ Installation
 .. note::
     You will need to following software installed to follow these instructions:
         * `Python 3 <https://www.python.org/download/>`_
-        * `Virtualenv <https://virtualenv.pypa.io/en/latest/installation/>`_
+        * `Virtualenv <https://virtualenv.pypa.io/en/latest/installation.html>`_
         * `Git <https://git-scm.com/downloads>`_
 
 Begin by downloading the project files with git:
