@@ -175,7 +175,7 @@
 <p class="admonition-title">Note</p>
 <dl class="simple">
 <dt>You will need to following software installed to follow these instructions:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="https://www.python.org/download/releases/2.7/">Python 2.7</a></p></li>
+<li><p><a class="reference external" href="https://www.python.org/download/">Python 3</a></p></li>
 <li><p><a class="reference external" href="https://virtualenv.pypa.io/en/latest/installation/">Virtualenv</a></p></li>
 <li><p><a class="reference external" href="https://git-scm.com/downloads">Git</a></p></li>
 </ul>
@@ -199,6 +199,7 @@ cp local_settings_example.py local_settings.py
 python manage.py makemigrations publisher
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py collectstatic
 </pre></div>
 </div>
 </div>
