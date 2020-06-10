@@ -15,7 +15,7 @@ Installation
 
 .. note::
     You will need to following software installed to follow these instructions:
-        * `Python 2.7 <https://www.python.org/download/releases/2.7/>`_
+        * `Python 3 <https://www.python.org/download/>`_
         * `Virtualenv <https://virtualenv.pypa.io/en/latest/installation/>`_
         * `Git <https://git-scm.com/downloads>`_
 
@@ -44,6 +44,7 @@ Next run the following commands:
     python manage.py makemigrations publisher
     python manage.py migrate
     python manage.py createsuperuser
+    python manage.py collectstatic
 
 -------
 
