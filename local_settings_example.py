@@ -4,12 +4,17 @@
 # We recommend running Django's built in deployment check via 'python manage.py check --deploy'
 import os
 
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True # Gives lots of details when something goes wrong. Only set to True for development
+
+ALLOWED_HOSTS = []
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(os.path.abspath("."), 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

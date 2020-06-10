@@ -1,16 +1,8 @@
 import os
 from local_settings import *
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-
-# SECURITY WARNING: don't run with debug turned on in production!
-ALLOWED_HOSTS = []
 
 CSRF_COOKIE_HTTPONLY = True
 # Application definition
@@ -39,24 +31,6 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'admin.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(os.path.abspath("."), 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'publisher.processors.nav_options',
-                'publisher.processors.pending_dois',
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = 'admin.wsgi.application'
 
