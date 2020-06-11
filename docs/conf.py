@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Publication Hub'
-copyright = u'2017, James Crean'
+html_show_copyright = False
 author = u'Chris Mauzey'
 
 # The version info for the project you're documenting, acts as replacement for
