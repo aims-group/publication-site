@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from publisher.models import Experiment, Frequency, Keyword, Model, Variable, Publication
+from publisher.models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, Publication
 from itertools import combinations
 import json
 
@@ -27,6 +27,16 @@ class Command(BaseCommand):
                     lookupdict.update({str(experiment): len(nodes) - 1})
                 pair_list.append(lookupdict[str(experiment)])
                 temp_count.append(str(experiment))
+
+            for activity in publication.activities.all():
+                if not str(activity) in list(lookupdict.keys()):
+                    size = Publication.activities.through.objects.filter(activity_id=activity.id).count()
+                    max_size = (size if size > max_size else max_size)
+                    act = {'size': size, 'score': 0, 'id': str(activity), 'type': "circle", 'facet_type': 'activity'}
+                    nodes.append(act)
+                    lookupdict.update({str(activity): len(nodes) - 1})
+                pair_list.append(lookupdict[str(activity)])
+                temp_count.append(str(activity))
 
             for frequency in publication.frequency.all():
                 if not str(frequency) in list(lookupdict.keys()):
@@ -57,6 +67,16 @@ class Command(BaseCommand):
                     lookupdict.update({str(model): len(nodes) - 1})
                 pair_list.append(lookupdict[str(model)])
                 temp_count.append(str(model))
+
+            for realm in publication.realms.all():
+                if not str(realm) in list(lookupdict.keys()):
+                    size = Publication.realms.through.objects.filter(realm_id=realm.id).count()
+                    max_size = (size if size > max_size else max_size)
+                    rel = {'size': size, 'score': 0, 'id': str(realm), 'type': "circle", 'facet_type': 'realm'}
+                    nodes.append(rel)
+                    lookupdict.update({str(realm): len(nodes) - 1})
+                pair_list.append(lookupdict[str(realm)])
+                temp_count.append(str(realm))
 
             for variable in publication.variables.all():
                 if not str(variable) in list(lookupdict.keys()):

@@ -8,12 +8,15 @@ from captcha.widgets import ReCaptchaV2Checkbox
 from django.core.exceptions import ValidationError
 from django.db.models.functions import Lower
 
-from .models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
+from .models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 # from captcha.fields import ReCaptchaField
 
 # Advanced Search form helper functions. 
 # Django will try to execute these statements before migrations are run, unless they are wrapped in a function like below
 # Projects are not listed here because it is a modelmultiplechoice field
+def get_asf_activities():
+    return [(x,x) for x in Activity.objects.all().order_by(Lower("activity")).values_list('activity', flat=True).distinct()]
+
 def get_asf_experiments():
     return [(x,x) for x in Experiment.objects.all().order_by(Lower("experiment")).values_list('experiment', flat=True).distinct()]
 
@@ -25,6 +28,9 @@ def get_asf_keywords():
 
 def get_asf_models():
     return [(x,x) for x in Model.objects.all().order_by(Lower("model")).values_list("model", flat=True).distinct()]
+
+def get_asf_realms():
+    return [(x,x) for x in Realm.objects.all().order_by(Lower("realm")).values_list("realm", flat=True).distinct()]
     
 def get_asf_variables():
     return [(x,x) for x in Variable.objects.all().order_by(Lower("variable")).values_list("variable", flat=True).distinct()]
@@ -296,6 +302,23 @@ class ExperimentForm(forms.ModelForm):
         exclude = ['experiment']
 
 
+class ActivityForm(forms.ModelForm):
+    activity = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Activity.objects.all(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        if queryset:
+            self.fields['activity'].queryset = queryset.order_by(Lower('activity'))
+        else:
+            self.fields['activity'].queryset = queryset
+
+    class Meta:
+        model = Activity
+        fields = '__all__'
+        exclude = ['activity']
+
+
 class FrequencyForm(forms.ModelForm):
     frequency = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Frequency.objects.all(), required=False)
 
@@ -348,6 +371,23 @@ class ModelForm(forms.ModelForm):
         exclude = ['model']
 
 
+class RealmForm(forms.ModelForm):
+    realm = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Realm.objects.all(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(RealmForm, self).__init__(*args, **kwargs)
+        if queryset:
+            self.fields['realm'].queryset = queryset.order_by(Lower('realm'))
+        else:
+            self.fields['realm'].queryset = queryset
+
+    class Meta:
+        model = Realm
+        fields = '__all__'
+        exclude = ['realm']
+
+
 class VariableForm(forms.ModelForm):
     variable = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Variable.objects.all(), required=False)
 
@@ -375,6 +415,9 @@ class AdvancedSearchForm(forms.Form):
     project = forms.ModelMultipleChoiceField(
         queryset=Project.objects.all().order_by(Lower("project")),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
+    activity = forms.MultipleChoiceField(
+        choices=get_asf_activities,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     experiment = forms.MultipleChoiceField(
         choices=get_asf_experiments,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
@@ -386,6 +429,9 @@ class AdvancedSearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     model = forms.MultipleChoiceField(
         choices=get_asf_models,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
+    realm = forms.MultipleChoiceField(
+        choices=get_asf_realms,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'search-input'}), required=False)
     variable= forms.MultipleChoiceField(
         choices=get_asf_variables,

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
 from .forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from .forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
-from .forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
+from .forms import ActivityForm, ExperimentForm, FrequencyForm, KeywordForm, ModelForm, RealmForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.db import transaction
@@ -31,13 +31,17 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     #Remove any checkboxes that were unchecked in an edit
     publication.frequency.remove(*[f for f in publication.frequency.all() if str(f.id) not in request.POST.getlist("frequency")]) 
     publication.keywords.remove(*[k for k in publication.keywords.all() if str(k.id) not in request.POST.getlist("keyword")]) 
+    publication.activities.remove(*[a for a in publication.activities.all() if str(a.id) not in request.POST.getlist("activity")]) 
     publication.experiments.remove(*[e for e in publication.experiments.all() if str(e.id) not in request.POST.getlist("experiment")]) 
+    publication.realms.remove(*[r for r in publication.realms.all() if str(r.id) not in request.POST.getlist("realm")]) 
     publication.variables.remove(*[v for v in publication.variables.all() if str(v.id) not in request.POST.getlist("variable")]) 
 
     #Add any checkboxes that were checked
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+    publication.activities.add(*[Activity.objects.get(id=activity_id) for activity_id in request.POST.getlist("activity")])
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
+    publication.realms.add(*[Realm.objects.get(id=realm_id) for realm_id in request.POST.getlist("realm")])
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
     projects = request.POST.getlist('project')
     for proj in publication.projects.all(): #iterate over projects previously selected
@@ -132,26 +136,30 @@ def init_forms(author_form, request=None, instance=None):
     presentation_form = PresentationForm(request, prefix='pres')
     technical_form = TechnicalReportForm(request, prefix='tech')
     other_form = OtherForm(request, prefix='other')
+    act_form = ActivityForm(request)
     exp_form = ExperimentForm(request)
     freq_form = FrequencyForm(request)
     keyword_form = KeywordForm(request)
     model_form = ModelForm(request)
+    realm_form = RealmForm(request)
     var_form = VariableForm(request)
     all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
 
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
-            'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form, 'all_projects': all_projects}
+            'other_form': other_form, 'act_form': act_form, 'exp_form': exp_form, 'freq_form': freq_form,
+            'keyword_form': keyword_form, 'model_form': model_form, 'realm_form': realm_form, 'var_form': var_form, 'all_projects': all_projects}
 
 
 def get_all_options():
     all_options = collections.OrderedDict()
+    all_options['activity'] = "Activity"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
+    all_options['realm'] = "Realm"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
     all_options['variable'] = "Variable"
@@ -192,6 +200,20 @@ def view(request, project_name="all"):
             return HttpResponse(status=404)
     if page_filter == 'all':
         pubs["pages"] = get_all_options()
+
+    elif page_filter == 'activity':
+        option = request.GET.get("option", "AerChemMIP")
+        pubs["option"] = option
+        for act in Activity.objects.all().order_by('activity'):
+            if publications.filter(activities=act).count() == 0:
+                continue
+            acts = {}
+            acts['type'] = 'activity'
+            acts['options'] = str(act.activity)
+            acts['count'] = publications.filter(activities=act).count()
+            data[str(act.activity)] = acts
+        publications = publications.filter(activities=Activity.objects.filter(activity=option)[0]).order_by("-publication_date")
+        pubs["pages"] = data
 
     elif page_filter == 'experiment':
         option = request.GET.get("option", "1pctCO2")
@@ -247,6 +269,20 @@ def view(request, project_name="all"):
             mods['count'] = publications.filter(model=mod).count()
             data[str(mod.model)] = mods
         publications = publications.filter(model=Model.objects.filter(model=option)[0]).order_by("-publication_date")
+        pubs["pages"] = data
+
+    elif page_filter == 'realm':
+        option = request.GET.get("option", "aerosol")
+        pubs["option"] = option
+        for realm in Realm.objects.all().order_by('realm'):
+            if publications.filter(realms=realm).count() == 0:
+                continue
+            realms = {}
+            realms['type'] = 'realm'
+            realms['options'] = str(realm.realm)
+            realms['count'] = publications.filter(realms=realm).count()
+            data[str(realm.realm)] = realms
+        publications = publications.filter(realms=Realm.objects.filter(realm=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'status':
@@ -452,6 +488,13 @@ def advanced_search(request):
 
             meta_any_mode_pubs = Publication.objects.none() # Initialize variable so we can reference it without error
             meta_search_by_any = request.POST.get("meta_search_by_any", "off")
+            if 'activity' in list(form.cleaned_data.keys()) and form.cleaned_data['activity']:
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(activities__activity__in=form.cleaned_data['activity'])
+                else:
+                    for act in form.cleaned_data['activity']:
+                        pubs = pubs.filter(activities__activity=act)
+
             if 'experiment' in list(form.cleaned_data.keys()) and form.cleaned_data['experiment']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
@@ -479,6 +522,13 @@ def advanced_search(request):
                 else:
                     for model in form.cleaned_data['model']:
                         pubs = pubs.filter(model__model=model)
+
+            if 'realm' in list(form.cleaned_data.keys()) and form.cleaned_data['realm']:
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(realms__realm__in=form.cleaned_data['realm'])
+                else:
+                    for realm in form.cleaned_data['realm']:
+                        pubs = pubs.filter(realms__realm=realm)
 
             if 'variable' in list(form.cleaned_data.keys()) and form.cleaned_data['variable']:
                 if meta_search_by_any == "on":
@@ -659,19 +709,23 @@ def edit(request, pubid):
             if str(project) in selected_projects:
                 meta_form.append({
                     'name': str(project),
+                    'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                     'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                     'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                     'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                     'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                    'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                     'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                 })
             else:
                 meta_form.append({
                     'name': str(project),
+                    'act_form': ActivityForm(queryset=project.activities),
                     'exp_form': ExperimentForm(queryset=project.experiments),
                     'freq_form': FrequencyForm(queryset=project.frequencies),
                     'keyword_form': KeywordForm(queryset=project.keywords),
                     'model_form': ModelForm(queryset=project.models),
+                    'realm_form': RealmForm(queryset=project.realms),
                     'var_form': VariableForm(queryset=project.variables),
                 })
         meta_type = pub_instance.projects.first()
@@ -716,20 +770,25 @@ def edit(request, pubid):
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [box.id for box in publication.activities.all()]},
+                                                queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
                                                 queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [box.id for box in publication.realms.all()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
             meta_type = publication.projects.first()
@@ -754,10 +813,12 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
         for project in Project.objects.all():
             meta_form.append({
                 'name': str(project),
+                'act_form': ActivityForm(queryset=project.activities),
                 'exp_form': ExperimentForm(queryset=project.experiments),
                 'freq_form': FrequencyForm(queryset=project.frequencies),
                 'keyword_form': KeywordForm(queryset=project.keywords),
                 'model_form': ModelForm(queryset=project.models),
+                'realm_form': RealmForm(queryset=project.realms),
                 'var_form': VariableForm(queryset=project.variables),
             })
         meta_form.sort(key=lambda x: x['name'])
@@ -779,19 +840,23 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
@@ -1009,19 +1074,23 @@ def process_dois(request):
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
