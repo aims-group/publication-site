@@ -5,11 +5,11 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css"
         integrity="sha256-I4gvabvvRivuPAYFqevVhZl88+vNf2NksupoBxMQi04="
         crossorigin="anonymous" />
-    <link rel="stylesheet" href="/static/css/advanced_search.css">
+    <link rel="stylesheet" href="{{site_root}}static/css/advanced_search.css">
 {% endblock %}
 
 {% block content %}
-<form action="/advanced_search" method="post">
+<form action="{{site_root}}advanced_search" method="post">
     {% csrf_token %}
     <div class="panel panel-default">
         <div class="panel-heading md-font">
@@ -94,7 +94,7 @@ All: Filter for results that match all criteria"></span>
         <span id="result-count-wrapper" class="md-font"> Results: <span id="result-count"></span> </span>
     </div>
 </form>
-<script type="text/javascript" src="/static/js/advanced_search.js"></script>
+<script type="text/javascript" src="{{site_root}}static/js/advanced_search.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"
     integrity="sha256-TueWqYu0G+lYIimeIcMI8x1m14QH/DQVt4s9m/uuhPw="
     crossorigin="anonymous"></script>
