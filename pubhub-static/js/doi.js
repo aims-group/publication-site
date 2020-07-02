@@ -192,7 +192,7 @@ function submitPublication() {
                 window.scrollTo(0, 0);
             }
             else{
-                window.location.replace("/review");
+                window.location.replace("review");
             }
         },
     }).fail(function($xhr) {
