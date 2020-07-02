@@ -2,7 +2,7 @@
 
 <div class="warning-message"></div>
 
-<form action="/new" method="post">
+<form action="{% url 'search' %}new" method="post">
     {% csrf_token %}
     {% include "snippets/publicationForm.html" %}
     {% include "snippets/authorForm.html" %}

@@ -3,16 +3,16 @@
 
 {% block content %}
 <div class="container-fluid text-center">
-    <iframe id="network-graph" src="/network-graph" scrolling="no"></iframe>
-    <a href="/network-graph">Full Screen</a>
+    <iframe id="network-graph" src="{% url 'search' %}network-graph" scrolling="no"></iframe>
+    <a href="{% url 'search' %}network-graph">Full Screen</a>
 </div>
 <div class="container-fluid">
     <h3 id="click-id" ></h3>
     <ul id="click-stats" class="list-group"></ul>
 
 </div>
-<link href="/static/css/statistics.css" rel="stylesheet">
-<script src="/static/js/bind.js"></script>
-<script src="/static/js/statistics.js"></script>
+<link href="{% url 'search' %}static/css/statistics.css" rel="stylesheet">
+<script src="{% url 'search' %}static/js/bind.js"></script>
+<script src="{% url 'search' %}static/js/statistics.js"></script>
 
 {% endblock %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %} Search Results {% endblock %}
 {% block extra_headers %}
-    <link rel="stylesheet" href="/static/css/search.css">
-    <link rel="stylesheet" href="/static/css/advanced_search.css">
+    <link rel="stylesheet" href="{% url 'search' %}static/css/search.css">
+    <link rel="stylesheet" href="{% url 'search' %}static/css/advanced_search.css">
 {% endblock %}
 {% block content %}
 
@@ -45,6 +45,6 @@
         <p>No publications found.</p>
     {% endif %}
 </div>
-<script type="text/javascript" src="/static/js/view.js"></script>
-<script type="text/javascript" src="/static/js/advanced_search.js"></script>
+<script type="text/javascript" src="{% url 'search' %}static/js/view.js"></script>
+<script type="text/javascript" src="{% url 'search' %}static/js/advanced_search.js"></script>
 {% endblock %}
