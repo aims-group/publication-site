@@ -1,11 +1,4 @@
 from publisher.models import Project, PendingDoi
-from django.conf import settings
-
-def site_url(request):
-    if hasattr(settings, 'SITE_ROOT'):
-        return { 'site_root': settings.SITE_ROOT }
-    else:
-        return { 'site_root': '/' }
 
 def nav_options(request):
     return {'nav_options': Project.objects.all().order_by("project")}

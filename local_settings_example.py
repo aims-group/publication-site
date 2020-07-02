@@ -58,6 +58,10 @@ RECAPTCHA_PRIVATE_KEY = "" # https://www.google.com/recaptcha/intro/
 EMAIL_HOST = 'localhost' # Email values must be set for password recovery to function
 EMAIL_PORT = 1025
 
+# Set prefix of URL if site is served from a subdirectory 
+# (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = r'^pubhub/'.)
+URL_PREFIX = r'^'
+
 os.environ["REQUESTS_CA_BUNDLE"] = "/absolute/path/to/certfile.crt"  
 # Path to the .crt file. 
 # Used if the server is behind a corporate firewall that intercepts ssl
