@@ -91,7 +91,7 @@ function doisearch(showFormClicked) {
         $('#loading').show();
         var doi = $("#doi-field").val();
         $.ajax({
-            url: '/finddoi',
+            url: 'finddoi',
             method: 'GET',
             data: {'doi': doi},
             success: function(data){

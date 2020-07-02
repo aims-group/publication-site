@@ -68,7 +68,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
   function show_citation(id){
     if ($("div #citation"+id).html() == "empty"){
-      url = "/ajax/citation/" + id
+      url = "ajax/citation/" + id
       $.ajax({
         type: "GET",
         url: url,
@@ -161,7 +161,7 @@ $('#facet-links-container input.radio-sort').change(function(){
   }
   function show_more_info(id){
     if ($("div #more_info"+id).html() == "empty"){
-      url = "/ajax/moreinfo/" + id
+      url = "ajax/moreinfo/" + id
       $.ajax({
         type: "GET",
         url: url,
@@ -223,7 +223,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
   function show_abstract(id){
     if ($("div #abstract"+id).html() == "empty"){
-      url = "/ajax/abstract/" + id + "/";
+      url = "ajax/abstract/" + id + "/";
       $.ajax({
         type: "GET",
         url: url,
@@ -251,7 +251,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
 function show_bibtex(id){
     if ($("div #bibtex"+id).html() == "empty"){
-        url = "/ajax/citation/" + id;
+        url = "ajax/citation/" + id;
         $.ajax({
             type: "GET",
             url: url,
