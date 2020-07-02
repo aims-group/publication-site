@@ -72,11 +72,11 @@ USE_TZ = True
 
 STATIC_ROOT = 'static'
 
-STATIC_URL = '/static/'
+STATIC_URL = '/{}static/'.format(URL_PREFIX)
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/{}'.format(URL_PREFIX)
 
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/{}accounts/login/'.format(URL_PREFIX)
 
 STATICFILES_DIRS = (
     'pubhub-static',

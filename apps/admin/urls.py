@@ -5,7 +5,7 @@ from publisher.forms import RegistrationViewUniqueEmail
 from django.contrib.auth.views import logout_then_login
 
 urlpatterns = [
-    url(settings.URL_PREFIX, include([
+    url('^{}'.format(settings.URL_PREFIX), include([
         url(r'admin/', admin.site.urls),
         url(r'accounts/logout/$', logout_then_login),
         url(r'accounts/register/$', RegistrationViewUniqueEmail.as_view(template_name="django_registration/registration_form.html")),

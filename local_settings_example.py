@@ -59,8 +59,8 @@ EMAIL_HOST = 'localhost' # Email values must be set for password recovery to fun
 EMAIL_PORT = 1025
 
 # Set prefix of URL if site is served from a subdirectory 
-# (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = r'^pubhub/'.)
-URL_PREFIX = r'^'
+# (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = 'pubhub/'.)
+URL_PREFIX = ''
 
 os.environ["REQUESTS_CA_BUNDLE"] = "/absolute/path/to/certfile.crt"  
 # Path to the .crt file. 
