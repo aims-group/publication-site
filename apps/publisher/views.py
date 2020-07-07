@@ -1103,7 +1103,7 @@ def process_dois(request):
 
 # ajax
 def ajax(request):
-    return HttpResponseRedirect("/{}?type='all'".format(settings.URL_PREFIX))
+    return HttpResponseRedirect("/{}?type=all".format(settings.URL_PREFIX))
 
 
 def ajax_citation(request, pub_id):
