@@ -30,9 +30,5 @@ frequency_data = [
          'yr',
          'yrPt'
      ]},
-    {'project_name': 'AIMS',
-     'frequencies': [
-
-     ]},
 
 ]

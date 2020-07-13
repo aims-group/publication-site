@@ -208,8 +208,4 @@ model_data = [
          'UofT-CCSM4',
          'VRESM-1-0'
      ]},
-    {'project_name': 'AIMS',
-     'models': [
-
-     ]},
 ]

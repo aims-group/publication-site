@@ -14,9 +14,5 @@ realm_data = [
          'ocnBgchem',
          'seaIce'
      ]},
-    {'project_name': 'AIMS',
-     'realms': [
-
-     ]},
 
 ]

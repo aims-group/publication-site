@@ -359,8 +359,5 @@ experiment_data = [
          'volc-pinatubo-surf',
          'yr2010CO2'
      ]},
-    {'project_name': 'AIMS',
-     'experiments': [
-     ]},
 
 ]

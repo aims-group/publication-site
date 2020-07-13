@@ -30,9 +30,5 @@ activity_data = [
          'VIACSAB',
          'VolMIP'
      ]},
-    {'project_name': 'AIMS',
-     'activities': [
-
-     ]},
 
 ]
