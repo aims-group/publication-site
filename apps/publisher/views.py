@@ -1141,21 +1141,20 @@ def ajax_abstract(request, pub_id):
 
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
-    experiment_list = sorted(set([str(exp) for exp in pub.experiments.all()])) # remove duplicates by calling set()
+    activity_list = sorted(set([str(act) for act in pub.activities.all()])) # remove duplicates by calling set()
+    experiment_list = sorted(set([str(exp) for exp in pub.experiments.all()]))
     model_list = sorted(set([str(model) for model in pub.model.all()]))
+    realm_list = sorted(set([str(realm) for realm in pub.realms.all()]))
     variable_list = sorted(set([str(variable) for variable in pub.variables.all()]))
     keyword_list = sorted(set([str(keyword) for keyword in pub.keywords.all()]))
-
-    experiments = ",".join(experiment_list)
-    model = ",".join(model_list)
-    variables = ",".join(variable_list)
-    keywords = ",".join(keyword_list)
-    # frequency = ",".join(["{frequency.frequency}".format(frequency=frequency) for frequency in pub.frequency.all()])
-    # tags = ",".join(["{tags.name}".format(tags=tags) for tags in pub.tags.all()])
-
-    moreinfo = experiments + "|" + model + "|" + variables + "|" + keywords
-    json = "{\"key\": \"" + moreinfo + "\"}"
-    return HttpResponse(json)
+    
+    json = {'activities': activity_list,
+            'experiments': experiment_list, 
+            'models': model_list, 
+            'realms': realm_list, 
+            'variables': variable_list, 
+            'keywords': keyword_list}
+    return JsonResponse(json)
 
 
 def ajax_prefetch_authors(request):
