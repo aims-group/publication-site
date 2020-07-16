@@ -169,8 +169,7 @@ $('#facet-links-container input.radio-sort').change(function(){
         dataType: 'json',
         success: function(data){
           var output = "";
-          if (data.activities.length == 0 && data.experiments.length == 0 && data.models.length == 0 && 
-              data.realms.length == 0 && data.variables.length == 0 && data.keywords.length == 0){
+          if (data.activities.length == 0 && data.experiments.length == 0 && data.models.length == 0 && data.frequency.length == 0){
             output = "<p><em>Additional information not provided</em></p>";
           }
           else{
@@ -203,31 +202,13 @@ $('#facet-links-container input.radio-sort').change(function(){
                 info_titles += "<th>Models</th>";
                 info_columns += "<td>" + rows + "</td>";
               }
-              if(data.realms.length > 0){
+              if(data.frequency.length > 0){
                 var rows = "";
-                for (var i = 0, len = data.realms.length; i < len; i++){
-                    var link = data.realms[i].replace(' ', '%20')
-                    rows += "<a href=\"?type=realm&option=" + link + "\">" + data.realms[i] + "<a/><br/>";
+                for (var i = 0, len = data.frequency.length; i < len; i++){
+                    var link = data.frequency[i].replace(' ', '%20')
+                    rows += "<a href=\"?type=realm&option=" + link + "\">" + data.frequency[i] + "<a/><br/>";
                 }
-                info_titles += "<th>Realms</th>";
-                info_columns += "<td>" + rows + "</td>";
-              }
-              if(data.variables.length > 0){
-                var rows = "";
-                for (var i = 0, len = data.variables.length; i < len; i++){
-                    var link = data.variables[i].replace(' ', '%20')
-                    rows += "<a href=\"?type=variable&option=" + link + "\">" + data.variables[i] + "<a/><br/>";
-                }
-                info_titles += "<th>Variables</th>";
-                info_columns += "<td>" + rows + "</td>";
-              }
-              if(data.keywords.length > 0){
-                var rows = "";
-                for (var i = 0, len = data.keywords.length; i < len; i++){
-                    var link = data.keywords[i].replace(' ', '%20')
-                    rows += "<a href=\"?type=keyword&option=" + link + "\">" + data.keywords[i] + "<a/><br/>";
-                }
-                info_titles += "<th>Keywords</th>";
+                info_titles += "<th>Frequency</th>";
                 info_columns += "<td>" + rows + "</td>";
               }
               output =  "<table class=\"table\">" +
