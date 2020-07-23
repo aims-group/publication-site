@@ -96,7 +96,7 @@ class PublicationForm(forms.ModelForm):
             print(e)
             self.pub_id = 0
         super(PublicationForm, self).__init__(*args, **kwargs)
-        self.fields['doi'].required = True
+        self.fields['doi'].required = False
         self.fields['url'].required = False
         self.fields['project_number'].required = False
         self.fields['task_number'].required = False
