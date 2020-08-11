@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^review', views.review, name='review'),
     url(r'^advanced_search$', views.advanced_search, name='advanced_search'),
     url(r'^new$', views.new, name='new'),
-    url(r'^finddoi$', views.finddoi),
+    url(r'^(?:process_dois/)?finddoi$', views.finddoi),
     url(r'^edit/(\d+)', views.edit, name='edit'),
     url(r'^view/(?P<project_name>[a-zA-Z0-9]*)/$', views.view, name='view'),
     url(r'^add_dois/', views.add_dois, name='add_dois'),
