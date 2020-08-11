@@ -93,6 +93,7 @@ def process_publication(request):
     formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
     author_form_set = formset(request.POST)
     all_forms = init_forms(author_form_set, request.POST)
+    selected_projects = request.POST.getlist("project")
     if pub_type == 'Book':
         pub_type = 0
         media_form = BookForm(request.POST, prefix='book')
@@ -117,7 +118,7 @@ def process_publication(request):
     else:
         pub_type = 7
         media_form = OtherForm(request.POST, prefix='other')
-    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
+    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid() and len(selected_projects) > 0:
         publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
         media = media_form.save(commit=False)
         media.publication_id = publication
@@ -671,6 +672,7 @@ def edit(request, pubid):
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
         pub_form = PublicationForm(request.POST or None, pub_id=pubid, instance=pub_instance)
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
+        selected_projects = request.POST.getlist("project")
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
             bookinstance = Book.objects.get(publication_id=pub_instance)
@@ -696,7 +698,7 @@ def edit(request, pubid):
         elif pub_type == 7:  # other
             otherinstance = Other.objects.get(publication_id=pub_instance)
             media_form = OtherForm(request.POST or None, instance=otherinstance)
-        if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+        if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid() and len(selected_projects) > 0:
             publication = save_publication(pub_form, request, author_form_set, pub_type, True)
             other = media_form.save(commit=False)
             other.publication_id = publication
@@ -706,6 +708,7 @@ def edit(request, pubid):
         meta_form = []
         all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
         selected_projects = [str(proj) for proj in request.POST.getlist("project", [])]
+        no_projects_selected = True if len(selected_projects) == 0 else False
         for project in Project.objects.all().order_by('project'):
             if str(project) in selected_projects:
                 meta_form.append({
@@ -735,7 +738,7 @@ def edit(request, pubid):
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
-                        "selected_projects": selected_projects
+                        "selected_projects": selected_projects, 'no_projects_selected': no_projects_selected
                        })
 
     else: # Method == GET
@@ -837,6 +840,7 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
         else: # the form was not valid re-rendder form with errors
             meta_form = []
             selected_projects = request.POST.getlist("project")
+            no_projects_selected = True if len(selected_projects) == 0 else False
             for project in Project.objects.all():
                 if str(project) in selected_projects:
                     meta_form.append({
@@ -863,6 +867,7 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
             all_forms.update({'meta_form': meta_form})
             all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': batch})
             all_forms.update({'batch_doi': batch_doi})
             return render(request, 'site/publication_details.html', all_forms, status=400)
