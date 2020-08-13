@@ -1076,6 +1076,7 @@ def process_dois(request):
         else: # form was not valid
             meta_form = []
             selected_projects = request.POST.getlist("project")
+            no_projects_selected = True if len(selected_projects) == 0 else False
             for project in Project.objects.all():
                 if str(project) in selected_projects:
                     meta_form.append({
@@ -1102,6 +1103,7 @@ def process_dois(request):
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
             all_forms.update({'meta_form': meta_form})
             all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': True})
             all_forms.update({'batch_doi': ""})
             return render(request, 'site/publication_details.html', all_forms, status=400)
