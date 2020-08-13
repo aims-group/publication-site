@@ -4,6 +4,9 @@
 
 <form action="{% url 'search' %}new" method="post">
     {% csrf_token %}
+    <div class="container-fluid alert alert-info">
+        Fields marked with "*" are required.
+    </div>
     {% include "snippets/publicationForm.html" %}
     {% include "snippets/authorForm.html" %}
     <div id="tabs" class="panel panel-default">
