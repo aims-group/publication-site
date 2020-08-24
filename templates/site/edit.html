@@ -21,9 +21,15 @@
 <form action="" method="post">
     {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
+    {% if invalid_form %}
+    <div class="container-fluid alert alert-danger">
+        Required information, marked by an "*", is missing below.
+    </div>
+    {% else %}
     <div class="container-fluid alert alert-info">
         Fields marked with "*" are required.
     </div>
+    {% endif %}
     {% include "snippets/publicationForm.html" %}
     <div class="panel panel-default">
         <div class="panel-heading"><span class="md-font">Publication Details</span></div>

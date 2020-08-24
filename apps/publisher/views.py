@@ -738,7 +738,7 @@ def edit(request, pubid):
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
-                        "selected_projects": selected_projects, 'no_projects_selected': no_projects_selected
+                        "selected_projects": selected_projects, 'no_projects_selected': no_projects_selected, 'invalid_form': True
                        })
 
     else: # Method == GET
@@ -870,6 +870,7 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
             all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': batch})
             all_forms.update({'batch_doi': batch_doi})
+            all_forms.update({'invalid_form': True})
             return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
@@ -1106,6 +1107,7 @@ def process_dois(request):
             all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': True})
             all_forms.update({'batch_doi': ""})
+            all_forms.update({'invalid_form': True})
             return render(request, 'site/publication_details.html', all_forms, status=400)
 
 # ajax
