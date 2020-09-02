@@ -111,7 +111,7 @@ function doisearch(showFormClicked) {
                     $('#id_conf-start_page').val(data.start_page);
                     $('#id_conf-end_page').val(data.end_page);
                     $('#id_conf-publisher').val(data.publisher);
-                    $('#id_journal-journal_name').val(data.journal_index+1);
+                    $('#id_journal-journal_name').val(data.journal_index);
                     $('#id_journal-volume_number').val(data.volume_number);
                     $('#id_journal-article_number').val(data.article_number);
                     $('#id_journal-start_page').val(data.start_page);

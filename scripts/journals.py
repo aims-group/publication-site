@@ -35,6 +35,7 @@ journal_names = [
     'ECMWF Newsletter',
     'Environmental Research Letters',
     'Environmental Science & Technology',
+    'Eos',
     'EOS, Transactions',
     'Fractals',
     'Geophysical Research Letters',

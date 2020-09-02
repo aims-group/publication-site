@@ -10,7 +10,6 @@ from django.db.models import Q
 from django.db import transaction
 from django.conf import settings
 from itertools import chain
-from scripts.journals import journal_names
 from fuzzywuzzy import process
 from .models import *
 import requests
@@ -923,16 +922,19 @@ def finddoi(request):
             url = ''
         if 'container-title' in list(initial.keys()):
             container_title = initial['container-title']
-            if container_title in journal_names:
-                journal_index = journal_names.index(container_title)
+            if JournalOptions.objects.filter(journal_name=container_title):
+                journal = JournalOptions.objects.get(journal_name=container_title)
+                journal_index = journal.id
                 guessed_journal = False
             else:
+                journal_names = [str(j) for j in JournalOptions.objects.all()]
                 guess = process.extractOne(container_title, journal_names)
                 if guess is None:
                     journal_index = 0
                 else:
                     journal_name = guess[0]
-                    journal_index = journal_names.index(journal_name)
+                    journal = JournalOptions.objects.get(journal_name=journal_name)
+                    journal_index = journal.id
                 guessed_journal = True
         else:
             container_title = ''
