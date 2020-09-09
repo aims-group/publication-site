@@ -944,7 +944,8 @@ def finddoi(request):
             try:
                 startpage, endpage = str(initial['page']).split('-')
             except:
-                startpage = endpage = initial['page']
+                startpage = initial['page']
+                endpage = None
         else:
             startpage = ''
             endpage = ''
