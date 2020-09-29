@@ -117,9 +117,11 @@ function doisearch(showFormClicked) {
                     $('#id_journal-start_page').val(data.start_page);
                     $('#id_journal-end_page').val(data.end_page);
 
-                    if(data.guessed_journal){
+                    if(data.missing_journal){
                       var warn = $('<div/>')
-                      .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                      .html( 'The journal publishing this article, <b>' + data.container_title + '</b>, was not found in the list.'
+                           + ' To add this journal, please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page'
+                           + ' with the title: <br> <b>"Please add journal named: ' + data.container_title + '."</b>')
                       .addClass('alert alert-warning');
                       $('#journal-warning').append(warn);
                     }

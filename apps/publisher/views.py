@@ -10,7 +10,6 @@ from django.db.models import Q
 from django.db import transaction
 from django.conf import settings
 from itertools import chain
-from fuzzywuzzy import process
 from .models import *
 import requests
 import datetime
@@ -925,21 +924,15 @@ def finddoi(request):
             if JournalOptions.objects.filter(journal_name=container_title):
                 journal = JournalOptions.objects.get(journal_name=container_title)
                 journal_index = journal.id
-                guessed_journal = False
+                missing_journal = False
             else:
-                journal_names = [str(j) for j in JournalOptions.objects.all()]
-                guess = process.extractOne(container_title, journal_names)
-                if guess is None:
-                    journal_index = 0
-                else:
-                    journal_name = guess[0]
-                    journal = JournalOptions.objects.get(journal_name=journal_name)
-                    journal_index = journal.id
-                guessed_journal = True
+                journal = JournalOptions.objects.get(journal_name="Other")
+                journal_index = journal.id
+                missing_journal = True
         else:
             container_title = ''
             journal_index = 0
-            guessed_journal = False
+            missing_journal = False
         if 'page' in list(initial.keys()):
             try:
                 startpage, endpage = str(initial['page']).split('-')
@@ -1016,7 +1009,7 @@ def finddoi(request):
         data = {'success': True, 'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
                 'publication_date': publication_date, 'volume_number': volume, 'issue': issue, 'authors_list': authors_list}
         data.update(dict.fromkeys(['book_name', 'conference_name', 'magazine_name'], container_title))
-        data.update({'journal_index': journal_index, 'guessed_journal': guessed_journal})
+        data.update({'journal_index': journal_index, 'missing_journal': missing_journal, 'container_title': container_title})
         return JsonResponse(data)
     else:
         data = {'success': False, 'message': 'Unable to pre-fill form with the given DOI'}

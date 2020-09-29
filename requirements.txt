@@ -2,7 +2,6 @@ Django==2.2.13
 django-recaptcha==2.0.5 
 django-registration==3.0.1
 django-widget-tweaks==1.4.5
-fuzzywuzzy==0.17.0
 PyMySQL==0.9.3 
 python-Levenshtein==0.12.0
 requests==2.22.0

@@ -34,7 +34,13 @@
     <div class="panel panel-default">
         <div class="panel-heading"><span class="md-font">Publication Details</span></div>
         <div class="panel-body">
-            <div id="journal-warning"></div>
+            <div id="journal-warning">
+                <div class="alert alert-info">
+                If the journal publishing your article is not found in the list, 
+                then please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page
+                with the title: <b>"Please add journal named: <i>journal name</i>."</b>
+                </div>
+            </div>
             {% for field in media_form %}
                 {% if field.field.required %}
                     <div class="required">
