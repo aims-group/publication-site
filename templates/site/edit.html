@@ -18,6 +18,9 @@
     <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
     <span class="sr-only">Loading...</span>
 </div>
+
+<div class="warning-message"></div>
+
 <form action="" method="post">
     {% csrf_token %}
     <input type="hidden" name="pub_type" value="{{ pub_type }}">
@@ -30,11 +33,12 @@
         Fields marked with "*" are required.
     </div>
     {% endif %}
+    <div id="journal-warning"></div>
     {% include "snippets/publicationForm.html" %}
     <div class="panel panel-default">
         <div class="panel-heading"><span class="md-font">Publication Details</span></div>
         <div class="panel-body">
-            <div id="journal-warning">
+            <div id="journal-info">
                 <div class="alert alert-info">
                 If the journal publishing your article is not found in the list, 
                 then please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page

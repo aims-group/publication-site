@@ -120,7 +120,9 @@ function doisearch() {
                         var warn = $('<div/>')
                         .html( 'The journal publishing this article, <b>' + data.container_title + '</b>, was not found in the list.'
                              + ' To add this journal, please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page'
-                             + ' with the title: <br> <b>"Please add journal named: ' + data.container_title + '."</b>')
+                             + ' with the title: <br> <b>"Please add journal named: ' + data.container_title + '."</b> <br><br>'
+                             + ' Currently, your publication will be entered with journal set to "Other".  You can change the journal of this publication'
+                             + ' after it has been added to the list by going to the Edit page and selecting your publication title.')
                         .addClass('alert alert-warning');
                         $('#journal-warning').append(warn);
                     }
@@ -159,4 +161,11 @@ function doisearch() {
             alert("Ajax Failed");
         }
     });
+}
+
+function showForm(){
+//    https://bugs.jqueryui.com/ticket/3905
+    $("#publication-form-wrapper").removeClass("hidden");
+    $('#publication-optional-inputs').accordion( "refresh" );
+    $('.optional-inputs').accordion( "refresh" );
 }
