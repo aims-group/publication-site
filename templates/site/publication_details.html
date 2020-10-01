@@ -13,6 +13,7 @@
         Fields marked with "*" are required.
     </div>
     {% endif %}
+    <div id="journal-warning"></div>
     {% include "snippets/publicationForm.html" %}
     {% include "snippets/authorForm.html" %}
     <div id="tabs" class="panel panel-default">
@@ -84,7 +85,13 @@
                 </div>
             </div>
             <div id="tabs-3">
-                <div id="journal-warning"></div>
+                <div id="journal-info">
+                    <div class="alert alert-info">
+                    If the journal publishing your article is not found in the list, 
+                    then please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page
+                    with the title: <b>"Please add journal named: <i>journal name</i>."</b>
+                    </div>
+                </div>
                 <div class="required">
                 {{ journal_form.journal_name.label_tag }}
                 {{ journal_form.journal_name.errors }}
