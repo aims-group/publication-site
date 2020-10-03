@@ -103,6 +103,9 @@ class Project(django_models.Model):
 
 
 class JournalOptions(django_models.Model):
+    class Meta:
+        verbose_name_plural = "Journal options"
+        
     journal_name = django_models.TextField()
 
     def __str__(self):

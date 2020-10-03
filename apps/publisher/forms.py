@@ -198,7 +198,7 @@ class ConferenceForm(forms.ModelForm):
 
 
 class JournalForm(forms.ModelForm):
-    journal_name = forms.ModelChoiceField(queryset=JournalOptions.objects.all(), empty_label="N/A", widget=forms.Select(attrs={'class': 'form-control'}))
+    journal_name = forms.ModelChoiceField(queryset=JournalOptions.objects.all().order_by('journal_name'), empty_label="N/A", widget=forms.Select(attrs={'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
