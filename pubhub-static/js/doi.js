@@ -176,7 +176,6 @@ function submitPublication() {
             return
         }
     }
-    $('#meta-tabs .panel-body div[style="display: none;"]').remove(); //remove unused form elements before serializing
     $('.project-checkbox:not(:checked)').each(function(index, element){
         var name = element.value; //Grab the name of the unchecked box
         var tab = $("#".concat(name, "-tab")); //find the meta form tab it refers to
