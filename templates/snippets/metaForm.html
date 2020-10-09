@@ -3,8 +3,8 @@
         <ul class="nav nav-tabs">
             <input id="meta_type" type="hidden" name="meta_type" value="{{meta_type|default:''}}">
             {% for form in meta_form %}
-            {% if forloop.first %}
-                <li class="active" role="presentation" id="{{form.name}}-tab"><a href="#meta-tabs-1">{{form.name}}</a></li>
+            {% if selected_projects|length > 0 and form.name == selected_projects|first %}
+                <li class="active" role="presentation" id="{{form.name}}-tab"><a href="#meta-tabs-{{forloop.counter}}">{{form.name}}</a></li>
             {% else %}
                 <li role="presentation" id="{{form.name}}-tab"><a href="#meta-tabs-{{forloop.counter}}">{{form.name}}</a></li>
             {% endif %}
