@@ -730,7 +730,11 @@ def edit(request, pubid):
                     'realm_form': RealmForm(queryset=project.realms),
                     'var_form': VariableForm(queryset=project.variables),
                 })
-        meta_type = pub_instance.projects.first()
+        if len(selected_projects) > 0:
+            meta_type = selected_projects[0]
+            print('meta_type = {}'.format(meta_type))
+        else:
+            meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not ''])
         return render(request, 'site/edit.html',
@@ -793,7 +797,11 @@ def edit(request, pubid):
                         'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
-            meta_type = publication.projects.first()
+            if len(selected_projects) > 0:
+                meta_type = selected_projects[0]
+                print('meta_type = {}'.format(meta_type))
+            else:
+                meta_type = publication.projects.first()
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
                           'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,

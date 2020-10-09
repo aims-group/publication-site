@@ -5,8 +5,14 @@ $(document).ready(function(){
     $('#publication-optional-inputs').accordion({
       collapsible: true
     });
+    var active_found = false;
+    var active_index = 0;
     $('.project-checkbox').each(function(index, checkbox){
         if(checkbox.checked){
+            if(!active_found){
+                active_index = index;
+                active_found = true;
+            }
             $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
             ++projectSelectedCount;
         }
@@ -24,7 +30,17 @@ $(document).ready(function(){
     if($("#id_status option:selected").text() !== "Published"){
         $( "#id_doi" ).parent().removeClass('required');
     }
-    $( "#meta-tabs" ).tabs();
+    if(active_found){
+        $( "#meta-tabs" ).tabs({
+            active: active_index,
+            collapsible: true
+          });
+    } else {
+        $( "#meta-tabs" ).tabs({
+            active: active_found,
+            collapsible: true
+          });
+    }
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -49,9 +65,9 @@ $( '#meta-tabs' ).on( "tabscreate", function( event, ui ) {
 });
 
 $( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
-        $(ui.oldTab).removeClass('active');
-        $(ui.newTab).addClass('active');
-        $('#meta_type').val($(ui.newTab).text());
+    $(ui.oldTab).removeClass('active');
+    $(ui.newTab).addClass('active');
+    $('#meta_type').val($(ui.newTab).text());
 });
 
 $( "#project-form" ).on('change', '.project-checkbox', function(event) {
