@@ -58,6 +58,18 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
         }
         $(metaTab).hide();
         --projectSelectedCount;
+        if(projectSelectedCount > 0){
+            // find another selected project to make active
+            $('.project-checkbox').each(function(index, checkbox){
+                if(checkbox.checked){
+                    $('#meta-tabs').tabs("option", "active", index);
+                    return false;
+                }
+            });
+        } else {
+            // hide all tabs if no projects are selected
+            $('#meta-tabs').tabs("option", "active", false);
+        }
     }
     
 });
@@ -215,8 +227,14 @@ function setUpForm() {
     $('.optional-inputs').accordion({
       collapsible: true, active: false
     });
+    var active_found = false;
+    var active_index = 0;
     $('.project-checkbox').each(function(index, checkbox){
         if(checkbox.checked){
+            if(!active_found){
+                active_index = index;
+                active_found = true;
+            }
             $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
             ++projectSelectedCount;
         }
@@ -225,7 +243,17 @@ function setUpForm() {
         }
     });
     $( "#tabs" ).tabs({ active: active });
-    $( "#meta-tabs" ).tabs();
+    if(active_found){
+        $( "#meta-tabs" ).tabs({
+            active: active_index,
+            collapsible: true
+          });
+    } else {
+        $( "#meta-tabs" ).tabs({
+            active: false,
+            collapsible: true
+          });
+    }
     isDoiRequired();
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
     for(i=0; i < count; i++) {

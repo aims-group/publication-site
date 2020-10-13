@@ -37,7 +37,7 @@ $(document).ready(function(){
           });
     } else {
         $( "#meta-tabs" ).tabs({
-            active: active_found,
+            active: false,
             collapsible: true
           });
     }
@@ -86,6 +86,18 @@ $( "#project-form" ).on('change', '.project-checkbox', function(event) {
         }
         $(metaTab).hide();
         --projectSelectedCount;
+        if(projectSelectedCount > 0){
+            // find another selected project to make active
+            $('.project-checkbox').each(function(index, checkbox){
+                if(checkbox.checked){
+                    $('#meta-tabs').tabs("option", "active", index);
+                    return false;
+                }
+            });
+        } else {
+            // hide all tabs if no projects are selected
+            $('#meta-tabs').tabs("option", "active", false);
+        }
     }
 });
 

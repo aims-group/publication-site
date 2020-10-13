@@ -732,7 +732,6 @@ def edit(request, pubid):
                 })
         if len(selected_projects) > 0:
             meta_type = selected_projects[0]
-            print('meta_type = {}'.format(meta_type))
         else:
             meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
@@ -799,7 +798,6 @@ def edit(request, pubid):
                     })
             if len(selected_projects) > 0:
                 meta_type = selected_projects[0]
-                print('meta_type = {}'.format(meta_type))
             else:
                 meta_type = publication.projects.first()
             return render(request, 'site/edit.html',
