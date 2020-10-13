@@ -51,6 +51,7 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
             $('#meta-tabs').tabs("option", "active", tabNumber-1); //Off by one. id starts at one, but jquery-ui starts at 0
         }
         ++projectSelectedCount;
+        $( "#meta-tabs-info" ).show();
     }
     else{
         if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
@@ -69,6 +70,7 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
         } else {
             // hide all tabs if no projects are selected
             $('#meta-tabs').tabs("option", "active", false);
+            $( "#meta-tabs-info" ).hide();
         }
     }
     
@@ -248,11 +250,13 @@ function setUpForm() {
             active: active_index,
             collapsible: true
           });
+        $( "#meta-tabs-info" ).show();
     } else {
         $( "#meta-tabs" ).tabs({
             active: false,
             collapsible: true
           });
+        $( "#meta-tabs-info" ).hide();
     }
     isDoiRequired();
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
