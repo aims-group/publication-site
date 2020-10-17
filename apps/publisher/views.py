@@ -645,9 +645,9 @@ def review(request):
     publications = Publication.objects.filter(submitter=request.user.id)
     pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
     if not publications:
-        message = 'You do not have any publications to display. <a href="/{}new">Submit one.</a>'.format(settings.URL_PREFIX)
+        message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
     if not pending_dois:
-        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/{}add_dois'>click here</a>.".format(settings.URL_PREFIX)
+        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
     return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
                                                 'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
 @login_required()
@@ -1060,7 +1060,7 @@ def process_dois(request):
             info = "{}".format(
                 "You do not have any DOIs to process. Add some with the form below."
             )
-            return redirect("/{}add_dois/".format(settings.URL_PREFIX), request=request)
+            return redirect("/add_dois/", request=request)
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
@@ -1114,7 +1114,7 @@ def process_dois(request):
 
 # ajax
 def ajax(request):
-    return HttpResponseRedirect("/{}?type=all".format(settings.URL_PREFIX))
+    return HttpResponseRedirect("/?type=all")
 
 
 def ajax_citation(request, pub_id):

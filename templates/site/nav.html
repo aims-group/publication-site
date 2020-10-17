@@ -9,27 +9,27 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'search' %}">
-                <img id="nav-logo" class="img-responsive" src="{% url 'search' %}static/img/PubHubLogoNav.png" alt="logo" />
+            <a class="navbar-brand" href="/">
+                <img id="nav-logo" class="img-responsive" src="/static/img/PubHubLogoNav.png" alt="logo" />
                 Publication Hub
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{% url 'search' %}new">Submit</a></li>
-                <li><a href="{% url 'search' %}review">Edit</a></li>
+                <li><a href="/new">Submit</a></li>
+                <li><a href="/review">Edit</a></li>
                <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">View <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'search' %}view/all">all</a></li>
+                    <li><a href="/view/all">all</a></li>
                     {% for option in nav_options %}
-                    <li><a href="{% url 'search' %}view/{{option}}">{{option}}</a></li>
+                    <li><a href="/view/{{option}}">{{option}}</a></li>
                     {% endfor %}
                 </ul>
               </li>
-              <li><a href="{% url 'search' %}advanced_search">Search</a></li>
+              <li><a href="/advanced_search">Search</a></li>
                 {% if user.is_superuser %}
-                    <li><a href="{% url 'search' %}admin">Admin</a></li>
+                    <li><a href="/admin">Admin</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -37,15 +37,15 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pending <span class="badge">{{dois_pending_count}}</span> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                            <li><a href="{% url 'search' %}review/?show_pending=true">View Pending Items</a></li>
-                        <li><a href="{% url 'search' %}process_dois/">Process Pending Items</a></li>
+                            <li><a href="/review/?show_pending=true">View Pending Items</a></li>
+                        <li><a href="/process_dois/">Process Pending Items</a></li>
                     </ul>
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'search' %}accounts/logout">Logout</a></li>
+                    <li><a href="/accounts/logout">Logout</a></li>
                 {% else %}
-                    <li><a href="{% url 'search' %}accounts/login">Login</a></li>
+                    <li><a href="/accounts/login">Login</a></li>
                 {% endif %}
             </ul>
         </div><!--/.nav-collapse -->

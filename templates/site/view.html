@@ -2,7 +2,7 @@
 {% block title %} Publication Hub {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% url 'search' %}static/css/search.css">
+<link rel="stylesheet" href="/static/css/search.css">
 <div id="search-controls">
     <button id="search-toggle" class="btn btn-sm btn-info" style=""><i class="glyphicon glyphicon-search"></i></button>
     {% if type == 'search'%}
@@ -117,7 +117,7 @@
     {% endif %}
 </div>
 
-<script type="text/javascript" src="{% url 'search' %}static/js/jscroll.min.js"></script>
-<script type="text/javascript" src="{% url 'search' %}static/js/view.js"></script>
+<script type="text/javascript" src="/static/js/jscroll.min.js"></script>
+<script type="text/javascript" src="/static/js/view.js"></script>
 
 {% endblock %}
