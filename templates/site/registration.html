@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %} register {% endblock %}
 {% block content %}
-  <link href="/static/css/form.css" rel="stylesheet">
+  <link href="{% static 'css/form.css' %}" rel="stylesheet">
  
   {% if registered%}
     <h2>Thank You For Registering</h2>

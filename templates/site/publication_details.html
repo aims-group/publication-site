@@ -2,7 +2,7 @@
 
 <div class="warning-message"></div>
 
-<form action="/new" method="post">
+<form action="{% url 'new' %}" method="post">
     {% csrf_token %}
     {% if invalid_form %}
     <div class="container-fluid alert alert-danger">

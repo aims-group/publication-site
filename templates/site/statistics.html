@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %} Statistics {% endblock %}
 
 {% block content %}
@@ -11,8 +12,8 @@
     <ul id="click-stats" class="list-group"></ul>
 
 </div>
-<link href="/static/css/statistics.css" rel="stylesheet">
-<script src="/static/js/bind.js"></script>
-<script src="/static/js/statistics.js"></script>
+<link href="{% static 'css/statistics.css' %}" rel="stylesheet">
+<script src="{% static 'js/bind.js' %}"></script>
+<script src="{% static 'js/statistics.js' %}"></script>
 
 {% endblock %}
