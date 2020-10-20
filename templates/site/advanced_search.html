@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<form action="/advanced_search" method="post">
+<form action="{% url 'advanced_search' %}" method="post">
     {% csrf_token %}
     <div class="panel panel-default">
         <div class="panel-heading md-font">

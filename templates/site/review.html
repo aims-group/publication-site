@@ -20,10 +20,6 @@
             <div class="alert alert-warning" role="alert">{{error}}</div>
             {% endif %}
             
-            {% if message %}
-            <div class="alert alert-info" role="alert">{{message|safe}}</div>
-            {% endif %}
-            
             {% if publications %}
             <div>
                 <div class="panel panel-default">
@@ -32,7 +28,7 @@
                         {% for pub in publications %}
                         <tr>
                             <td>
-                                <a href="/edit/{{pub.id}}">{{pub}}</a>
+                                <a href="{% url 'edit' pub.id %}">{{pub}}</a>
                             </td>
                             <td class="text-right text-nowrap">
                                 <form method="post">
@@ -50,14 +46,15 @@
                     </table>
                 </div>
             </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                You do not have any publications to display. <a href="{% url 'new' %}">Submit one.</a>
+            </div>
             {% endif %}
             <!-- End Publication Tab content -->
         </div>
         <div role="tabpanel" class="tab-pane fade {%if show_pending%}in active{%endif%}" id="pending-publications">
             <!-- Pending Tab content -->
-            {% if pending_message %}
-            <div class="alert alert-info" role="alert">{{pending_message|safe}}</div>
-            {% endif %}
             {% if pending_dois %}
             <div>
                 <div class="panel panel-default">
@@ -88,6 +85,10 @@
                     <input type="hidden" id="delete-type" name=delete-type value="all-doi">
                     <button class="btn btn-danger pull-right">Remove All</button>
                 </form>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                You do not have any pending publications. If you have many publications to add, <a href="{% url 'add_dois' %}">click here</a>.
             </div>
             {% endif %}
             <!-- End Pending Tab content -->

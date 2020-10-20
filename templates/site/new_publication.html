@@ -18,7 +18,7 @@
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="/add_dois">Add Many Publications</a></li>
+                        <li><a href="{% url 'add_dois' %}">Add Many Publications</a></li>
                     </ul>   
                     <button class ="btn btn-default" type="button" onclick="doisearch(true)"> Show Form</button>
                 </span>
@@ -28,7 +28,7 @@
             <div id="batch-alert-wrapper" class="col-lg-6">
                 <div id="batch-alert" class="container-fluid alert alert-info">
                     Verify details for <span id="batch-alert-text">{{batch_doi}}</span>
-                    <span>or <a href="/skip_doi/" style="font-weight: 500;">skip it for now</a></span>
+                    <span>or <a href="{% url 'skip_doi' %}" style="font-weight: 500;">skip it for now</a></span>
                 </div>
             </div><!-- /.col-lg-6 -->
         {% endif %}

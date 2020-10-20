@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
@@ -582,8 +583,6 @@ def advanced_search(request):
 
 @login_required()
 def review(request):
-    message = None
-    pending_message = None
     error = None
     pending_error = None
     show_pending = True if request.GET.get('show_pending') == 'true' else False
@@ -644,11 +643,7 @@ def review(request):
 
     publications = Publication.objects.filter(submitter=request.user.id)
     pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
-    if not publications:
-        message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    if not pending_dois:
-        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
-    return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
+    return render(request, 'site/review.html', {'publications': publications,
                                                 'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
 @login_required()
 def skip_doi(request):
@@ -1060,7 +1055,7 @@ def process_dois(request):
             info = "{}".format(
                 "You do not have any DOIs to process. Add some with the form below."
             )
-            return redirect("/add_dois/", request=request)
+            return redirect(reverse('add_dois'), request=request)
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
@@ -1114,7 +1109,7 @@ def process_dois(request):
 
 # ajax
 def ajax(request):
-    return HttpResponseRedirect("/?type=all")
+    return HttpResponseRedirect(reverse('search'))
 
 
 def ajax_citation(request, pub_id):
