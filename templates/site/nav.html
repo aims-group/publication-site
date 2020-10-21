@@ -30,7 +30,7 @@
               </li>
               <li><a href="{% url 'advanced_search' %}">Search</a></li>
                 {% if user.is_superuser %}
-                    <li><a href="{% url 'search' %}admin">Admin</a></li>
+                    <li><a href="{% url 'admin:index' %}">Admin</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -44,9 +44,9 @@
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'search' %}accounts/logout">Logout</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
-                    <li><a href="{% url 'search' %}accounts/login">Login</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
                 {% endif %}
             </ul>
         </div><!--/.nav-collapse -->
