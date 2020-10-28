@@ -51,7 +51,7 @@ DATABASES = {
   }
 }
 
-SECRET_KEY = "}.!CLP*DF.CY=|DY<>~56?2N0I~UF^O>40'M|Y!)%E>6%<'95N" # Used by danjo for cryptographic signing. Set this to a unique random value
+SECRET_KEY = "" # Used by danjo for cryptographic signing. Set this to a unique random value
 RECAPTCHA_PUBLIC_KEY = "" # Google's recaptcha. Refer to the recaptcha web site for this key
 RECAPTCHA_PRIVATE_KEY = "" # https://www.google.com/recaptcha/intro/
 
@@ -62,7 +62,7 @@ EMAIL_PORT = 1025
 # (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = '/pubhub'.)
 URL_PREFIX = ''
 
-os.environ["REQUESTS_CA_BUNDLE"] = "/absolute/path/to/certfile.crt"  
+# os.environ["REQUESTS_CA_BUNDLE"] = "/absolute/path/to/certfile.crt"  
 # Path to the .crt file. 
 # Used if the server is behind a corporate firewall that intercepts ssl
 # This can be set to "" (empty string) if your server is not behind one of these annoying firewalls
