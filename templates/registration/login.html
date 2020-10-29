@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %} Login {% endblock %}
 
 {% block content %}
-<link href="/static/css/form.css" rel="stylesheet">
-<img id="logo" class="img-responsive center-block" src="/static/img/Logo.png" alt="Publication Hub">
+<link href="{% static 'css/form.css' %}" rel="stylesheet">
+<img id="logo" class="img-responsive center-block" src="{% static 'img/Logo.png' %}" alt="Publication Hub">
 
 <form id="login_form" action="" method="post" class="account-form">
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
-    Your username and password didn't match. Forgot your password? <a href="/accounts/password_reset">Click Here</a>
+    Your username and password didn't match. Forgot your password? <a href="{% url 'password_reset' %}">Click Here</a>
     </div>
     {% endif %}
     <h2 class="form-signin-heading">Please Sign In</h2>
@@ -22,7 +23,7 @@
     <button class="btn btn-lg btn-primary btn-block" id="sign-in" type="submit">Sign In</button>
     <input type="hidden" name="next" value="{{ next }}"/>
     <br>
-    <a href="/accounts/register" class="btn btn-lg btn-info btn-block">New User Registration.</a>
+    <a href="{% url 'register' %}" class="btn btn-lg btn-info btn-block">New User Registration.</a>
 </form>
 <br>
 {% endblock %}

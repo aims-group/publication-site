@@ -33,6 +33,16 @@ PUBLICATION_STATUS_CHOICE = (
 )
 
 
+class Activity(django_models.Model):
+    class Meta:
+        verbose_name_plural = "activities"
+
+    activity = django_models.TextField()
+
+    def __str__(self):
+        return self.activity
+
+
 class Experiment(django_models.Model):
     experiment = django_models.TextField()
 
@@ -41,6 +51,9 @@ class Experiment(django_models.Model):
 
 
 class Frequency(django_models.Model):
+    class Meta:
+        verbose_name_plural = "frequencies"
+
     frequency = django_models.TextField()
 
     def __str__(self):
@@ -61,6 +74,13 @@ class Model(django_models.Model):
         return self.model
 
 
+class Realm(django_models.Model):
+    realm = django_models.TextField()
+
+    def __str__(self):
+        return self.realm
+
+
 class Variable(django_models.Model):
     variable = django_models.TextField()
 
@@ -73,6 +93,8 @@ class Project(django_models.Model):
     variables = django_models.ManyToManyField(Variable)
     frequencies = django_models.ManyToManyField(Frequency)
     models = django_models.ManyToManyField(Model)
+    realms = django_models.ManyToManyField(Realm)
+    activities = django_models.ManyToManyField(Activity)
     experiments = django_models.ManyToManyField(Experiment)
     keywords = django_models.ManyToManyField(Keyword)
 
@@ -81,6 +103,9 @@ class Project(django_models.Model):
 
 
 class JournalOptions(django_models.Model):
+    class Meta:
+        verbose_name_plural = "Journal options"
+        
     journal_name = django_models.TextField()
 
     def __str__(self):
@@ -116,9 +141,11 @@ class Publication(django_models.Model):
     url = django_models.URLField()
     doi = django_models.TextField(blank=True)
     abstract = django_models.TextField()
+    activities = django_models.ManyToManyField(Activity)
     experiments = django_models.ManyToManyField(Experiment)
     frequency = django_models.ManyToManyField(Frequency)
     keywords = django_models.ManyToManyField(Keyword)
+    realms = django_models.ManyToManyField(Realm)
     model = django_models.ManyToManyField(Model, through='PubModels')
     variables = django_models.ManyToManyField(Variable)
 

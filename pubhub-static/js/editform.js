@@ -5,8 +5,14 @@ $(document).ready(function(){
     $('#publication-optional-inputs').accordion({
       collapsible: true
     });
+    var active_found = false;
+    var active_index = 0;
     $('.project-checkbox').each(function(index, checkbox){
         if(checkbox.checked){
+            if(!active_found){
+                active_index = index;
+                active_found = true;
+            }
             $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
             ++projectSelectedCount;
         }
@@ -24,7 +30,19 @@ $(document).ready(function(){
     if($("#id_status option:selected").text() !== "Published"){
         $( "#id_doi" ).parent().removeClass('required');
     }
-    $( "#meta-tabs" ).tabs();
+    if(active_found){
+        $( "#meta-tabs" ).tabs({
+            active: active_index,
+            collapsible: true
+          });
+        $( "#meta-tabs-info" ).show();
+    } else {
+        $( "#meta-tabs" ).tabs({
+            active: false,
+            collapsible: true
+          });
+        $( "#meta-tabs-info" ).hide();
+    }
 });
 
 $('#id_form-TOTAL_FORMS').val($('tr.author').length);
@@ -49,9 +67,9 @@ $( '#meta-tabs' ).on( "tabscreate", function( event, ui ) {
 });
 
 $( '#meta-tabs' ).on( "tabsactivate", function( event, ui ) {
-        $(ui.oldTab).removeClass('active');
-        $(ui.newTab).addClass('active');
-        $('#meta_type').val($(ui.newTab).text());
+    $(ui.oldTab).removeClass('active');
+    $(ui.newTab).addClass('active');
+    $('#meta_type').val($(ui.newTab).text());
 });
 
 $( "#project-form" ).on('change', '.project-checkbox', function(event) {
@@ -63,6 +81,7 @@ $( "#project-form" ).on('change', '.project-checkbox', function(event) {
             $('#meta-tabs').tabs("option", "active", tabNumber-1); //Off by one. id starts at one, but jquery-ui starts at 0
         }
         ++projectSelectedCount;
+        $( "#meta-tabs-info" ).show();
     }
     else{
         if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
@@ -70,6 +89,19 @@ $( "#project-form" ).on('change', '.project-checkbox', function(event) {
         }
         $(metaTab).hide();
         --projectSelectedCount;
+        if(projectSelectedCount > 0){
+            // find another selected project to make active
+            $('.project-checkbox').each(function(index, checkbox){
+                if(checkbox.checked){
+                    $('#meta-tabs').tabs("option", "active", index);
+                    return false;
+                }
+            });
+        } else {
+            // hide all tabs if no projects are selected
+            $('#meta-tabs').tabs("option", "active", false);
+            $( "#meta-tabs-info" ).hide();
+        }
     }
 });
 
@@ -86,7 +118,7 @@ function doisearch() {
     $('#loading').show();
     var doi = $("#doi-field").val();
     $.ajax({
-        url: '/finddoi',
+        url: 'finddoi',
         method: 'GET',
         data: {'doi': doi},
         success: function(data){
@@ -116,9 +148,14 @@ function doisearch() {
                     if(data.article_number) $('#id_article_number').val(data.article_number);
                     if(data.start_page) $('#id_start_page').val(data.start_page);
                     if(data.end_page) $('#id_end_page').val(data.end_page);
-                    if(data.guessed_journal){
+                    if(data.missing_journal){
                         var warn = $('<div/>')
-                        .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                        .html( 'The journal publishing this article, <b>' + data.container_title + '</b>, was not found in the list.'
+                             + ' To add this journal, please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page'
+                             + ' with the title: <br> <b>"Please add journal named: ' + data.container_title + '."</b> <br><br>'
+                             + ' Currently, your publication will be registered with journal set to "Other".  Once you\'ve submitted the issue,'
+                             + ' as described above, and the journal name you requested has been added to the list, please go to the Edit'
+                             + ' page, select your publication, and replace "Other" with the actual name of the journal.')
                         .addClass('alert alert-warning');
                         $('#journal-warning').append(warn);
                     }
@@ -157,4 +194,11 @@ function doisearch() {
             alert("Ajax Failed");
         }
     });
+}
+
+function showForm(){
+//    https://bugs.jqueryui.com/ticket/3905
+    $("#publication-form-wrapper").removeClass("hidden");
+    $('#publication-optional-inputs').accordion( "refresh" );
+    $('.optional-inputs').accordion( "refresh" );
 }

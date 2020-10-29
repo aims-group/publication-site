@@ -9,3 +9,4 @@ static/scripts/db_settings.py
 apps/publisher/migrations/
 .DS_store
 static/
+.vscode/

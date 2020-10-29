@@ -51,6 +51,7 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
             $('#meta-tabs').tabs("option", "active", tabNumber-1); //Off by one. id starts at one, but jquery-ui starts at 0
         }
         ++projectSelectedCount;
+        $( "#meta-tabs-info" ).show();
     }
     else{
         if($('#meta-tabs .panel-heading .ui-tabs-active')[0].id === "".concat(this.value, "-tab")){ //if the deselected project was the active meta tab, hide the content 
@@ -58,6 +59,19 @@ $( "#publication-form-wrapper" ).on('change', '.project-checkbox', function(even
         }
         $(metaTab).hide();
         --projectSelectedCount;
+        if(projectSelectedCount > 0){
+            // find another selected project to make active
+            $('.project-checkbox').each(function(index, checkbox){
+                if(checkbox.checked){
+                    $('#meta-tabs').tabs("option", "active", index);
+                    return false;
+                }
+            });
+        } else {
+            // hide all tabs if no projects are selected
+            $('#meta-tabs').tabs("option", "active", false);
+            $( "#meta-tabs-info" ).hide();
+        }
     }
     
 });
@@ -91,7 +105,7 @@ function doisearch(showFormClicked) {
         $('#loading').show();
         var doi = $("#doi-field").val();
         $.ajax({
-            url: '/finddoi',
+            url: 'finddoi',
             method: 'GET',
             data: {'doi': doi},
             success: function(data){
@@ -111,15 +125,20 @@ function doisearch(showFormClicked) {
                     $('#id_conf-start_page').val(data.start_page);
                     $('#id_conf-end_page').val(data.end_page);
                     $('#id_conf-publisher').val(data.publisher);
-                    $('#id_journal-journal_name').val(data.journal_index+1);
+                    $('#id_journal-journal_name').val(data.journal_index);
                     $('#id_journal-volume_number').val(data.volume_number);
                     $('#id_journal-article_number').val(data.article_number);
                     $('#id_journal-start_page').val(data.start_page);
                     $('#id_journal-end_page').val(data.end_page);
 
-                    if(data.guessed_journal){
+                    if(data.missing_journal){
                       var warn = $('<div/>')
-                      .text('Warning: Journal name may not be accurate. Please check that it is correct.')
+                      .html( 'The journal publishing this article, <b>' + data.container_title + '</b>, was not found in the list.'
+                           + ' To add this journal, please submit an issue to our <a href="https://github.com/aims-group/publication-site/issues/">GitHub Issues</a> page'
+                           + ' with the title: <br> <b>"Please add journal named: ' + data.container_title + '."</b> <br><br>'
+                           + ' Currently, your publication will be registered with journal set to "Other".  Once you\'ve submitted the issue,'
+                           + ' as described above, and the journal name you requested has been added to the list, please go to the Edit'
+                           + ' page, select your publication, and replace "Other" with the actual name of the journal.')
                       .addClass('alert alert-warning');
                       $('#journal-warning').append(warn);
                     }
@@ -171,7 +190,6 @@ function submitPublication() {
             return
         }
     }
-    $('#meta-tabs .panel-body div[style="display: none;"]').remove(); //remove unused form elements before serializing
     $('.project-checkbox:not(:checked)').each(function(index, element){
         var name = element.value; //Grab the name of the unchecked box
         var tab = $("#".concat(name, "-tab")); //find the meta form tab it refers to
@@ -192,7 +210,7 @@ function submitPublication() {
                 window.scrollTo(0, 0);
             }
             else{
-                window.location.replace("/review");
+                window.location.replace("review");
             }
         },
     }).fail(function($xhr) {
@@ -211,8 +229,14 @@ function setUpForm() {
     $('.optional-inputs').accordion({
       collapsible: true, active: false
     });
+    var active_found = false;
+    var active_index = 0;
     $('.project-checkbox').each(function(index, checkbox){
         if(checkbox.checked){
+            if(!active_found){
+                active_index = index;
+                active_found = true;
+            }
             $("#".concat(checkbox.value, "-tab")).show() //find corresponding meta tab and show it
             ++projectSelectedCount;
         }
@@ -221,7 +245,19 @@ function setUpForm() {
         }
     });
     $( "#tabs" ).tabs({ active: active });
-    $( "#meta-tabs" ).tabs();
+    if(active_found){
+        $( "#meta-tabs" ).tabs({
+            active: active_index,
+            collapsible: true
+          });
+        $( "#meta-tabs-info" ).show();
+    } else {
+        $( "#meta-tabs" ).tabs({
+            active: false,
+            collapsible: true
+          });
+        $( "#meta-tabs-info" ).hide();
+    }
     isDoiRequired();
     var count = parseInt($('#id_form-TOTAL_FORMS').val());
     for(i=0; i < count; i++) {

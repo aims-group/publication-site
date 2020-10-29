@@ -68,7 +68,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
   function show_citation(id){
     if ($("div #citation"+id).html() == "empty"){
-      url = "/ajax/citation/" + id
+      url = "ajax/citation/" + id
       $.ajax({
         type: "GET",
         url: url,
@@ -161,54 +161,62 @@ $('#facet-links-container input.radio-sort').change(function(){
   }
   function show_more_info(id){
     if ($("div #more_info"+id).html() == "empty"){
-      url = "/ajax/moreinfo/" + id
+      url = "ajax/moreinfo/" + id
       $.ajax({
         type: "GET",
         url: url,
         data: {},
         dataType: 'json',
         success: function(data){
-          output = data.key;
-          var data = ""
-          if (output === '|||'){
-            data = "<p><em>Additional information not provided</em></p>"
+          var output = "";
+          if (data.activities.length == 0 && data.experiments.length == 0 && data.models.length == 0 && data.frequency.length == 0){
+            output = "<p><em>Additional information not provided</em></p>";
           }
           else{
-              output = output.replace(/,/g, '<br/>');
-              metadata = output.split("|");
-              var exp = "";
-              var model = "";
-              var variable = "";
-              var keyword = "";
-              var arr = metadata[0].split("<br/>");
-              for (var i = 0, len = arr.length; i < len; i++){
-                var link = arr[i].replace(' ', '%20')
-                exp += "<a href=\"?type=experiment&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              var info_titles = "";
+              var info_columns = "";
+              if(data.activities.length > 0){
+                var rows = "";
+                for (var i = 0, len = data.activities.length; i < len; i++){
+                    var link = data.activities[i].replace(' ', '%20')
+                    rows += "<a href=\"?type=activity&option=" + link + "\">" + data.activities[i] + "<a/><br/>";
+                }
+                info_titles += "<th>Activities</th>";
+                info_columns += "<td>" + rows + "</td>";
               }
-              arr = metadata[1].split("<br/>");
-              for (var i = 0, len = arr.length; i < len; i++){
-                var link = arr[i].replace(' ', '%20')
-                model += "<a href=\"?type=model&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              if(data.experiments.length > 0){
+                var rows = "";
+                for (var i = 0, len = data.experiments.length; i < len; i++){
+                    var link = data.experiments[i].replace(' ', '%20')
+                    rows += "<a href=\"?type=experiment&option=" + link + "\">" + data.experiments[i] + "<a/><br/>";
+                }
+                info_titles += "<th>Experiments</th>";
+                info_columns += "<td>" + rows + "</td>";
               }
-              arr = metadata[2].split("<br/>");
-              for (var i = 0, len = arr.length; i < len; i++){
-                var link = arr[i].replace(' ', '%20')
-                variable += "<a href=\"?type=variable&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              if(data.models.length > 0){
+                var rows = "";
+                for (var i = 0, len = data.models.length; i < len; i++){
+                    var link = data.models[i].replace(' ', '%20')
+                    rows += "<a href=\"?type=model&option=" + link + "\">" + data.models[i] + "<a/><br/>";
+                }
+                info_titles += "<th>Models</th>";
+                info_columns += "<td>" + rows + "</td>";
               }
-              arr = metadata[3].split("<br/>");
-              for (var i = 0, len = arr.length; i < len; i++){
-                var link = arr[i].replace(' ', '%20')
-                keyword += "<a href=\"?type=keyword&option=" + link + "\">" + arr[i] + "<a/><br/>";
+              if(data.frequency.length > 0){
+                var rows = "";
+                for (var i = 0, len = data.frequency.length; i < len; i++){
+                    var link = data.frequency[i].replace(' ', '%20')
+                    rows += "<a href=\"?type=realm&option=" + link + "\">" + data.frequency[i] + "<a/><br/>";
+                }
+                info_titles += "<th>Frequency</th>";
+                info_columns += "<td>" + rows + "</td>";
               }
-              data =  "<table class=\"table\">" +
-                      "<th>Experiments</th><th>Models</th><th>Variables</th><th>Keywords</th><tr>" +
-                      "<td>" + exp + "</td>" +
-                      "<td>" + model + "</td>" +
-                      "<td>" + variable + "</td>" +
-                      "<td>" + keyword + "</td>" +
-                      "</tr></table>";
+              output =  "<table class=\"table\">" +
+                        info_titles +
+                        "<tr>" + info_columns + "</tr>" +
+                        "</table>";
           }
-          $("div #more_info"+id).html(data);
+          $("div #more_info"+id).html(output);
           $("div #more_info"+id).toggle();
         },
         error: function(request, status, error){
@@ -223,7 +231,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
   function show_abstract(id){
     if ($("div #abstract"+id).html() == "empty"){
-      url = "/ajax/abstract/" + id + "/";
+      url = "ajax/abstract/" + id + "/";
       $.ajax({
         type: "GET",
         url: url,
@@ -251,7 +259,7 @@ $('#facet-links-container input.radio-sort').change(function(){
 
 function show_bibtex(id){
     if ($("div #bibtex"+id).html() == "empty"){
-        url = "/ajax/citation/" + id;
+        url = "ajax/citation/" + id;
         $.ajax({
             type: "GET",
             url: url,

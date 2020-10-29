@@ -36,7 +36,7 @@ function updateSearchCount(){
     form = form.concat("&ajax=true"); 
     $.ajax({
         type: 'POST',
-        url: '/advanced_search',
+        url: 'advanced_search',
         data: form,
         success: function(result){
             $('#result-count').text(result.count);

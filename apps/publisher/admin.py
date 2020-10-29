@@ -1,10 +1,12 @@
 from django.contrib import admin
-from .models import Experiment, Frequency, Keyword, Model, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
+from .models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
+admin.site.register(Activity)
 admin.site.register(Experiment)
 admin.site.register(Frequency)
 admin.site.register(Keyword)
 admin.site.register(Model)
+admin.site.register(Realm)
 admin.site.register(Variable)
 admin.site.register(Project)
 admin.site.register(Funding)
