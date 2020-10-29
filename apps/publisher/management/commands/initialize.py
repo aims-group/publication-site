@@ -1,9 +1,11 @@
 from django.core.management import BaseCommand
-from publisher.models import Experiment, Frequency, Keyword, Model, Variable, JournalOptions, Project
+from publisher.models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, JournalOptions, Project
+from scripts.activity import activity_data
 from scripts.experiment import experiment_data
 from scripts.frequency import frequency_data
 from scripts.keyword import keyword_data
 from scripts.model import model_data
+from scripts.realm import realm_data
 from scripts.variable import variable_data
 from scripts.journals import journal_names
 
@@ -22,6 +24,22 @@ class Command(BaseCommand):
     help = "Loads the database with dataset information such as controlled vocabulary."
 
     def handle(self, *args, **options):
+        if Activity.objects.all():
+            print('activities already loaded')
+        else:
+            print('loading activities')
+            for project in activity_data:
+                project_obj = get_project(project['project_name'])
+                for acts in project['activities']:
+                    pre_existing_activity = Activity.objects.filter(activity=acts)
+                    if pre_existing_activity:
+                        project_obj.activities.add(pre_existing_activity[0])
+                    else:
+                        new_act = Activity(activity=acts)
+                        new_act.save()
+                        project_obj.activities.add(new_act)
+            print('act done')
+
         if Experiment.objects.all():
             print('experiments already loaded')
         else:
@@ -85,6 +103,22 @@ class Command(BaseCommand):
                         new_mod.save()
                         project_obj.models.add(new_mod)
             print('mod done')
+
+        if Realm.objects.all():
+            print('realm already loaded')
+        else:
+            print('loading realm')
+            for project in realm_data:
+                project_obj = get_project(project['project_name'])
+                for realm in project['realms']:
+                    pre_existing_realm = Realm.objects.filter(realm=realm)
+                    if pre_existing_realm:
+                        project_obj.realms.add(pre_existing_realm[0])
+                    else:
+                        new_realm = Realm(realm=realm)
+                        new_realm.save()
+                        project_obj.realms.add(new_realm)
+            print('realm done')
 
         if Variable.objects.all():
             print('variable already loaded')

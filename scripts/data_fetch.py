@@ -305,6 +305,18 @@ def main():
         publication_keyword.close()
         # END KEYWORD #
 
+        # REALM #
+        publication_realm = db.cursor()
+        publication_realm.execute("SELECT attribute.display_name FROM publication, publication_has_attribute, attribute WHERE attribute.attribute_key = 'realm' and publication.publication_id = publication_has_attribute.publication_id and publication_has_attribute.attribute_id= attribute.attribute_id and publication.publication_id = " + str(current_id))
+        for pub_realm in publication_realm.fetchall():
+            if Realm.objects.filter(realm=pub_realm[0]):
+                new_publication.realms.add(Realm.objects.filter(realm=pub_realm[0])[0])
+                # print Realm.objects.filter(realm=pub_realm[0])[0]
+            else:
+                print pub_realm[0] + " -- FAIL -- REALM"
+        publication_realm.close()
+        # END REALM #
+
         # VARIABLE #
         publication_variable = db.cursor()
         publication_variable.execute("SELECT attribute.display_name FROM publication, publication_has_attribute, attribute WHERE attribute.attribute_key = 'variable' and publication.publication_id = publication_has_attribute.publication_id and publication_has_attribute.attribute_id= attribute.attribute_id and publication.publication_id = " + str(current_id))
@@ -316,6 +328,18 @@ def main():
                 print pub_var[0] + " -- FAIL -- VARIABLE"
         publication_variable.close()
         # END VARIABLE #
+
+        # ACTIVITY #
+        publication_activity = db.cursor()
+        publication_activity.execute("SELECT attribute.display_name FROM publication, publication_has_attribute, attribute WHERE attribute.attribute_key = 'activity' and publication.publication_id = publication_has_attribute.publication_id and publication_has_attribute.attribute_id= attribute.attribute_id and publication.publication_id = " + str(current_id))
+        for pub_act in publication_activity.fetchall():
+            if Activity.objects.filter(activity=pub_act[0]):
+                new_publication.activities.add(Activity.objects.filter(activity=pub_act[0])[0])
+                # print Activity.objects.filter(activity=pub_act[0])[0]
+            else:
+                print pub_act[0] + " -- FAIL -- ACTIVITY"
+        publication_activity.close()
+        # END ACTIVITY #
 
         # EXPERIMENT #
         publication_experiment = db.cursor()

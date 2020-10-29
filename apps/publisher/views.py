@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
 from .forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from .forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
-from .forms import ExperimentForm, FrequencyForm, KeywordForm, ModelForm, VariableForm
+from .forms import ActivityForm, ExperimentForm, FrequencyForm, KeywordForm, ModelForm, RealmForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.db import transaction
+from django.conf import settings
 from itertools import chain
-from scripts.journals import journal_names
-from fuzzywuzzy import process
 from .models import *
 import requests
 import datetime
@@ -31,13 +31,17 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     #Remove any checkboxes that were unchecked in an edit
     publication.frequency.remove(*[f for f in publication.frequency.all() if str(f.id) not in request.POST.getlist("frequency")]) 
     publication.keywords.remove(*[k for k in publication.keywords.all() if str(k.id) not in request.POST.getlist("keyword")]) 
+    publication.activities.remove(*[a for a in publication.activities.all() if str(a.id) not in request.POST.getlist("activity")]) 
     publication.experiments.remove(*[e for e in publication.experiments.all() if str(e.id) not in request.POST.getlist("experiment")]) 
+    publication.realms.remove(*[r for r in publication.realms.all() if str(r.id) not in request.POST.getlist("realm")]) 
     publication.variables.remove(*[v for v in publication.variables.all() if str(v.id) not in request.POST.getlist("variable")]) 
 
     #Add any checkboxes that were checked
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
     publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
+    publication.activities.add(*[Activity.objects.get(id=activity_id) for activity_id in request.POST.getlist("activity")])
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
+    publication.realms.add(*[Realm.objects.get(id=realm_id) for realm_id in request.POST.getlist("realm")])
     publication.variables.add(*[Variable.objects.get(id=variable_id) for variable_id in request.POST.getlist("variable")])
     projects = request.POST.getlist('project')
     for proj in publication.projects.all(): #iterate over projects previously selected
@@ -88,6 +92,7 @@ def process_publication(request):
     formset = formset_factory(AuthorForm, min_num=1, validate_min=True)
     author_form_set = formset(request.POST)
     all_forms = init_forms(author_form_set, request.POST)
+    selected_projects = request.POST.getlist("project")
     if pub_type == 'Book':
         pub_type = 0
         media_form = BookForm(request.POST, prefix='book')
@@ -112,7 +117,7 @@ def process_publication(request):
     else:
         pub_type = 7
         media_form = OtherForm(request.POST, prefix='other')
-    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid():
+    if media_form.is_valid() and all_forms['pub_form'].is_valid() and author_form_set.is_valid() and len(selected_projects) > 0:
         publication = save_publication(all_forms['pub_form'], request, author_form_set, pub_type, False)
         media = media_form.save(commit=False)
         media.publication_id = publication
@@ -132,26 +137,30 @@ def init_forms(author_form, request=None, instance=None):
     presentation_form = PresentationForm(request, prefix='pres')
     technical_form = TechnicalReportForm(request, prefix='tech')
     other_form = OtherForm(request, prefix='other')
+    act_form = ActivityForm(request)
     exp_form = ExperimentForm(request)
     freq_form = FrequencyForm(request)
     keyword_form = KeywordForm(request)
     model_form = ModelForm(request)
+    realm_form = RealmForm(request)
     var_form = VariableForm(request)
     all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
 
     return {'pub_form': pub_form, 'author_form': author_form, 'book_form': book_form, 'conference_form': conference_form,
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
-            'other_form': other_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'var_form': var_form, 'all_projects': all_projects}
+            'other_form': other_form, 'act_form': act_form, 'exp_form': exp_form, 'freq_form': freq_form,
+            'keyword_form': keyword_form, 'model_form': model_form, 'realm_form': realm_form, 'var_form': var_form, 'all_projects': all_projects}
 
 
 def get_all_options():
     all_options = collections.OrderedDict()
+    all_options['activity'] = "Activity"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
     all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
+    all_options['realm'] = "Realm"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
     all_options['variable'] = "Variable"
@@ -192,6 +201,20 @@ def view(request, project_name="all"):
             return HttpResponse(status=404)
     if page_filter == 'all':
         pubs["pages"] = get_all_options()
+
+    elif page_filter == 'activity':
+        option = request.GET.get("option", "AerChemMIP")
+        pubs["option"] = option
+        for act in Activity.objects.all().order_by('activity'):
+            if publications.filter(activities=act).count() == 0:
+                continue
+            acts = {}
+            acts['type'] = 'activity'
+            acts['options'] = str(act.activity)
+            acts['count'] = publications.filter(activities=act).count()
+            data[str(act.activity)] = acts
+        publications = publications.filter(activities=Activity.objects.filter(activity=option)[0]).order_by("-publication_date")
+        pubs["pages"] = data
 
     elif page_filter == 'experiment':
         option = request.GET.get("option", "1pctCO2")
@@ -247,6 +270,20 @@ def view(request, project_name="all"):
             mods['count'] = publications.filter(model=mod).count()
             data[str(mod.model)] = mods
         publications = publications.filter(model=Model.objects.filter(model=option)[0]).order_by("-publication_date")
+        pubs["pages"] = data
+
+    elif page_filter == 'realm':
+        option = request.GET.get("option", "aerosol")
+        pubs["option"] = option
+        for realm in Realm.objects.all().order_by('realm'):
+            if publications.filter(realms=realm).count() == 0:
+                continue
+            realms = {}
+            realms['type'] = 'realm'
+            realms['options'] = str(realm.realm)
+            realms['count'] = publications.filter(realms=realm).count()
+            data[str(realm.realm)] = realms
+        publications = publications.filter(realms=Realm.objects.filter(realm=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'status':
@@ -452,6 +489,13 @@ def advanced_search(request):
 
             meta_any_mode_pubs = Publication.objects.none() # Initialize variable so we can reference it without error
             meta_search_by_any = request.POST.get("meta_search_by_any", "off")
+            if 'activity' in list(form.cleaned_data.keys()) and form.cleaned_data['activity']:
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(activities__activity__in=form.cleaned_data['activity'])
+                else:
+                    for act in form.cleaned_data['activity']:
+                        pubs = pubs.filter(activities__activity=act)
+
             if 'experiment' in list(form.cleaned_data.keys()) and form.cleaned_data['experiment']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(experiments__experiment__in=form.cleaned_data['experiment'])
@@ -479,6 +523,13 @@ def advanced_search(request):
                 else:
                     for model in form.cleaned_data['model']:
                         pubs = pubs.filter(model__model=model)
+
+            if 'realm' in list(form.cleaned_data.keys()) and form.cleaned_data['realm']:
+                if meta_search_by_any == "on":
+                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(realms__realm__in=form.cleaned_data['realm'])
+                else:
+                    for realm in form.cleaned_data['realm']:
+                        pubs = pubs.filter(realms__realm=realm)
 
             if 'variable' in list(form.cleaned_data.keys()) and form.cleaned_data['variable']:
                 if meta_search_by_any == "on":
@@ -532,8 +583,6 @@ def advanced_search(request):
 
 @login_required()
 def review(request):
-    message = None
-    pending_message = None
     error = None
     pending_error = None
     show_pending = True if request.GET.get('show_pending') == 'true' else False
@@ -594,11 +643,7 @@ def review(request):
 
     publications = Publication.objects.filter(submitter=request.user.id)
     pending_dois = PendingDoi.objects.filter(user=request.user).order_by("date_time")
-    if not publications:
-        message = 'You do not have any publications to display. <a href="/new">Submit one.</a>'
-    if not pending_dois:
-        pending_message = "You do not have any pending publications. If you have many publications to add, <a href='/add_dois'>click here</a>."
-    return render(request, 'site/review.html', {'message': message, "pending_message": pending_message, 'publications': publications,
+    return render(request, 'site/review.html', {'publications': publications,
                                                 'pending_dois': pending_dois, 'error': None, 'pending_error': pending_error, "show_pending": show_pending})
 @login_required()
 def skip_doi(request):
@@ -620,6 +665,7 @@ def edit(request, pubid):
             return render(request, 'site/review.html', {'message': None, 'entries': entries, 'error': error})
         pub_form = PublicationForm(request.POST or None, pub_id=pubid, instance=pub_instance)
         author_form_set = AuthorFormSet(request.POST, queryset=pub_instance.authors.all())
+        selected_projects = request.POST.getlist("project")
         pub_type = int(request.POST.get('pub_type', ''))
         if pub_type == 0:  # book
             bookinstance = Book.objects.get(publication_id=pub_instance)
@@ -645,7 +691,7 @@ def edit(request, pubid):
         elif pub_type == 7:  # other
             otherinstance = Other.objects.get(publication_id=pub_instance)
             media_form = OtherForm(request.POST or None, instance=otherinstance)
-        if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid():
+        if pub_type in range(8) and media_form.is_valid() and pub_form.is_valid() and author_form_set.is_valid() and len(selected_projects) > 0:
             publication = save_publication(pub_form, request, author_form_set, pub_type, True)
             other = media_form.save(commit=False)
             other.publication_id = publication
@@ -655,32 +701,40 @@ def edit(request, pubid):
         meta_form = []
         all_projects = [str(proj) for proj in Project.objects.all().order_by('project')]
         selected_projects = [str(proj) for proj in request.POST.getlist("project", [])]
+        no_projects_selected = True if len(selected_projects) == 0 else False
         for project in Project.objects.all().order_by('project'):
             if str(project) in selected_projects:
                 meta_form.append({
                     'name': str(project),
+                    'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                     'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                     'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                     'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                     'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                    'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                     'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                 })
             else:
                 meta_form.append({
                     'name': str(project),
+                    'act_form': ActivityForm(queryset=project.activities),
                     'exp_form': ExperimentForm(queryset=project.experiments),
                     'freq_form': FrequencyForm(queryset=project.frequencies),
                     'keyword_form': KeywordForm(queryset=project.keywords),
                     'model_form': ModelForm(queryset=project.models),
+                    'realm_form': RealmForm(queryset=project.realms),
                     'var_form': VariableForm(queryset=project.variables),
                 })
-        meta_type = pub_instance.projects.first()
+        if len(selected_projects) > 0:
+            meta_type = selected_projects[0]
+        else:
+            meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
         ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not ''])
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
-                        "selected_projects": selected_projects
+                        "selected_projects": selected_projects, 'no_projects_selected': no_projects_selected, 'invalid_form': True
                        })
 
     else: # Method == GET
@@ -716,23 +770,31 @@ def edit(request, pubid):
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [box.id for box in publication.activities.all()]},
+                                                queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
                                                 queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [box.id for box in publication.realms.all()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
-            meta_type = publication.projects.first()
+            if len(selected_projects) > 0:
+                meta_type = selected_projects[0]
+            else:
+                meta_type = publication.projects.first()
             return render(request, 'site/edit.html',
                           {'pub_form': pub_form, 'author_form': author_form, 'media_form': media_form, 'pub_type': publication.publication_type,
                           'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
@@ -754,10 +816,12 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
         for project in Project.objects.all():
             meta_form.append({
                 'name': str(project),
+                'act_form': ActivityForm(queryset=project.activities),
                 'exp_form': ExperimentForm(queryset=project.experiments),
                 'freq_form': FrequencyForm(queryset=project.frequencies),
                 'keyword_form': KeywordForm(queryset=project.keywords),
                 'model_form': ModelForm(queryset=project.models),
+                'realm_form': RealmForm(queryset=project.realms),
                 'var_form': VariableForm(queryset=project.variables),
             })
         meta_form.sort(key=lambda x: x['name'])
@@ -775,30 +839,37 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
         else: # the form was not valid re-rendder form with errors
             meta_form = []
             selected_projects = request.POST.getlist("project")
+            no_projects_selected = True if len(selected_projects) == 0 else False
             for project in Project.objects.all():
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
             all_forms.update({'meta_form': meta_form})
             all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': batch})
             all_forms.update({'batch_doi': batch_doi})
+            all_forms.update({'invalid_form': True})
             return render(request, 'site/publication_details.html', all_forms, status=400)
 
 
@@ -851,26 +922,24 @@ def finddoi(request):
             url = ''
         if 'container-title' in list(initial.keys()):
             container_title = initial['container-title']
-            if container_title in journal_names:
-                journal_index = journal_names.index(container_title)
-                guessed_journal = False
+            if JournalOptions.objects.filter(journal_name=container_title):
+                journal = JournalOptions.objects.get(journal_name=container_title)
+                journal_index = journal.id
+                missing_journal = False
             else:
-                guess = process.extractOne(container_title, journal_names)
-                if guess is None:
-                    journal_index = 0
-                else:
-                    journal_name = guess[0]
-                    journal_index = journal_names.index(journal_name)
-                guessed_journal = True
+                journal = JournalOptions.objects.get(journal_name="Other")
+                journal_index = journal.id
+                missing_journal = True
         else:
             container_title = ''
             journal_index = 0
-            guessed_journal = False
+            missing_journal = False
         if 'page' in list(initial.keys()):
             try:
                 startpage, endpage = str(initial['page']).split('-')
             except:
-                startpage = endpage = initial['page']
+                startpage = initial['page']
+                endpage = None
         else:
             startpage = ''
             endpage = ''
@@ -941,7 +1010,7 @@ def finddoi(request):
         data = {'success': True, 'doi': doi, 'isbn': isbn, 'title': title, 'url': url, 'start_page': startpage, 'end_page': endpage, 'publisher': publisher,
                 'publication_date': publication_date, 'volume_number': volume, 'issue': issue, 'authors_list': authors_list}
         data.update(dict.fromkeys(['book_name', 'conference_name', 'magazine_name'], container_title))
-        data.update({'journal_index': journal_index, 'guessed_journal': guessed_journal})
+        data.update({'journal_index': journal_index, 'missing_journal': missing_journal, 'container_title': container_title})
         return JsonResponse(data)
     else:
         data = {'success': False, 'message': 'Unable to pre-fill form with the given DOI'}
@@ -986,7 +1055,7 @@ def process_dois(request):
             info = "{}".format(
                 "You do not have any DOIs to process. Add some with the form below."
             )
-            return redirect("/add_dois/", request=request)
+            return redirect(reverse('add_dois'), request=request)
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
         if(submit_success):
@@ -1005,35 +1074,42 @@ def process_dois(request):
         else: # form was not valid
             meta_form = []
             selected_projects = request.POST.getlist("project")
+            no_projects_selected = True if len(selected_projects) == 0 else False
             for project in Project.objects.all():
                 if str(project) in selected_projects:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
                         'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
+                        'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
                     })
                 else:
                     meta_form.append({
                         'name': str(project),
+                        'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
                         'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
+                        'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
                     })
             meta_form = sorted(meta_form, key=lambda proj: proj['name'])
             all_forms.update({'meta_form': meta_form})
             all_forms.update({'selected_projects': selected_projects})
+            all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': True})
             all_forms.update({'batch_doi': ""})
+            all_forms.update({'invalid_form': True})
             return render(request, 'site/publication_details.html', all_forms, status=400)
 
 # ajax
 def ajax(request):
-    return HttpResponseRedirect("/?type='all'")
+    return HttpResponseRedirect(reverse('search'))
 
 
 def ajax_citation(request, pub_id):
@@ -1071,21 +1147,16 @@ def ajax_abstract(request, pub_id):
 
 def ajax_more_info(request, pub_id):
     pub = Publication.objects.get(id=pub_id)
-    experiment_list = sorted(set([str(exp) for exp in pub.experiments.all()])) # remove duplicates by calling set()
+    activity_list = sorted(set([str(act) for act in pub.activities.all()])) # remove duplicates by calling set()
+    experiment_list = sorted(set([str(exp) for exp in pub.experiments.all()]))
     model_list = sorted(set([str(model) for model in pub.model.all()]))
-    variable_list = sorted(set([str(variable) for variable in pub.variables.all()]))
-    keyword_list = sorted(set([str(keyword) for keyword in pub.keywords.all()]))
-
-    experiments = ",".join(experiment_list)
-    model = ",".join(model_list)
-    variables = ",".join(variable_list)
-    keywords = ",".join(keyword_list)
-    # frequency = ",".join(["{frequency.frequency}".format(frequency=frequency) for frequency in pub.frequency.all()])
-    # tags = ",".join(["{tags.name}".format(tags=tags) for tags in pub.tags.all()])
-
-    moreinfo = experiments + "|" + model + "|" + variables + "|" + keywords
-    json = "{\"key\": \"" + moreinfo + "\"}"
-    return HttpResponse(json)
+    frequency_list = sorted(set([str(freq) for freq in pub.frequency.all()]))
+    
+    json = {'activities': activity_list,
+            'experiments': experiment_list, 
+            'models': model_list, 
+            'frequency': frequency_list}
+    return JsonResponse(json)
 
 
 def ajax_prefetch_authors(request):

@@ -13,11 +13,22 @@ frequency_data = [
      ]},
     {'project_name': 'CMIP6',
      'frequencies': [
-
-     ]},
-    {'project_name': 'AIMS',
-     'frequencies': [
-
+         '1hr',
+         '1hrCM',
+         '1hrPt',
+         '3hr',
+         '3hrPt',
+         '6hr',
+         '6hrPt',
+         'day',
+         'dec',
+         'fx',
+         'mon',
+         'monC',
+         'monPt',
+         'subhrPt',
+         'yr',
+         'yrPt'
      ]},
 
 ]

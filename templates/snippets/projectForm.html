@@ -1,6 +1,10 @@
-<div id="project-form" class="panel panel-default">
+<div id="project-form" class="panel panel-default {% if no_projects_selected %}form-error{% endif %}">
     <div class="panel-heading">
-        <span class="md-font">Projects</span>
+        <span class="md-font">Projects* 
+            {% if no_projects_selected %}
+            <span style="color:red">(Select at least one project)</span>
+            {% endif %}
+        </span>
     </div>
     <div class="panel-body">
         {% for project in all_projects %}

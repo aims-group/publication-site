@@ -6,8 +6,8 @@ from django.contrib.auth.views import logout_then_login
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/logout/$', logout_then_login),
-    url(r'^accounts/register/$', RegistrationViewUniqueEmail.as_view(template_name="django_registration/registration_form.html")),
+    url(r'^accounts/register/$', RegistrationViewUniqueEmail.as_view(template_name="django_registration/registration_form.html"), name='register'),
     url(r'^accounts/', include('django_registration.backends.one_step.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^', include('publisher.urls')),
+    url(r'^', include('publisher.urls'))
 ]
