@@ -24,125 +24,103 @@ class Command(BaseCommand):
     help = "Loads the database with dataset information such as controlled vocabulary."
 
     def handle(self, *args, **options):
-        if Activity.objects.all():
-            print('activities already loaded')
-        else:
-            print('loading activities')
-            for project in activity_data:
-                project_obj = get_project(project['project_name'])
-                for acts in project['activities']:
-                    pre_existing_activity = Activity.objects.filter(activity=acts)
-                    if pre_existing_activity:
-                        project_obj.activities.add(pre_existing_activity[0])
-                    else:
-                        new_act = Activity(activity=acts)
-                        new_act.save()
-                        project_obj.activities.add(new_act)
-            print('act done')
+        # Activities
+        print('loading activities')
+        for project in activity_data:
+            project_obj = get_project(project['project_name'])
+            for acts in project['activities']:
+                if not Activity.objects.filter(activity=acts).exists():
+                    new_act = Activity(activity=acts)
+                    new_act.save()
+                if not project_obj.activities.filter(activity=acts).exists():
+                    activity = Activity.objects.filter(activity=acts)
+                    project_obj.activities.add(activity[0])
+        print('activities done')
 
-        if Experiment.objects.all():
-            print('experiments already loaded')
-        else:
-            print('loading experiments')
-            for project in experiment_data:
-                project_obj = get_project(project['project_name'])
-                for exps in project['experiments']:
-                    pre_existing_experiment = Experiment.objects.filter(experiment=exps)
-                    if pre_existing_experiment:
-                        project_obj.experiments.add(pre_existing_experiment[0])
-                    else:
-                        new_exp = Experiment(experiment=exps)
-                        new_exp.save()
-                        project_obj.experiments.add(new_exp)
-            print('exp done')
+        # Experiments
+        print('loading experiments')
+        for project in experiment_data:
+            project_obj = get_project(project['project_name'])
+            for exps in project['experiments']:
+                if not Experiment.objects.filter(experiment=exps).exists():
+                    new_exp = Experiment(experiment=exps)
+                    new_exp.save()
+                if not project_obj.experiments.filter(experiment=exps).exists():
+                    experiment = Experiment.objects.filter(experiment=exps)
+                    project_obj.experiments.add(experiment[0])
+        print('experiments done')
 
-        if Frequency.objects.all():
-            print('frequency already loaded')
-        else:
-            print('loading frequency')
-            for project in frequency_data:
-                project_obj = get_project(project['project_name'])
-                for freq in project['frequencies']:
-                    pre_existing_frequency = Frequency.objects.filter(frequency=freq)
-                    if pre_existing_frequency:
-                        project_obj.frequencies.add(pre_existing_frequency[0])
-                    else:
-                        new_freq = Frequency(frequency=freq)
-                        new_freq.save()
-                        project_obj.frequencies.add(new_freq)
-            print('freq done')
+        # Frequencies
+        print('loading frequencies')
+        for project in frequency_data:
+            project_obj = get_project(project['project_name'])
+            for freq in project['frequencies']:
+                if not Frequency.objects.filter(frequency=freq).exists():
+                    new_freq = Frequency(frequency=freq)
+                    new_freq.save()
+                if not project_obj.frequencies.filter(frequency=freq).exists():
+                    frequency = Frequency.objects.filter(frequency=freq)
+                    project_obj.frequencies.add(frequency[0])
+        print('frequencies done')
 
-        if Keyword.objects.all():
-            print('keyword already loaded')
-        else:
-            print('loading keyword')
-            for project in keyword_data:
-                project_obj = get_project(project['project_name'])
-                for keyw in project['keywords']:
-                    pre_existing_keyword = Keyword.objects.filter(keyword=keyw)
-                    if pre_existing_keyword:
-                        project_obj.keywords.add(pre_existing_keyword[0])
-                    else:
-                        new_keyw = Keyword(keyword=keyw)
-                        new_keyw.save()
-                        project_obj.keywords.add(new_keyw)
-            print('key done')
+        # Keywords
+        print('loading keywords')
+        for project in keyword_data:
+            project_obj = get_project(project['project_name'])
+            for keyw in project['keywords']:
+                if not Keyword.objects.filter(keyword=keyw).exists():
+                    new_keyw = Keyword(keyword=keyw)
+                    new_keyw.save()
+                if not project_obj.keywords.filter(keyword=keyw).exists():
+                    keyword = Keyword.objects.filter(keyword=keyw)
+                    project_obj.keywords.add(keyword[0])
+        print('keywords done')
 
-        if Model.objects.all():
-            print('model already loaded')
-        else:
-            print('loading model')
-            for project in model_data:
-                project_obj = get_project(project['project_name'])
-                for mod in project['models']:
-                    pre_existing_model = Model.objects.filter(model=mod)
-                    if pre_existing_model:
-                        project_obj.models.add(pre_existing_model[0])
-                    else:
-                        new_mod = Model(model=mod)
-                        new_mod.save()
-                        project_obj.models.add(new_mod)
-            print('mod done')
+        # Models
+        print('loading models')
+        for project in model_data:
+            project_obj = get_project(project['project_name'])
+            for mod in project['models']:
+                if not Model.objects.filter(model=mod).exists():
+                    new_mod = Model(model=mod)
+                    new_mod.save()
+                if not project_obj.models.filter(model=mod).exists():
+                    model = Model.objects.filter(model=mod)
+                    project_obj.models.add(model[0])
+        print('models done')
 
-        if Realm.objects.all():
-            print('realm already loaded')
-        else:
-            print('loading realm')
-            for project in realm_data:
-                project_obj = get_project(project['project_name'])
-                for realm in project['realms']:
-                    pre_existing_realm = Realm.objects.filter(realm=realm)
-                    if pre_existing_realm:
-                        project_obj.realms.add(pre_existing_realm[0])
-                    else:
-                        new_realm = Realm(realm=realm)
-                        new_realm.save()
-                        project_obj.realms.add(new_realm)
-            print('realm done')
+        # Realms
+        print('loading realms')
+        for project in realm_data:
+            project_obj = get_project(project['project_name'])
+            for realm in project['realms']:
+                if not Realm.objects.filter(realm=realm).exists():
+                    new_realm = Realm(realm=realm)
+                    new_realm.save()
+                if not project_obj.realms.filter(realm=realm).exists():
+                    realm = Realm.objects.filter(realm=realm)
+                    project_obj.realms.add(realm[0])
+        print('realms done')
 
-        if Variable.objects.all():
-            print('variable already loaded')
-        else:
-            print('loading variable')
-            for project in variable_data:
-                project_obj = get_project(project['project_name'])
-                for var in project['variables']:
-                    pre_existing_variable = Variable.objects.filter(variable=var)
-                    if pre_existing_variable:
-                        project_obj.variables.add(pre_existing_variable[0])
-                    else:
-                        new_var = Variable(variable=var)
-                        new_var.save()
-                        project_obj.variables.add(new_var)
-            print('var done')
+        # Variables
+        print('loading variables')
+        for project in variable_data:
+            project_obj = get_project(project['project_name'])
+            for var in project['variables']:
+                if not Variable.objects.filter(variable=var).exists():
+                    new_var = Variable(variable=var)
+                    new_var.save()
+                if not project_obj.variables.filter(variable=var).exists():
+                    variable = Variable.objects.filter(variable=var)
+                    project_obj.variables.add(variable[0])
+        print('variables done')
 
-        if JournalOptions.objects.all():
-            print('journal names already loaded')
-        else:
-            print('loading journal names')
-            for jour in journal_names:
-                new_jour = JournalOptions(journal_name=jour)
+        # Journals
+        print('loading journal names')
+        for jour in journal_names:
+            new_jour = JournalOptions(journal_name=jour)
+            if not JournalOptions.objects.filter(journal_name=jour).exists():
                 new_jour.save()
-            print('journal names done')
+        print('journal names done')
 
         print('all done')
