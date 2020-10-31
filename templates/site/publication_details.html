@@ -6,7 +6,7 @@
     {% csrf_token %}
     {% if invalid_form %}
     <div class="container-fluid alert alert-danger">
-        Required information, marked by an "*", is missing below.
+        Required information, marked by an "*" below, is missing or incorrect.
     </div>
     {% else %}
     <div class="container-fluid alert alert-info">
