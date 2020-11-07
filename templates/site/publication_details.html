@@ -6,7 +6,7 @@
     {% csrf_token %}
     {% if invalid_form %}
     <div class="container-fluid alert alert-danger">
-        Required information, marked by an "*", is missing below.
+        Required information, marked by an "*" below, is missing or incorrect.
     </div>
     {% else %}
     <div class="container-fluid alert alert-info">
@@ -45,7 +45,7 @@
                 {% endfor %}
                 </div>
                 <div id="book-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                     {% for field in book_form %}
                         {% if not field.field.required %}
@@ -70,7 +70,7 @@
                 {% endfor %}
                 </div>
                 <div id="conference-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                     {% for field in conference_form  %}
                         {% if not field.field.required %}
@@ -98,7 +98,7 @@
                 {{ journal_form.journal_name }}
                 </div>
                 <div id="journal-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                         <div>
                         {{ journal_form.volume_number.label_tag }}
@@ -134,7 +134,7 @@
                 {% endfor %}
                 </div>
                 <div id="magazine-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                     {% for field in magazine_form  %}
                         {% if not field.field.required %}
@@ -159,7 +159,7 @@
                 {% endfor %}
                 </div>
                 <div id="poster-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                     {% for field in poster_form  %}
                         {% if not field.field.required %}
@@ -189,7 +189,7 @@
                 {% endfor %}
                 </div>
                 <div id="technical-optional-inputs" class="optional-inputs">
-                    <h5 class="btn btn-sm btn-info">Optional Info</h5>
+                    <h5 class="btn btn-sm btn-info">Toggle for optional info</h5>
                     <div class="well well-sm">
                     {% for field in technical_form  %}
                         {% if not field.field.required %}
