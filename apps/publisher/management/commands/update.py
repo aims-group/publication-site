@@ -53,9 +53,9 @@ class Command(BaseCommand):
                 # Replace old experiment in publications with new one
                 if Experiment.objects.filter(experiment=old_exp).exists():
                     old_experiment = Experiment.objects.filter(experiment=old_exp)
-                    for pub in publications.filter(experiment=old_experiment[0]):
-                        pub.experiment.add(Experiment.objects.filter(experiment=new_exp)[0])
-                        pub.experiment.filter(experiment=old_exp).delete()
+                    for pub in publications.filter(experiments=old_experiment[0]):
+                        pub.experiments.add(Experiment.objects.filter(experiment=new_exp)[0])
+                        pub.experiments.filter(experiment=old_exp).delete()
         print('deleting old experiments')
         # Remove old experiments from table
         for old_exp in removed_experiments:

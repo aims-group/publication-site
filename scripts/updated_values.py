@@ -62,4 +62,22 @@ replaced_experiments = {
     'CMIP6': {}
 }
 
-removed_experiments = []
+removed_experiments = [
+    'esmFdbk2',
+    'abrupt4xCO2',
+    'amip4xCO2',
+    'amipFuture',
+    'amip4K',
+    'aqua4xCO2',
+    'aquaControl',
+    'aqua4K',
+    'esmHistorical',
+    'esmControl',
+    'historicalGHG',
+    'historicalNat',
+    'historicalExt',
+    'rcp26',
+    'rcp45',
+    'rcp60',
+    'rcp85'
+]
