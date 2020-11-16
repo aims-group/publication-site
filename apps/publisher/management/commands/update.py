@@ -1,6 +1,9 @@
 from django.core.management import BaseCommand
 from publisher.models import Experiment, Frequency, Project
-from scripts.updated_values import replaced_frequencies, removed_frequencies
+from scripts.updated_values import replaced_frequencies, \
+                                   removed_frequencies, \
+                                   replaced_experiments, \
+                                   removed_experiments
 
 
 class Command(BaseCommand):
@@ -33,3 +36,29 @@ class Command(BaseCommand):
             if Frequency.objects.filter(frequency=old_freq).exists():
                 Frequency.objects.filter(frequency=old_freq).delete()
         print('frequencies done')
+
+        # Experiments
+        print('replacing publication experiments')
+        for project_name, experiments in replaced_experiments.items():
+            project = Project.objects.filter(project=project_name)[0]
+            publications = Project.objects.get(project__iexact=project_name).publication_set
+            for old_exp, new_exp in experiments.items():
+                # Add new experiment if not already in the table
+                if not Experiment.objects.filter(experiment=new_exp).exists():
+                    new_experiment = Experiment(experiment=new_exp)
+                    new_experiment.save()
+                # Add new experiment if not already in the project
+                if not project.experiments.filter(experiment=new_exp).exists():
+                    project.experiments.add(Experiment.objects.filter(experiment=new_exp)[0])
+                # Replace old experiment in publications with new one
+                if Experiment.objects.filter(experiment=old_exp).exists():
+                    old_experiment = Experiment.objects.filter(experiment=old_exp)
+                    for pub in publications.filter(experiment=old_experiment[0]):
+                        pub.experiment.add(Experiment.objects.filter(experiment=new_exp)[0])
+                        pub.experiment.filter(experiment=old_exp).delete()
+        print('deleting old experiments')
+        # Remove old experiments from table
+        for old_exp in removed_experiments:
+            if Experiment.objects.filter(experiment=old_exp).exists():
+                Experiment.objects.filter(experiment=old_exp).delete()
+        print('experiments done')
