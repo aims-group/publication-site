@@ -19,6 +19,7 @@ replaced_frequencies = {
         'yrPt': 'Yearly'
     }
 }
+
 removed_frequencies = [
     '1hr',
     '1hrCM',
@@ -37,3 +38,28 @@ removed_frequencies = [
     'yr',
     'yrPt'
 ]
+
+replaced_experiments = {
+    'CMIP5': {
+        'esmFdbk2': '1pctCO2-rad',
+        'abrupt4xCO2': 'abrupt-4xCO2',
+        'amip4xCO2': 'amip-4xCO2',
+        'amipFuture': 'amip-future4K',
+        'amip4K': 'amip-p4K',
+        'aqua4xCO2': 'aqua-4xCO2',
+        'aquaControl': 'aqua-control',
+        'aqua4K': 'aqua-p4K',
+        'esmHistorical': 'esm-hist',
+        'esmControl': 'esm-piControl',
+        'historicalGHG': 'hist-GHG',
+        'historicalNat': 'hist-nat',
+        'historicalExt': 'historical-ext',
+        'rcp26': 'rcp26-cmip5',
+        'rcp45': 'rcp45-cmip5',
+        'rcp60': 'rcp60-cmip5',
+        'rcp85': 'rcp85-cmip5'
+    },
+    'CMIP6': {}
+}
+
+removed_experiments = []
