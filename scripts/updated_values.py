@@ -79,5 +79,6 @@ removed_experiments = [
     'rcp26',
     'rcp45',
     'rcp60',
-    'rcp85'
+    'rcp85',
+    'Other'
 ]
