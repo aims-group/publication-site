@@ -47,6 +47,7 @@ journal_names = [
     'Global Change Biology',
     'Hydrology and Earth System Sciences',
     'Hydrology and Earth System Sciences Discussions',
+    'ICES Journal of Marine Science',
     'IEEE Transactions on Geoscience and Remote Sensing',
     'International Journal of Climatology',
     'Izvestiya, Atmospheric and Oceanic Physics',
