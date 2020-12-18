@@ -18,11 +18,11 @@
     {% else %}
     <a id="show-citations"
        class="btn btn-sm btn-info"
-       href="?type={{type}}&option={{option}}&display=citations"
+       href="?type={{type}}&option={{option|urlencode}}&display=citations"
        target="_blank">Show Citations</a>
        <a id="show-bibtex"
        class="btn btn-sm btn-info"
-       href="?type={{type}}&option={{option}}&display=bibtex"
+       href="?type={{type}}&option={{option|urlencode}}&display=bibtex"
        target="_blank">Show BibTex</a>
     {% endif %}
 </div>
