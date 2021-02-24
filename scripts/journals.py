@@ -40,6 +40,7 @@ journal_names = [
     'Eos',
     'Fractals',
     'Geophysical Research Letters',
+    'Geoscience Data Journal',
     'Geoscience and Remote Sensing Letters',
     'Geoscientific Model Development',
     'Geoscientific Model Development Discussions',
