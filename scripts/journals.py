@@ -95,6 +95,7 @@ journal_names = [
     'Science',
     'Science Advances',
     'Scientific American',
+    'Scientific Reports',
     'Tellus',
     'Terrestrial, Atmospheric and Oceanic Sciences',
     'The Cryosphere',
