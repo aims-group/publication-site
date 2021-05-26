@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import forms, formset_factory, modelformset_factory
 from .forms import PublicationForm, AuthorFormSet, BookForm, ConferenceForm, JournalForm, MagazineForm, PosterForm, AuthorForm
 from .forms import PresentationForm, TechnicalReportForm, OtherForm, AdvancedSearchForm, DoiBatchForm
-from .forms import ActivityForm, ExperimentForm, FrequencyForm, KeywordForm, ModelForm, RealmForm, VariableForm
+from .forms import ActivityForm, ExperimentForm, FrequencyForm, ModelForm, RealmForm, VariableForm
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.db import transaction
@@ -30,7 +30,6 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
     
     #Remove any checkboxes that were unchecked in an edit
     publication.frequency.remove(*[f for f in publication.frequency.all() if str(f.id) not in request.POST.getlist("frequency")]) 
-    publication.keywords.remove(*[k for k in publication.keywords.all() if str(k.id) not in request.POST.getlist("keyword")]) 
     publication.activities.remove(*[a for a in publication.activities.all() if str(a.id) not in request.POST.getlist("activity")]) 
     publication.experiments.remove(*[e for e in publication.experiments.all() if str(e.id) not in request.POST.getlist("experiment")]) 
     publication.realms.remove(*[r for r in publication.realms.all() if str(r.id) not in request.POST.getlist("realm")]) 
@@ -38,7 +37,6 @@ def save_publication(pub_form, request, author_form_set, pub_type, edit):
 
     #Add any checkboxes that were checked
     publication.frequency.add(*[Frequency.objects.get(id=frequency_id) for frequency_id in request.POST.getlist("frequency")])
-    publication.keywords.add(*[Keyword.objects.get(id=keywords_id) for keywords_id in request.POST.getlist("keyword")])
     publication.activities.add(*[Activity.objects.get(id=activity_id) for activity_id in request.POST.getlist("activity")])
     publication.experiments.add(*[Experiment.objects.get(id=experiment_id) for experiment_id in request.POST.getlist("experiment")])
     publication.realms.add(*[Realm.objects.get(id=realm_id) for realm_id in request.POST.getlist("realm")])
@@ -140,7 +138,6 @@ def init_forms(author_form, request=None, instance=None):
     act_form = ActivityForm(request)
     exp_form = ExperimentForm(request)
     freq_form = FrequencyForm(request)
-    keyword_form = KeywordForm(request)
     model_form = ModelForm(request)
     realm_form = RealmForm(request)
     var_form = VariableForm(request)
@@ -150,7 +147,7 @@ def init_forms(author_form, request=None, instance=None):
             'journal_form': journal_form, 'magazine_form': magazine_form, 'poster_form': poster_form,
             'presentation_form': presentation_form, 'technical_form': technical_form,
             'other_form': other_form, 'act_form': act_form, 'exp_form': exp_form, 'freq_form': freq_form,
-            'keyword_form': keyword_form, 'model_form': model_form, 'realm_form': realm_form, 'var_form': var_form, 'all_projects': all_projects}
+            'model_form': model_form, 'realm_form': realm_form, 'var_form': var_form, 'all_projects': all_projects}
 
 
 def get_all_options():
@@ -158,7 +155,6 @@ def get_all_options():
     all_options['activity'] = "Activity"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
-    all_options['keyword'] = "Keyword"
     all_options['model'] = "Model"
     all_options['realm'] = "Realm"
     all_options['status'] = "Status"
@@ -242,20 +238,6 @@ def view(request, project_name="all"):
             frqs['count'] = publications.filter(frequency=frq).count()
             data[str(frq.frequency)] = frqs
         publications = publications.filter(frequency=Frequency.objects.filter(frequency=option)[0]).order_by("-publication_date")
-        pubs["pages"] = data
-
-    elif page_filter == 'keyword':
-        option = request.GET.get("option", "Abrupt change")
-        pubs["option"] = option
-        for kyw in Keyword.objects.all().order_by('keyword'):
-            if publications.filter(keywords=kyw).count() == 0:
-                continue
-            kyws = {}
-            kyws['type'] = 'keyword'
-            kyws['options'] = str(kyw.keyword)
-            kyws['count'] = publications.filter(keywords=kyw).count()
-            data[str(kyw.keyword)] = kyws
-        publications = publications.filter(keywords=Keyword.objects.filter(keyword=option)[0]).order_by("-publication_date")
         pubs["pages"] = data
 
     elif page_filter == 'model':
@@ -510,13 +492,6 @@ def advanced_search(request):
                     for freq in form.cleaned_data['frequency']:
                         pubs = pubs.filter(frequency__frequency=freq)
 
-            if 'keyword' in list(form.cleaned_data.keys()) and form.cleaned_data['keyword']:
-                if meta_search_by_any == "on":
-                    meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(keywords__keyword__in=form.cleaned_data['keyword'])
-                else:
-                    for keyw in form.cleaned_data['keyword']:
-                        pubs = pubs.filter(keywords__keyword=keyw)
-
             if 'model' in list(form.cleaned_data.keys()) and form.cleaned_data['model']:
                 if meta_search_by_any == "on":
                     meta_any_mode_pubs = meta_any_mode_pubs | pubs.filter(model__model__in=form.cleaned_data['model'])
@@ -709,7 +684,6 @@ def edit(request, pubid):
                     'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                     'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                     'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
-                    'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                     'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
                     'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                     'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
@@ -720,7 +694,6 @@ def edit(request, pubid):
                     'act_form': ActivityForm(queryset=project.activities),
                     'exp_form': ExperimentForm(queryset=project.experiments),
                     'freq_form': FrequencyForm(queryset=project.frequencies),
-                    'keyword_form': KeywordForm(queryset=project.keywords),
                     'model_form': ModelForm(queryset=project.models),
                     'realm_form': RealmForm(queryset=project.realms),
                     'var_form': VariableForm(queryset=project.variables),
@@ -775,7 +748,6 @@ def edit(request, pubid):
                         'exp_form': ExperimentForm(initial={'experiment': [box.id for box in publication.experiments.all()]},
                                                 queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [box.id for box in publication.frequency.all()]}, queryset=project.frequencies),
-                        'keyword_form': KeywordForm(initial={'keyword': [box.id for box in publication.keywords.all()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [box.id for box in publication.model.all()]}, queryset=project.models),
                         'realm_form': RealmForm(initial={'realm': [box.id for box in publication.realms.all()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [box.id for box in publication.variables.all()]}, queryset=project.variables),
@@ -786,7 +758,6 @@ def edit(request, pubid):
                         'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
-                        'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
                         'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
@@ -819,7 +790,6 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
                 'act_form': ActivityForm(queryset=project.activities),
                 'exp_form': ExperimentForm(queryset=project.experiments),
                 'freq_form': FrequencyForm(queryset=project.frequencies),
-                'keyword_form': KeywordForm(queryset=project.keywords),
                 'model_form': ModelForm(queryset=project.models),
                 'realm_form': RealmForm(queryset=project.realms),
                 'var_form': VariableForm(queryset=project.variables),
@@ -847,7 +817,6 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
                         'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
-                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
                         'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
@@ -858,7 +827,6 @@ def new(request, batch=False, batch_doi="", batch_doi_id=0): # Defaults to singl
                         'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
-                        'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
                         'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
@@ -1082,7 +1050,6 @@ def process_dois(request):
                         'act_form': ActivityForm(initial={'activity': [int(box) for box in request.POST.getlist("activity") if box.isdigit()]}, queryset=project.activities),
                         'exp_form': ExperimentForm(initial={'experiment': [int(box) for box in request.POST.getlist("experiment") if box.isdigit()]}, queryset=project.experiments),
                         'freq_form': FrequencyForm(initial={'frequency': [int(box) for box in request.POST.getlist("frequency") if box.isdigit()]}, queryset=project.frequencies),
-                        'keyword_form': KeywordForm(initial={'keyword': [int(box) for box in request.POST.getlist("keyword") if box.isdigit()]}, queryset=project.keywords),
                         'model_form': ModelForm(initial={'model': [int(box) for box in request.POST.getlist("model") if box.isdigit()]}, queryset=project.models),
                         'realm_form': RealmForm(initial={'realm': [int(box) for box in request.POST.getlist("realm") if box.isdigit()]}, queryset=project.realms),
                         'var_form': VariableForm(initial={'variable': [int(box) for box in request.POST.getlist("variable") if box.isdigit()]}, queryset=project.variables),
@@ -1093,7 +1060,6 @@ def process_dois(request):
                         'act_form': ActivityForm(queryset=project.activities),
                         'exp_form': ExperimentForm(queryset=project.experiments),
                         'freq_form': FrequencyForm(queryset=project.frequencies),
-                        'keyword_form': KeywordForm(queryset=project.keywords),
                         'model_form': ModelForm(queryset=project.models),
                         'realm_form': RealmForm(queryset=project.realms),
                         'var_form': VariableForm(queryset=project.variables),
