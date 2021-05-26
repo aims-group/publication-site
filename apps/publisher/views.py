@@ -255,7 +255,7 @@ def view(request, project_name="all"):
         pubs["pages"] = data
 
     elif page_filter == 'realm':
-        option = request.GET.get("option", "aerosol")
+        option = request.GET.get("option", "aerosol - Aerosol")
         pubs["option"] = option
         for realm in Realm.objects.all().order_by('realm'):
             if publications.filter(realms=realm).count() == 0:

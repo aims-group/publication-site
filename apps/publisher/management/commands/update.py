@@ -1,9 +1,11 @@
 from django.core.management import BaseCommand
-from publisher.models import Experiment, Frequency, Project
+from publisher.models import Experiment, Frequency, Project, Realm
 from scripts.updated_values import replaced_frequencies, \
                                    removed_frequencies, \
                                    replaced_experiments, \
-                                   removed_experiments
+                                   removed_experiments, \
+                                   replaced_realms, \
+                                   removed_realms
 
 
 class Command(BaseCommand):
@@ -62,3 +64,29 @@ class Command(BaseCommand):
             if Experiment.objects.filter(experiment=old_exp).exists():
                 Experiment.objects.filter(experiment=old_exp).delete()
         print('experiments done')
+
+        # Realms
+        print('replacing publication realms')
+        for project_name, realms in replaced_realms.items():
+            project = Project.objects.filter(project=project_name)[0]
+            publications = Project.objects.get(project__iexact=project_name).publication_set
+            for old_rlm, new_rlm in realms.items():
+                # Add new realm if not already in the table
+                if not Realm.objects.filter(realm=new_rlm).exists():
+                    new_realm = Realm(realm=new_rlm)
+                    new_realm.save()
+                # Add new realm if not already in the project
+                if not project.realms.filter(realm=new_rlm).exists():
+                    project.realms.add(Realm.objects.filter(realm=new_rlm)[0])
+                # Replace old realm in publications with new one
+                if Realm.objects.filter(realm=old_rlm).exists():
+                    old_realm = Realm.objects.filter(realm=old_rlm)
+                    for pub in publications.filter(realms=old_realm[0]):
+                        pub.realms.add(Realm.objects.filter(realm=new_rlm)[0])
+                        pub.realms.filter(realm=old_rlm).delete()
+        print('deleting old realms')
+        # Remove old realms from table
+        for old_rlm in removed_realms:
+            if Realm.objects.filter(realm=old_rlm).exists():
+                Realm.objects.filter(realm=old_rlm).delete()
+        print('realms done')

@@ -82,3 +82,28 @@ removed_experiments = [
     'rcp85',
     'Other'
 ]
+
+replaced_realms = {
+    'CMIP5': {},
+    'CMIP6': {
+        'aerosol': 'aerosol - Aerosol',
+        'atmos': 'atmos - Atmosphere',
+        'atmosChem': 'atmosChem - Atmospheric Chemistry',
+        'land': 'land - Land Surface',
+        'landIce': 'landIce - Land Ice',
+        'ocean': 'ocean - Ocean',
+        'ocnBgchem': 'ocnBgchem - Ocean Biogeochemistry',
+        'seaIce': 'seaIce - Sea Ice'
+    }
+}
+
+removed_realms = [
+        'aerosol',
+        'atmos',
+        'atmosChem',
+        'land',
+        'landIce',
+        'ocean',
+        'ocnBgchem',
+        'seaIce'
+]
