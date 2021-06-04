@@ -1,7 +1,6 @@
 variable_data = [
     {'project_name': 'CMIP5',
      'variables': [
-         'Other',
          'abs550aer - Ambient Aerosol Absorption Optical Thickness at 550nm',
          'acabf - Surface Mass Balance Flux',
          'acabfIs - Ice Sheet Surface Mass Balance Flux',
@@ -1333,7 +1332,6 @@ variable_data = [
      ]},
     {'project_name': 'CMIP6',
      'variables': [
-         'Other',
          'abs550aer - Ambient Aerosol Absorption Optical Thickness at 550nm',
          'acabf - Surface Mass Balance Flux',
          'acabfIs - Ice Sheet Surface Mass Balance Flux',
