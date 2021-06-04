@@ -1573,6 +1573,7 @@ replaced_variables = {
 }
 
 removed_variables = [
+        'Other',
         'abs550aer - Atmosphere Absorption Optical Thickness Due To Ambient Aerosol Particles',
         'acabf - Land Ice Surface Specific Mass Balance Flux',
         'acabfIs - Land Ice Surface Specific Mass Balance Flux',
