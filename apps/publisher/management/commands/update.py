@@ -1,11 +1,13 @@
 from django.core.management import BaseCommand
-from publisher.models import Experiment, Frequency, Project, Realm
+from publisher.models import Experiment, Frequency, Project, Realm, Variable
 from scripts.updated_values import replaced_frequencies, \
                                    removed_frequencies, \
                                    replaced_experiments, \
                                    removed_experiments, \
                                    replaced_realms, \
-                                   removed_realms
+                                   removed_realms, \
+                                   replaced_variables, \
+                                   removed_variables
 
 
 class Command(BaseCommand):
@@ -90,3 +92,29 @@ class Command(BaseCommand):
             if Realm.objects.filter(realm=old_rlm).exists():
                 Realm.objects.filter(realm=old_rlm).delete()
         print('realms done')
+
+        # Variables
+        print('replacing publication variables')
+        for project_name, variables in replaced_variables.items():
+            project = Project.objects.filter(project=project_name)[0]
+            publications = Project.objects.get(project__iexact=project_name).publication_set
+            for old_var, new_var in variables.items():
+                # Add new variable if not already in the table
+                if not Variable.objects.filter(variable=new_var).exists():
+                    new_realm = Variable(variable=new_var)
+                    new_realm.save()
+                # Add new variable if not already in the project
+                if not project.variables.filter(variable=new_var).exists():
+                    project.variables.add(Variable.objects.filter(variable=new_var)[0])
+                # Replace old variable in publications with new one
+                if Variable.objects.filter(variable=old_var).exists():
+                    old_realm = Variable.objects.filter(variable=old_var)
+                    for pub in publications.filter(variables=old_realm[0]):
+                        pub.variables.add(Variable.objects.filter(variable=new_var)[0])
+                        pub.variables.filter(variable=old_var).delete()
+        print('deleting old variables')
+        # Remove old variables from table
+        for old_var in removed_variables:
+            if Variable.objects.filter(variable=old_var).exists():
+                Variable.objects.filter(variable=old_var).delete()
+        print('variables done')

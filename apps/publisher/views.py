@@ -308,8 +308,8 @@ def view(request, project_name="all"):
         pubs["pages"] = data
 
     elif page_filter == 'variable':
-        option = request.GET.get("option", "air pressure")
-        pubs["option"] = request.GET.get("option", "air pressure")
+        option = request.GET.get("option", "phalf - Pressure on Model Half-Levels")
+        pubs["option"] = request.GET.get("option", "phalf - Pressure on Model Half-Levels")
         for var in Variable.objects.all().order_by('variable'):
             if publications.filter(variables=var).count() == 0:
                 continue
