@@ -10,11 +10,25 @@ html, body {
     min-height: 100%;
     height: auto !important;
     height: 100%;
-    margin: 0 auto 0em;
+    margin: 0 auto 4em;
 }
 
-.footer, .push {
+.push {
     height: 1em;
+}
+
+.footer {
+    position: fixed;
+    left: 0em;
+    bottom: 0em;
+    padding: 0.5em;
+    height: auto;
+    width: 100%;
+    background-color: #e7e7e7;;
+}
+
+.footer p {
+    margin: 0em;
 }
 
 div.navbar-header>a.navbar-brand,
