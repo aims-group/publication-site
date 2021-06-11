@@ -1026,12 +1026,11 @@ def process_dois(request):
             return redirect(reverse('add_dois'), request=request)
     else: # request.method == POST
         submit_success, all_forms = process_publication(request)
+        try:
+            doi_id = int(request.POST["batch_doi_id"])
+        except:
+            doi_id = 0
         if(submit_success):
-            submitted_doi = all_forms['pub_form'].cleaned_data["doi"]
-            try:
-                doi_id = int(request.POST["batch_doi_id"])
-            except:
-                doi_id = 0
             pending_dois = PendingDoi.objects.filter(user=request.user, id=doi_id)
             if pending_dois.count() > 0: # if the doi that was saved was a pending doi
                 pending_dois[0].delete()  # remove it from the pool of pending entries
@@ -1069,7 +1068,8 @@ def process_dois(request):
             all_forms.update({'selected_projects': selected_projects})
             all_forms.update({'no_projects_selected': no_projects_selected})
             all_forms.update({'batch': True})
-            all_forms.update({'batch_doi': ""})
+            all_forms.update({'batch_doi': doi_id})
+            all_forms.update({'batch_doi_id': doi_id})
             all_forms.update({'invalid_form': True})
             return render(request, 'site/publication_details.html', all_forms, status=400)
 
