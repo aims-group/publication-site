@@ -87,6 +87,7 @@ journal_names = [
     'Physics Today',
     'Physics and Chemistry of the Earth',
     'Proceedings of the National Academy of Sciences',
+    'Progress in Earth and Planetary Science',
     'Quarterly Journal Royal Meteorological Society',
     'Quaternary Science Reviews',
     'Radio Science',
