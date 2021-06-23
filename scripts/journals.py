@@ -76,6 +76,7 @@ journal_names = [
     'Monthly Weather Review',
     'Nature',
     'Nature Climate Change',
+    'Nature Communications',
     'Nature Geoscience',
     'Nonlinear Processes in Geophysics',
     'Nuclear Science Engineering',
