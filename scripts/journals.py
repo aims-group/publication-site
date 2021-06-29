@@ -64,6 +64,7 @@ journal_names = [
     'Journal of Climate',
     'Journal of Geophysical Research',
     'Journal of Geophysical Research-Atmospheres',
+    'Journal of Geophysical Research: Oceans',
     'Journal of Hydrometeorology',
     'Journal of Molecular Structure',
     'Journal of Oceanography',
