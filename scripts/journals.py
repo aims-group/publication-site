@@ -47,6 +47,7 @@ journal_names = [
     "Geoscientific Model Development Discussions",
     "Global Biogeochemical Cycles",
     "Global Change Biology",
+    "Global and Planetary Change",
     "Hydrology and Earth System Sciences",
     "Hydrology and Earth System Sciences Discussions",
     "ICES Journal of Marine Science",
