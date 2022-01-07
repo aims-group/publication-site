@@ -28,6 +28,7 @@ journal_names = [
     "Climatic Change",
     "Contributions to Atmospheric Physics",
     "Current Science",
+    "Data in Brief",
     "Deep Sea Research",
     "Dynamics of Atmospheres and Oceans",
     "ECMWF Newsletter",
