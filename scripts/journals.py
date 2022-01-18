@@ -111,6 +111,7 @@ journal_names = [
     "The Cryosphere Discussions",
     "The Holocene",
     "Theoretical and Applied Climatology",
+    "Water",
     "Water Resources Research",
     "Weather and Climate Extremes",
     "Weather and Forecasting"
