@@ -1,4 +1,5 @@
 journal_names = [
+    "AGU Advances",
     "Acta Meteorologica Sinica",
     "Advances in Atmospheric Sciences",
     "Advances in Geosciences",
