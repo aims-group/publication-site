@@ -106,6 +106,7 @@ journal_names = [
     "Science Advances",
     "Scientific American",
     "Scientific Reports",
+    "Sustainability",
     "Tellus",
     "Terrestrial, Atmospheric and Oceanic Sciences",
     "The Cryosphere",
