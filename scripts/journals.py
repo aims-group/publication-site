@@ -116,5 +116,6 @@ journal_names = [
     "Water",
     "Water Resources Research",
     "Weather and Climate Extremes",
-    "Weather and Forecasting"
+    "Weather and Forecasting",
+    "npj Climate and Atmospheric Science"
 ]
