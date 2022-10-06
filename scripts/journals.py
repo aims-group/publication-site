@@ -42,6 +42,7 @@ journal_names = [
     "Environmental Science & Technology",
     "Eos",
     "Fractals",
+    "Frontiers in Earth Science",
     "Geophysical Research Letters",
     "Geoscience Data Journal",
     "Geoscience and Remote Sensing Letters",
