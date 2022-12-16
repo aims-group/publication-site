@@ -103,6 +103,7 @@ journal_names = [
     "Remote Sensing",
     "Remote Sensing Environment",
     "Reviews of Geophysics",
+    "Royal Society Open Science",
     "SOLA",
     "Science",
     "Science Advances",
