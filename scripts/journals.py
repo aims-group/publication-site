@@ -19,6 +19,7 @@ journal_names = [
     "Australian Meteorological and Oceanographic Journal",
     "Biogeosciences",
     "Biogeosciences Discussions",
+    "Biological Conservation",
     "Boundary-Layer Meteorology",
     "Bulletin of the American Meteorological Society",
     "Chines Science bulletin",
