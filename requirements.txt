@@ -3,4 +3,4 @@ django-recaptcha==2.0.5
 django-registration==3.1.2
 django-widget-tweaks==1.4.5
 PyMySQL==0.9.3 
-requests==2.22.0
+requests==2.31.0
