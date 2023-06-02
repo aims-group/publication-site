@@ -43,6 +43,7 @@ journal_names = [
     "Environmental Research Letters",
     "Environmental Science & Technology",
     "Eos",
+    "Forensic Science International: Reports",
     "Fractals",
     "Frontiers in Earth Science",
     "Geophysical Research Letters",
