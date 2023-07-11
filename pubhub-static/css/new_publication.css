@@ -10,6 +10,10 @@
     overflow-x: hidden;
 }
 
+.meta-form-list ul {
+    list-style-type: none;
+}
+
 .md-font {
     font-size: 12pt;
 }
