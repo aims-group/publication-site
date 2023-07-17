@@ -355,7 +355,7 @@ class KeywordForm(forms.ModelForm):
 
 
 class ModelForm(forms.ModelForm):
-    model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all(), required=False)
+    model = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Model.objects.all(), required=False, label='Source')
 
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)

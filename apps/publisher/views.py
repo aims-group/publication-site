@@ -155,7 +155,7 @@ def get_all_options():
     all_options['activity'] = "Activity"
     all_options['experiment'] = "Experiment"
     all_options['frequency'] = "Frequency"
-    all_options['model'] = "Model"
+    all_options['model'] = "Source"
     all_options['realm'] = "Realm"
     all_options['status'] = "Status"
     all_options['type'] = "Type"
