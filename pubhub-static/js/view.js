@@ -199,7 +199,7 @@ $('#facet-links-container input.radio-sort').change(function(){
                     var link = data.models[i].replace(' ', '%20')
                     rows += "<a href=\"?type=model&option=" + link + "\">" + data.models[i] + "<a/><br/>";
                 }
-                info_titles += "<th>Models</th>";
+                info_titles += "<th>Sources</th>";
                 info_columns += "<td>" + rows + "</td>";
               }
               if(data.frequency.length > 0){

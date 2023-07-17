@@ -4,6 +4,10 @@
   overflow-x: hidden;
 }
 
+.meta-form-list ul {
+    list-style-type: none;
+}
+
 .inline-checkboxes > div.panel-body{
     display: flex;
     flex-direction: row;
