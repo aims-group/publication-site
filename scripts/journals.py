@@ -110,6 +110,7 @@ journal_names = [
     "SOLA",
     "Science",
     "Science Advances",
+    "Science China Earth Sciences",
     "Scientific American",
     "Scientific Reports",
     "Sustainability",
