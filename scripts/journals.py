@@ -22,6 +22,7 @@ journal_names = [
     "Biological Conservation",
     "Boundary-Layer Meteorology",
     "Bulletin of the American Meteorological Society",
+    "CATENA",
     "Chines Science bulletin",
     "Climate Dynamics",
     "Climate Research",
