@@ -40,6 +40,7 @@ journal_names = [
     "Earth Interactions",
     "Earth System Dynamics",
     "Earth and Planetary Science Letters",
+    "Earth and Space Science",
     "Earth's Future",
     "Environmental Research Letters",
     "Environmental Science & Technology",
