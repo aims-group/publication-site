@@ -3,13 +3,13 @@ from django.contrib.auth.forms import AuthenticationForm
 from django_registration.forms import RegistrationFormUniqueEmail
 from django_registration.backends.one_step.views import RegistrationView
 from django.contrib.auth.models import User
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Checkbox
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 from django.core.exceptions import ValidationError
 from django.db.models.functions import Lower
 
 from .models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
-# from captcha.fields import ReCaptchaField
+# from django_recaptcha.fields import ReCaptchaField
 
 # Advanced Search form helper functions. 
 # Django will try to execute these statements before migrations are run, unless they are wrapped in a function like below
@@ -46,7 +46,7 @@ class LoginForm(AuthenticationForm):
 class RegistrationForm(RegistrationFormUniqueEmail):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
                              required=True)
-    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox(attrs={'data-theme': 'light'}))
+    django_recaptcha = ReCaptchaField(widget=ReCaptchaV2Checkbox(attrs={'data-theme': 'light'}))
     password1 = forms.CharField(label="Password",
                                 widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password', 'autocomplete': 'off'}))
     password2 = forms.CharField(label="Confirm Password",
