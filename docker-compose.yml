@@ -1,6 +1,7 @@
 version: "3"
 
 volumes:
+  local_django_log: {}
   local_postgres_data: {}
   local_postgres_data_backups: {}
 
@@ -27,6 +28,8 @@ services:
     container_name: django
     depends_on:
       - postgres
+    volumes:
+      - local_django_log:/var/log/django
     env_file:
       - ./.envs/.django
       - ./.envs/.postgres

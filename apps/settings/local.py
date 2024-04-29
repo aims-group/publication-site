@@ -2,7 +2,7 @@ import os
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", False)
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 TEMPLATES = [
@@ -36,12 +36,38 @@ MIDDLEWARE = [
 DATABASES = {
   'default': {
       'ENGINE': 'django.db.backends.postgresql',
-      'NAME': os.environ.get("POSTGRES_DB"),
-      'USER': os.environ.get("POSTGRES_USER"),             # Not used with sqlite3.
-      'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),         # Not used with sqlite3.
-      'HOST': os.environ.get("POSTGRES_HOST"),             # Not used with sqlite3.
-      'PORT': os.environ.get("POSTGRES_PORT"),             # Not used with sqlite3.
+      'NAME': os.environ.get('POSTGRES_DB', default=''),
+      'USER': os.environ.get('POSTGRES_USER', default=''),             # Not used with sqlite3.
+      'PASSWORD': os.environ.get('POSTGRES_PASSWORD', default=''),         # Not used with sqlite3.
+      'HOST': os.environ.get('POSTGRES_HOST', default=''),             # Not used with sqlite3.
+      'PORT': os.environ.get('POSTGRES_PORT', default=''),             # Not used with sqlite3.
   }
+}
+
+LOGGING = {
+ "version": 1,
+ "disable_existing_loggers": False,
+ "filters": {
+   "require_debug_false": {
+     "()": "django.utils.log.RequireDebugFalse"
+   }
+ },
+ "handlers": {
+   "applogfile": {
+     "level": os.environ.get("DJANGO_LOGGING_LEVEL", default="INFO"),
+     "class": "logging.handlers.RotatingFileHandler",
+     "filename":  os.environ.get("DJANGO_LOGGING_FILENAME", default="/var/log/publications-site.log"),
+     "maxBytes": 1024 * 1024 * 15,
+     "backupCount": 10
+   }
+ },
+ "loggers": {
+   "django.request": {
+     "handlers": ["applogfile"],
+     "level": os.environ.get("DJANGO_LOGGING_LEVEL", default="INFO"),
+     "propagate": True
+   },
+ }
 }
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", default='29l93ms9m32390#20-z!32ad38')
