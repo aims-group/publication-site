@@ -1,0 +1,36 @@
+version: "3"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/production/postgres/Dockerfile
+    image: pubhub_local_postgres
+    container_name: postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+      - local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.postgres
+    ports:
+      - "5433:5432"
+
+  django:
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    image: pubhub_local_django
+    container_name: django
+    depends_on:
+      - postgres
+    env_file:
+      - ./.envs/.django
+      - ./.envs/.postgres
+    ports:
+      - "8000:8000"
+    restart: always
+    command: /start

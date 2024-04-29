@@ -1,9 +1,3 @@
-import os
-from local_settings import *
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
 CSRF_COOKIE_HTTPONLY = True
 # Application definition
 
@@ -69,6 +63,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+# Set prefix of URL if site is served from a subdirectory 
+# (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = '/pubhub'.)
+URL_PREFIX = ''
+
 STATIC_ROOT = 'static'
 
 STATIC_URL = '{}/static/'.format(URL_PREFIX)
@@ -76,6 +74,9 @@ STATIC_URL = '{}/static/'.format(URL_PREFIX)
 LOGIN_REDIRECT_URL = '{}/'.format(URL_PREFIX)
 
 LOGIN_URL = '{}/accounts/login/'.format(URL_PREFIX)
+
+# Django Admin URL.
+ADMIN_URL = "admin/"
 
 STATICFILES_DIRS = (
     'pubhub-static',
