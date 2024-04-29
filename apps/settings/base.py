@@ -114,31 +114,25 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-# Set prefix of URL if site is served from a subdirectory 
-# (i.e. If the site is served from my.site.com/pubhub, then set URL_PREFIX = '/pubhub'.)
-URL_PREFIX = ''
-
 STATIC_ROOT = 'static'
 
-STATIC_URL = '{}/static/'.format(URL_PREFIX)
+STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '{}/'.format(URL_PREFIX)
+LOGIN_REDIRECT_URL = '/'
 
-LOGIN_URL = '{}/accounts/login/'.format(URL_PREFIX)
-
-# Django Admin URL.
-ADMIN_URL = os.environ.get("DJANGO_ADMIN_URL", default="admin/")
+LOGIN_URL = '/accounts/login/'
 
 STATICFILES_DIRS = (
     'pubhub-static',
 )
+
+# Django Admin URL.
+ADMIN_URL = os.environ.get("DJANGO_ADMIN_URL", default="admin/")
 
 # Google's recaptcha. Refer to the recaptcha web site for this key https://www.google.com/recaptcha/intro/
 RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY", default='')
