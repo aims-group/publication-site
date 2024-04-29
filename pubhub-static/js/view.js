@@ -206,7 +206,7 @@ $('#facet-links-container input.radio-sort').change(function(){
                 var rows = "";
                 for (var i = 0, len = data.frequency.length; i < len; i++){
                     var link = data.frequency[i].replace(' ', '%20')
-                    rows += "<a href=\"?type=realm&option=" + link + "\">" + data.frequency[i] + "<a/><br/>";
+                    rows += "<a href=\"?type=frequency&option=" + link + "\">" + data.frequency[i] + "<a/><br/>";
                 }
                 info_titles += "<th>Frequency</th>";
                 info_columns += "<td>" + rows + "</td>";
