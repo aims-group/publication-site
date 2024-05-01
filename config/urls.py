@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 from publisher.forms import RegistrationViewUniqueEmail
 from django.contrib.auth.views import logout_then_login
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
@@ -12,3 +13,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('publisher.urls'))
 ]
+
+urlpatterns += staticfiles_urlpatterns()

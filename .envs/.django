@@ -1,8 +1,9 @@
 # General
 # ------------------------------------------------------------------------------
 DJANGO_DEBUG=True
-DJANGO_SETTINGS_MODULE=settings.local
+DJANGO_SETTINGS_MODULE=config.settings.local
 DOMAIN_NAME=http://localhost:8000
+DJANGO_STATIC_ROOT=/pubhub/static
 
 # Security
 # ------------------------------------------------------------------------------

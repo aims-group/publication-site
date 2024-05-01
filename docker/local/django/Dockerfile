@@ -27,10 +27,15 @@ COPY ./docker/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY ./apps /apps
-COPY ./scripts /scripts
-COPY ./templates /templates
-COPY ./pubhub-static /pubhub-static
-COPY ./manage.py /manage.py
+RUN mkdir /pubhub
+
+COPY ./config /pubhub/config
+COPY ./publisher /pubhub/publisher
+COPY ./scripts /pubhub/scripts
+COPY ./templates /pubhub/templates
+COPY ./pubhub-static /pubhub/pubhub-static
+COPY ./manage.py /pubhub/manage.py
+
+WORKDIR /pubhub
 
 ENTRYPOINT ["/entrypoint"]

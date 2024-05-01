@@ -1,0 +1,34 @@
+version: "3"
+
+volumes:
+  production_django_log: {}
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/production/postgres/Dockerfile
+    image: pubhub_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.postgres
+
+  django:
+    build:
+      context: .
+      dockerfile: ./docker/production/django/Dockerfile
+    image: pubhub_production_django
+    depends_on:
+      - postgres
+    volumes:
+      - production_django_log:/var/log/django
+    env_file:
+      - ./.envs/.django
+      - ./.envs/.postgres
+    ports:
+      - "5000:5000"
+    command: /start
