@@ -18,6 +18,13 @@ DATABASES = {
     }
 }
 
+# WhiteNoise
+# ------------------------------------------------------------------------------
+# http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
+INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
+] + INSTALLED_APPS
+
 # os.environ["REQUESTS_CA_BUNDLE"] = "/absolute/path/to/certfile.crt"  
 # Path to the .crt file. 
 # Used if the server is behind a corporate firewall that intercepts ssl
