@@ -5,7 +5,7 @@ from .base import *
 # GENERAL
 # ------------------------------------------------------------------------------
 DEBUG = False
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS")
+ALLOWED_HOSTS = [x.strip() for x in os.environ.get("DJANGO_ALLOWED_HOSTS").split(',')]
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
