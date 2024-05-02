@@ -10,3 +10,4 @@ apps/publisher/migrations/
 .DS_store
 static/
 .vscode/
+.production_env/
