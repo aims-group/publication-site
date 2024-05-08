@@ -15,7 +15,7 @@ services:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
-      - ./.envs/.postgres
+      - ./.envs/.prod.env
 
   django:
     build:
@@ -30,8 +30,7 @@ services:
     volumes:
       - production_django_log:/var/log/django
     env_file:
-      - ./.envs/.django
-      - ./.envs/.postgres
+      - ./.envs/.prod.env
     ports:
       - "5000:5000"
     command: /start

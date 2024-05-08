@@ -10,4 +10,12 @@ apps/publisher/migrations/
 .DS_store
 static/
 .vscode/
-.production_env/
+
+# Config
+pubhub_configs/pubhub_config
+pubhub_configs/backups
+
+# Environment files
+.env
+.envs/*
+!.envs/.local/
