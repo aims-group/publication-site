@@ -1,6 +1,6 @@
 # Constants
 PUBHUB_CONFIG=pubhub_config
-DEFAULT_EDITOR=emacs
+DEFAULT_EDITOR=vim
 CONFIG_DIR=pubhub_configs
 BACKUP_DIR=$CONFIG_DIR/backups
 BACKUP_FORMAT=config_backup_$(date +'%F_%I-%M-%S')
@@ -53,7 +53,7 @@ function setCurrentConfig() {
     fi
 }
 
-#Arg1 name of service to start: backend or traefik
+#Arg1 name of service to start: pubhub or traefik
 #Arg2 optional '-d' to perform service in background
 function startService() {
     echo "Starting $1"
@@ -62,7 +62,7 @@ function startService() {
     cd ..
 }
 
-#Arg1 name of service top stop: backend or traefik
+#Arg1 name of service top stop: pubhub or traefik
 function stopService() {
     echo "Stopping $1"
     cd $1
@@ -70,7 +70,7 @@ function stopService() {
     cd ..
 }
 
-#Arg1 name of service to start: backend or traefik
+#Arg1 name of service to start: pubhub or traefik
 #Arg2 optional '-d' to perform service in background
 function startLocalService() {
     echo "Starting $1"
@@ -79,7 +79,7 @@ function startLocalService() {
     cd ..
 }
 
-#Arg1 name of service top stop: backend or traefik
+#Arg1 name of service top stop: pubhub or traefik
 function stopLocalService() {
     echo "Stopping $1"
     cd $1
@@ -91,20 +91,20 @@ function startPubhubContainers() {
     clear
     saveConfigs $CONFIG_DIR/$PUBHUB_CONFIG
     startService traefik -d
-    startService backend -d
+    startService pubhub -d
 }
 
 function stopPubhubContainers() {
     clear
-    stopService backend
+    stopService pubhub
     stopService traefik
 }
 
 function toggleLocalContainers() {
     clear
     # Stop any remaining services and start them up again
-    stopLocalService backend -d
-    startLocalService backend -d
+    stopLocalService pubhub -d
+    startLocalService pubhub -d
 }
 
 # Main Menu
@@ -161,8 +161,8 @@ function mainMenu() {
 #Container Menu
 function containersMenu() {
     echo "Container Start/Stop"
-    echo "1 Start Backend"
-    echo "2 Stop Backend"
+    echo "1 Start PubHub"
+    echo "2 Stop PubHub"
     echo "3 Start Traefik"
     echo "4 Stop Traefik"
     echo "5 Start Documentation"
@@ -175,10 +175,10 @@ function containersMenu() {
         containersMenu
     else
         if [ "$option" = "1" ]; then
-            startService backend
+            startService pubhub
             mainMenu
         elif [ "$option" = "2" ]; then
-            stopService backend
+            stopService pubhub
             clear
             mainMenu
         elif [ "$option" = "3" ]; then
