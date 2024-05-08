@@ -19,7 +19,7 @@ function configure() {
 # Arg1 name of config file to copy into active locations
 function saveConfigs() {
     cp $CONFIG_DIR/$PUBHUB_CONFIG traefik/.env
-    cp $CONFIG_DIR/$PUBHUB_CONFIG .envs/.prod.env
+    cp $CONFIG_DIR/$PUBHUB_CONFIG pubhub/.envs/.prod.env
 }
 
 function setCurrentConfig() {
