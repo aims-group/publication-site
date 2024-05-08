@@ -4,6 +4,7 @@ DEFAULT_EDITOR=vim
 CONFIG_DIR=pubhub_configs
 BACKUP_DIR=$CONFIG_DIR/backups
 BACKUP_FORMAT=config_backup_$(date +'%F_%I-%M-%S')
+COMPOSE_CMD=podman-compose
 
 set -e
 
@@ -58,7 +59,7 @@ function setCurrentConfig() {
 function startService() {
     echo "Starting $1"
     cd $1
-    docker compose -f docker-compose.prod.yml up --build $2
+    $COMPOSE_CMD -f docker-compose.prod.yml up --build $2
     cd ..
 }
 
@@ -66,7 +67,7 @@ function startService() {
 function stopService() {
     echo "Stopping $1"
     cd $1
-    docker compose -f docker-compose.prod.yml down --remove-orphans
+    $COMPOSE_CMD -f docker-compose.prod.yml down --remove-orphans
     cd ..
 }
 
@@ -75,7 +76,7 @@ function stopService() {
 function startLocalService() {
     echo "Starting $1"
     cd $1
-    docker compose -f docker-compose.yml up --build $2
+    $COMPOSE_CMD -f docker-compose.yml up --build $2
     cd ..
 }
 
@@ -83,7 +84,7 @@ function startLocalService() {
 function stopLocalService() {
     echo "Stopping $1"
     cd $1
-    docker compose -f docker-compose.yml down --remove-orphans
+    $COMPOSE_CMD -f docker-compose.yml down --remove-orphans
     cd ..
 }
 
