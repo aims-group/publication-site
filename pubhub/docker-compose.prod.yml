@@ -24,7 +24,6 @@ services:
     image: pubhub_production_django
     networks:
       - traefik_default
-      - default
     depends_on:
       - postgres
     volumes:
