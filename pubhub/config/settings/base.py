@@ -131,3 +131,4 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY", default='')
 # Email values must be set for password recovery to function
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default='localhost')
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default=1025)
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", default='Publication Hub<noreply@pubhub.example.com>')
