@@ -90,6 +90,7 @@ journal_names = [
     "Nature Climate Change",
     "Nature Communications",
     "Nature Geoscience",
+    "Nature Reviews Earth &amp; Environment",
     "Nonlinear Processes in Geophysics",
     "Nuclear Science Engineering",
     "Ocean Modelling",
