@@ -29,6 +29,7 @@ journal_names = [
     "Climate of the Past",
     "Climate of the Past Discussions",
     "Climatic Change",
+    "Communications Earth &amp; Environment",
     "Conservation Science and Practice",
     "Contributions to Atmospheric Physics",
     "Current Science",
