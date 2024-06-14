@@ -96,6 +96,7 @@ journal_names = [
     "Ocean Science Journal",
     "Other",
     "Palaeogeography, Palaeoclimatology, Palaeoecology",
+    "Past Global Changes Magazine",
     "Physical Review Letters",
     "Physics Today",
     "Physics and Chemistry of the Earth",
