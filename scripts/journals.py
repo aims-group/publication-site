@@ -113,6 +113,7 @@ journal_names = [
     "Science Advances",
     "Science China Earth Sciences",
     "Scientific American",
+    "Scientific Data",
     "Scientific Reports",
     "Sustainability",
     "Tellus",
