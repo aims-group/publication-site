@@ -49,6 +49,7 @@ journal_names = [
     "Forensic Science International: Reports",
     "Fractals",
     "Frontiers in Earth Science",
+    "G3: Genes, Genomes, Genetics",
     "Geophysical Research Letters",
     "Geoscience Data Journal",
     "Geoscience and Remote Sensing Letters",
