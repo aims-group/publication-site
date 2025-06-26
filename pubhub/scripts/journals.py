@@ -75,7 +75,6 @@ journal_names = [
     "Journal of Biogeography",
     "Journal of Climate",
     "Journal of Geophysical Research",
-    "Journal of Geophysical Research-Atmospheres",
     "Journal of Geophysical Research: Atmospheres",
     "Journal of Geophysical Research: Oceans",
     "Journal of Hydrometeorology",
