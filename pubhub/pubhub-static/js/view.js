@@ -104,7 +104,7 @@ $('#facet-links-container input.radio-sort').change(function(){
                     data.doi = data.doi.split('doi.org/')[1]
                 }
                 if (data.doi !== ''){
-                    citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">doi:' + data.doi + '.' +'</a>');
+                    citation.append('<a target="_blank" href="https://dx.doi.org/'+ data.doi +'">doi:' + data.doi + '.' +'</a>');
                 }
             }
             else if (data.type == 'Book'){
@@ -143,7 +143,7 @@ $('#facet-links-container input.radio-sort').change(function(){
                         data.doi = data.doi.split('doi.org/')[1]
                     }
                     if (data.doi !== ''){
-                        citation.append('<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + ('http://dx.doi.org/'+data.doi) + '.' +'</a>');
+                        citation.append('<a target="_blank" href="https://dx.doi.org/'+ data.doi +'">' + ('https://dx.doi.org/'+data.doi) + '.' +'</a>');
                     }
                 }
             }
@@ -377,7 +377,7 @@ function show_bibtex(id){
                     data.doi = data.doi.split('doi.org/')[1]
                 }
                 if(data.doi){
-                    bibtex += ',\n  doi          = {' + '<a target="_blank" href="http://dx.doi.org/'+ data.doi +'">' + data.doi + '</a>}';
+                    bibtex += ',\n  doi          = {' + '<a target="_blank" href="https://dx.doi.org/'+ data.doi +'">' + data.doi + '</a>}';
                 }
                 bibtex += '\n}'
                 $("div #bibtex"+id).html($('<pre/>').append(bibtex));
