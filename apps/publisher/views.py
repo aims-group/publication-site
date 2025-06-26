@@ -851,15 +851,15 @@ def finddoi(request):
         headers = {'accept': accept}
         if doi[:5].lower() == 'doi: ':  # grabs first 5 characters lowercases, and compares
             try:
-                url = "http://dx.doi.org/" + doi.split()[1]  # removes "doi:" and whitespace leaving only the doi
+                url = "https://dx.doi.org/" + doi.split()[1]  # removes "doi:" and whitespace leaving only the doi
             except IndexError:
                 return (doi.strip('\n') + " -- Invalid DOI.\n")
         elif doi.startswith('doi:10'):
-            url = "http://dx.doi.org/" + doi[4:]  # remove 'doi:'
-        elif doi.startswith("http://dx.doi.org/"):
+            url = "https://dx.doi.org/" + doi[4:]  # remove 'doi:'
+        elif doi.startswith("https://dx.doi.org/"):
             url = doi
         else:
-            url = "http://dx.doi.org/" + doi
+            url = "https://dx.doi.org/" + doi
         try:
             r = requests.get(url, headers=headers)
             status = r.status_code
