@@ -39,6 +39,7 @@
     <script type="text/javascript" src="{% static 'js/google_analytics_pcmdi.js' %}" ></script>
 
     {% if ENABLE_US_GOV_SITE_BANNER %}
+    <!-- U.S. Web Design System (USWDS) -->
     <script src="{% static 'uswds/js/uswds-init.min.js' %}"></script>
     {% endif %}
 
@@ -65,6 +66,7 @@
     </div> <!-- /container -->
 
     {% if ENABLE_US_GOV_SITE_BANNER %}
+    <!-- Execute uswds.min.js after all HTML content in the body is loaded -->
     <script src="{% static 'uswds/js/uswds.min.js' %}"></script>
     {% endif %}
 
