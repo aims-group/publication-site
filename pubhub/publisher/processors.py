@@ -21,7 +21,7 @@ def pending_dois(request):
 
 def banner_settings(request):
     """
-    Makes banner settings from local_settings.py available to templates.
+    Makes banner settings available to templates.
     """
     return {
         'ENABLE_US_GOV_SITE_BANNER': getattr(settings,
