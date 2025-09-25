@@ -25,6 +25,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
+    {% if ENABLE_US_GOV_SITE_BANNER %}
+    <link rel="stylesheet" href="{% static 'uswds/css/uswds.min.css' %}">
+    {% endif %}
+
     <!-- LLNL Analytics -->
     <script src="{% static 'js/matomo.js' %}"></script>
 
@@ -33,6 +37,11 @@
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script type="text/javascript" src="{% static 'js/google_analytics_pcmdi.js' %}" ></script>
+
+    {% if ENABLE_US_GOV_SITE_BANNER %}
+    <!-- U.S. Web Design System (USWDS) -->
+    <script src="{% static 'uswds/js/uswds-init.min.js' %}"></script>
+    {% endif %}
 
     {% block extra_headers %} {% endblock %}
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -45,6 +54,9 @@
   <body>
 
       <div class="content-wrapper container">
+      {% if ENABLE_US_GOV_SITE_BANNER %}
+      {% include 'site/usa_banner.html' %}
+      {% endif %}
       {% include 'site/nav.html' %}
       {% block content %} {% endblock %}
       </div>
@@ -52,6 +64,11 @@
       {% include 'site/footer.html' %}
       </div>
     </div> <!-- /container -->
+
+    {% if ENABLE_US_GOV_SITE_BANNER %}
+    <!-- Execute uswds.min.js after all HTML content in the body is loaded -->
+    <script src="{% static 'uswds/js/uswds.min.js' %}"></script>
+    {% endif %}
 
   </body>
 </html>
