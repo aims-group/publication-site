@@ -4,7 +4,7 @@ DEFAULT_EDITOR=vim
 CONFIG_DIR=pubhub_configs
 BACKUP_DIR=$CONFIG_DIR/backups
 BACKUP_FORMAT=config_backup_$(date +'%F_%I-%M-%S')
-COMPOSE_CMD=podman-compose
+COMPOSE_CMD=docker-compose
 
 set -e
 
