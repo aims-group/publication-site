@@ -30,7 +30,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'publisher.processors.nav_options',
-                'publisher.processors.pending_dois'
+                'publisher.processors.pending_dois',
+                'publisher.processors.banner_settings'
             ],
         },
     },
@@ -132,3 +133,6 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY", default='')
 EMAIL_HOST = os.environ.get("EMAIL_HOST", default='localhost')
 EMAIL_PORT = os.environ.get("EMAIL_PORT", default=1025)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", default='Publication Hub<noreply@pubhub.example.com>')
+
+# Show the federal government banner (https://standards.digital.gov/standards/banner/)
+ENABLE_US_GOV_SITE_BANNER = os.environ.get("ENABLE_US_GOV_SITE_BANNER", default=False)
