@@ -77,6 +77,7 @@ journal_names = [
     "Journal of Geophysical Research",
     "Journal of Geophysical Research: Atmospheres",
     "Journal of Geophysical Research: Oceans",
+    "Journal of Geophysical Research: Solid Earth",
     "Journal of Hydrometeorology",
     "Journal of Molecular Structure",
     "Journal of Oceanography",
