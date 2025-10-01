@@ -23,7 +23,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'publisher.processors.nav_options',
-                'publisher.processors.pending_dois'
+                'publisher.processors.pending_dois',
+                'publisher.processors.banner_settings'
             ],
         },
     },
@@ -66,3 +67,6 @@ URL_PREFIX = ''
 # Path to the .crt file. 
 # Used if the server is behind a corporate firewall that intercepts ssl
 # This can be set to "" (empty string) if your server is not behind one of these annoying firewalls
+
+# Show the federal government banner (https://standards.digital.gov/standards/banner/)
+ENABLE_US_GOV_SITE_BANNER = False
