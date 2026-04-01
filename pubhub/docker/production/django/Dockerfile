@@ -1,6 +1,8 @@
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED 1
+ARG DJANGO_UID=10001
+ARG DJANGO_GID=10001
 
 RUN apt-get update \
     # dependencies for building Python packages
@@ -13,8 +15,8 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --system django \
-    && adduser --system --ingroup django django
+RUN addgroup --system --gid ${DJANGO_GID} django \
+    && adduser --system --uid ${DJANGO_UID} --ingroup django django
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements.prod.txt /requirements.txt
@@ -31,11 +33,9 @@ RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 RUN chown django /start
 
-RUN mkdir /var/log/django
-RUN chown django /var/log/django
+RUN install -d -o django -g django /var/log/django
 
-RUN mkdir /pubhub
-RUN chown django /pubhub
+RUN install -d -o django -g django /pubhub
 
 COPY --chown=django:django ./config /pubhub/config
 COPY --chown=django:django ./publisher /pubhub/publisher

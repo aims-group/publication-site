@@ -4,6 +4,17 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+DJANGO_LOGGING_FILENAME="${DJANGO_LOGGING_FILENAME:-/var/log/publications-site.log}"
+DJANGO_LOG_DIR="$(dirname "${DJANGO_LOGGING_FILENAME}")"
+
+if ! mkdir -p "${DJANGO_LOG_DIR}" || ! touch "${DJANGO_LOGGING_FILENAME}" || [ ! -w "${DJANGO_LOGGING_FILENAME}" ]; then
+    >&2 echo "Django log file is not writable: ${DJANGO_LOGGING_FILENAME}"
+    >&2 echo "Container uid:gid is $(id -u):$(id -g)"
+    ls -ld "${DJANGO_LOG_DIR}" || true
+    ls -l "${DJANGO_LOGGING_FILENAME}" || true
+    exit 1
+fi
+
 
 
 
