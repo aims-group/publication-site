@@ -1,6 +1,9 @@
 log:
   level: INFO
 
+accessLog:
+  filePath: /var/log/traefik/access.log
+
 entryPoints:
   web:
     # http
@@ -10,72 +13,7 @@ entryPoints:
     # https
     address: ":443"
 
-http:
-  routers:
-    web-backend-router:
-      rule: "$BACKEND_RULE"
-
-      entryPoints:
-        - web
-      middlewares:
-        - redirect
-        - csrf
-      service: django
-
-    web-backend-secure-router:
-      rule: "$BACKEND_RULE"
-
-      entryPoints:
-        - web-secure
-      middlewares:
-        - csrf
-        - secure-headers
-      service: django
-      tls:
-        certificates:
-          - certFile: /etc/traefik/ssl/cert.pem
-            keyFile: /etc/traefik/ssl/key.pem
-
-  middlewares:
-    redirect:
-      # https://docs.traefik.io/master/middlewares/redirectscheme/
-      redirectScheme:
-        scheme: https
-        permanent: true
-    secure-headers:
-      # https://doc.traefik.io/traefik/middlewares/headers/#stsseconds
-      # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-      headers:
-        stsPreload: true
-        stsIncludeSubdomains: true
-        stsSeconds: 31536000
-        forceSTSHeader: true
-    csrf:
-      # https://docs.traefik.io/master/middlewares/headers/#hostsproxyheaders
-      # https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
-      headers:
-        hostsProxyHeaders: ["X-CSRFToken"]
-
-  services:
-    django:
-      loadBalancer:
-        servers:
-          - url: http://django:5000
-
 providers:
-  # https://docs.traefik.io/master/providers/file/
   file:
-    filename: /etc/traefik/traefik.yml
+    filename: /etc/traefik/dynamic.yml
     watch: true
-
-tls:
-  options:
-    default:
-      minVersion: VersionTLS12
-      cipherSuites:
-        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305

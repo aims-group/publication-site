@@ -4,8 +4,6 @@ DOMAIN_NAME=example.com
 PUBLIC_URL=
 PREVIOUS_URL=
 DOMAIN_SUBDIRECTORY=
-TRAEFIK_SSL_CERT_FILE=
-TRAEFIK_SSL_CERT_KEY=
 
 # =====================BACKEND CONFIG====================
 
