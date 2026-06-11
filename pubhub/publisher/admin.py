@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Activity, Experiment, Frequency, Keyword, Model, Realm, Variable, Project, Funding, Author, Publication, Book, Conference, Journal, Magazine, Poster, Presentation, TechnicalReport, Other, JournalOptions
 
+admin.site.empty_value_display = "(None)"
+
 admin.site.register(Activity)
 admin.site.register(Experiment)
 admin.site.register(Frequency)

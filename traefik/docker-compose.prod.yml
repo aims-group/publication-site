@@ -2,6 +2,7 @@ version: "3"
 
 volumes:
   production_traefik: {}
+  production_traefik_log: {}
 
 services:
   traefik:
@@ -11,9 +12,12 @@ services:
       args:
         host_name: ${DOMAIN_NAME}
         backend_prefix: ${DOMAIN_SUBDIRECTORY}
+        ssl_cert_file: ${SSL_CERT_FILE}
+        ssl_cert_key: ${SSL_CERT_KEY}
     image: pubhub_production_traefik
     volumes:
-      - production_traefik:/etc/traefik/acme
+      - production_traefik:/etc/traefik/ssl
+      - production_traefik_log:/var/log/traefik
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
