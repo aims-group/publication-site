@@ -1,9 +1,6 @@
 FROM traefik:2.10
 
 RUN apk add gettext
-RUN mkdir -p /etc/traefik/acme
-RUN touch /etc/traefik/acme/acme.json
-RUN chmod 600 /etc/traefik/acme/acme.json
 
 # Prepare built-time variables for template
 ARG host_name
