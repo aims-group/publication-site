@@ -3,6 +3,9 @@ import os
 DEBUG = os.environ.get("DJANGO_DEBUG", False)
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 CSRF_COOKIE_HTTPONLY = True
 # Application definition
 
