@@ -44,7 +44,12 @@
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: #9d9d9d; cursor: pointer; padding: 15px; font-size: 14px; text-decoration: none; display: block;">Logout</button>
+                        </form>
+                    </li>
                 {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>
                 {% endif %}
