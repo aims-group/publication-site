@@ -8,6 +8,6 @@ set -o nounset
 python manage.py makemigrations
 python manage.py makemigrations publisher
 python manage.py migrate
-python manage.py collectstatic
+python manage.py collectstatic --noinput
 python manage.py initialize
 python manage.py runserver 0.0.0.0:8000
