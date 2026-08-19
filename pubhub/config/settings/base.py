@@ -3,8 +3,9 @@ import os
 DEBUG = os.environ.get("DJANGO_DEBUG", False)
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Preserve the primary-key type used by the existing production schema. Moving
+# to BigAutoField is a separate data migration and is not required by Django 5.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 CSRF_COOKIE_HTTPONLY = True
 # Application definition
@@ -42,13 +43,13 @@ TEMPLATES = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'

@@ -60,8 +60,7 @@ INSTALLED_APPS += ['gunicorn']
 
 
 # STATIC
-# ------------------------
-# Replace STATICFILES_STORAGE with new STORAGES format
+# ------------------------------------------------------------------------------
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",

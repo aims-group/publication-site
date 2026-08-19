@@ -703,7 +703,7 @@ def edit(request, pubid):
         else:
             meta_type = pub_instance.projects.first()
         ens = request.POST.getlist('ensemble')
-        ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] is not ''])
+        ensemble_data = str([[index + 1, int('0' + str(ens[index]))] for index in range(len(ens)) if ens[index] != ''])
         return render(request, 'site/edit.html',
                       {'pub_form': pub_form, 'author_form': author_form_set, 'media_form': media_form, 'pub_type': pub_type,
                        'ensemble_data': ensemble_data, 'meta_form': meta_form, 'meta_type': meta_type, "all_projects": all_projects,
