@@ -1,4 +1,4 @@
-FROM postgres:12.6
+FROM postgres:16.3
 
 COPY ./docker/production/postgres/maintenance /usr/local/bin/maintenance
 
