@@ -2,6 +2,25 @@
 
 These scripts implement guarded parts of `PRODUCTION_MIGRATION_PLAN.md`. Run them from any directory. They default to `docker-compose.prod.yml`; override that with `MIGRATION_COMPOSE_FILE`. Set `MIGRATION_COMPOSE_PROJECT` when production uses a non-default Compose project name.
 
+The scripts automatically detect Docker Compose or Podman. With Podman they prefer `podman-compose`, then fall back to `podman compose`. Compose file copying is deliberately avoided: service container IDs are resolved through Compose and files are copied with `docker cp` or `podman cp` directly.
+
+Detection can be overridden explicitly:
+
+```bash
+# Typical production Podman deployment
+MIGRATION_CONTAINER_ENGINE=podman \
+MIGRATION_COMPOSE_PROVIDER=podman-compose \
+  ./scripts/migration/preflight.sh
+
+# Podman's Compose subcommand instead of the standalone provider
+MIGRATION_CONTAINER_ENGINE=podman \
+MIGRATION_COMPOSE_PROVIDER=podman \
+  ./scripts/migration/preflight.sh
+
+# Force Docker Compose
+MIGRATION_CONTAINER_ENGINE=docker ./scripts/migration/preflight.sh
+```
+
 ```bash
 # Read-only inventory of running production services
 ./scripts/migration/preflight.sh

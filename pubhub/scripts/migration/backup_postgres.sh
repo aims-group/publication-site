@@ -11,8 +11,6 @@ if [[ "${MIGRATION_WRITES_STOPPED:-}" != "yes" ]]; then
     exit 2
 fi
 
-require_command docker
-
 OUTPUT_DIR="${1:-${MIGRATION_PROJECT_DIR}/migration-backups}"
 mkdir -p "${OUTPUT_DIR}"
 OUTPUT_DIR="$(cd "${OUTPUT_DIR}" && pwd)"
@@ -25,8 +23,8 @@ postgres_exec 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom --n
 postgres_exec 'pg_dumpall -U "$POSTGRES_USER" --globals-only --file=/backups/'"${GLOBALS_DUMP}"
 postgres_exec 'pg_restore --list /backups/'"${DATABASE_DUMP}"' >/dev/null'
 
-compose cp "postgres:/backups/${DATABASE_DUMP}" "${OUTPUT_DIR}/${DATABASE_DUMP}"
-compose cp "postgres:/backups/${GLOBALS_DUMP}" "${OUTPUT_DIR}/${GLOBALS_DUMP}"
+copy_from_service postgres "/backups/${DATABASE_DUMP}" "${OUTPUT_DIR}/${DATABASE_DUMP}"
+copy_from_service postgres "/backups/${GLOBALS_DUMP}" "${OUTPUT_DIR}/${GLOBALS_DUMP}"
 
 if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "${OUTPUT_DIR}/${DATABASE_DUMP}" "${OUTPUT_DIR}/${GLOBALS_DUMP}" > "${OUTPUT_DIR}/SHA256SUMS_${STAMP}"
