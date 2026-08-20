@@ -121,9 +121,32 @@ postgres_exec() {
 
 service_container_id() {
     local service="$1"
+    local candidate
+    local candidates
     local container_id
+    local service_label
 
-    container_id="$(compose ps -q "${service}" | head -n 1)"
+    # Standalone podman-compose does not accept a service argument after
+    # `ps -q`. Enumerate this Compose project's containers and use the labels
+    # that Podman Compose applies to identify the requested service.
+    if [[ "${MIGRATION_COMPOSE_COMMAND[0]}" == "podman-compose" ]]; then
+        candidates="$(compose ps -q)"
+        container_id=""
+        while IFS= read -r candidate; do
+            [[ -n "${candidate}" ]] || continue
+            service_label="$(container_engine inspect --format '{{ index .Config.Labels "io.podman.compose.service" }}' "${candidate}" 2>/dev/null || true)"
+            if [[ -z "${service_label}" || "${service_label}" == "<no value>" ]]; then
+                service_label="$(container_engine inspect --format '{{ index .Config.Labels "com.docker.compose.service" }}' "${candidate}" 2>/dev/null || true)"
+            fi
+            if [[ "${service_label}" == "${service}" ]]; then
+                container_id="${candidate}"
+                break
+            fi
+        done <<< "${candidates}"
+    else
+        container_id="$(compose ps -q "${service}" | head -n 1)"
+    fi
+
     if [[ -z "${container_id}" ]]; then
         echo "No running container found for Compose service: ${service}" >&2
         return 1
